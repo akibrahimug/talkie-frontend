@@ -1,9 +1,11 @@
 import { React, useState, useEffect } from 'react';
-import './Register.scss';
-import Input from '../../components/input/Input';
-import Button from '../../components/button/Button';
-import { authService } from '../../services/api/auth/auth.service';
-import { Utils } from '../../services/utils/utils.service';
+import '@pages/register/Register.scss';
+import Input from '@components/input/Input';
+import Button from '@components/button/Button';
+import { authService } from '@services/api/auth/auth.service';
+import { Utils } from '@services/utils/utils.service';
+import { useNavigate } from 'react-router-dom';
+
 const Register = () => {
   const [username, setUserName] = useState('');
   const [email, setEmail] = useState('');
@@ -12,7 +14,7 @@ const Register = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [alertType, setAlertType] = useState('');
   const [hasError, setHasError] = useState(false);
-
+  const navigate = useNavigate();
   const [user, setUser] = useState();
 
   const registerUser = async (e) => {
@@ -45,8 +47,7 @@ const Register = () => {
   useEffect(() => {
     if (loading && !user) return;
     if (user) {
-      console.log('Navigate to streams page');
-      setLoading(false);
+      navigate('/app/social/streams');
     }
   }, [loading, user]);
   return (

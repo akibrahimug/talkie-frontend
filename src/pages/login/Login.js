@@ -1,10 +1,10 @@
 import { React, useState, useEffect } from 'react';
-import './Login.scss';
+import '@pages/login/Login.scss';
 import { FaArrowRight } from 'react-icons/fa';
-import Input from '../../components/input/Input';
-import Button from '../../components/button/Button';
-import { Link } from 'react-router-dom';
-import { authService } from '../../services/api/auth/auth.service';
+import Input from '@components/input/Input';
+import Button from '@components/button/Button';
+import { Link, useNavigate } from 'react-router-dom';
+import { authService } from '@services/api/auth/auth.service';
 const Login = () => {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +13,7 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [alertType, setAlertType] = useState('');
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
   const [user, setUser] = useState();
   const loginUser = async (e) => {
     setLoading(true);
@@ -38,11 +38,9 @@ const Login = () => {
 
   useEffect(() => {
     if (loading && !user) return;
-    if (user) {
-      console.log('Navigate to streams page from login');
-      setLoading(false);
-    }
-  }, [loading, user]);
+    if (user) navigate('/app/social/streams');
+  }, [loading, user, navigate]);
+
   return (
     <div className="auth-inner">
       {hasError && errorMessage ? (

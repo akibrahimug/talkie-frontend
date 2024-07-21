@@ -1,9 +1,9 @@
 import { React, useState } from 'react';
-import './ResetPassword.scss';
+import '@pages/reset-password/ResetPassword.scss';
 import { FaArrowLeft } from 'react-icons/fa';
-import Input from '../../components/input/Input';
-import Button from '../../components/button/Button';
-import { authService } from '../../services/api/auth/auth.service';
+import Input from '@components/input/Input';
+import Button from '@components/button/Button';
+import { authService } from '@services/api/auth/auth.service';
 import { Link, useSearchParams } from 'react-router-dom';
 
 function ResetPassword() {

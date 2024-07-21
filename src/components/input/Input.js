@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './Input.scss';
+import '@components/input/Input.scss';
 const Input = ({ name, type, value, className, labelText, placeholder, handleChange, style }) => {
   return (
     <>
