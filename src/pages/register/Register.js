@@ -5,7 +5,9 @@ import Button from '@components/button/Button';
 import { authService } from '@services/api/auth/auth.service';
 import { Utils } from '@services/utils/utils.service';
 import { useNavigate } from 'react-router-dom';
-
+import useLocalStorage from '@hooks/useLocalStorage';
+import useSessionStorage from '@hooks/useSessionStorage';
+import { useDispatch } from 'react-redux';
 const Register = () => {
   const [username, setUserName] = useState('');
   const [email, setEmail] = useState('');
@@ -14,18 +16,21 @@ const Register = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [alertType, setAlertType] = useState('');
   const [hasError, setHasError] = useState(false);
-  const navigate = useNavigate();
   const [user, setUser] = useState();
 
+  const [setStoredUsername] = useLocalStorage('username', 'set');
+  const [setLoggedIn] = useLocalStorage('keepLoggedIn', 'set');
+  const [pageReload] = useSessionStorage('payload', 'set');
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const registerUser = async (e) => {
-    console.log(e);
     setLoading(true);
     e.preventDefault();
     try {
       const avatarColor = Utils.avatarColor();
-      console.log(avatarColor, 'image', Utils.generateAvatar(username.charAt(0).toUpperCase(), avatarColor));
       const avatarImage = Utils.generateAvatar(username.charAt(0).toUpperCase(), avatarColor);
-
       const result = await authService.signup({
         username,
         email,
@@ -33,10 +38,13 @@ const Register = () => {
         avatarColor,
         avatarImage
       });
-      setUser(result.data.user);
+      setStoredUsername(username);
+      Utils.dispatchUser(result, pageReload, dispatch, setUser);
+      setLoggedIn(true);
       setHasError(false);
       setAlertType('alert-success');
     } catch (error) {
+      console.log(error);
       setLoading(false);
       setHasError(true);
       setAlertType('alert-error');
@@ -49,7 +57,7 @@ const Register = () => {
     if (user) {
       navigate('/app/social/streams');
     }
-  }, [loading, user]);
+  }, [loading, user, navigate]);
   return (
     <div className="auth-inner">
       {hasError && errorMessage ? (
