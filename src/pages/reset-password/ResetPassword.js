@@ -10,7 +10,6 @@ function ResetPassword() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
   const [alertType, setAlertType] = useState('');
   const [responseMessage, setResponseMessage] = useState('');
   const [searchParams] = useSearchParams();
@@ -25,14 +24,12 @@ function ResetPassword() {
       setLoading(false);
       setPassword('');
       setConfirmPassword('');
-      setShowAlert(false);
       setAlertType('alert-success');
       setResponseMessage(response?.data?.message);
     } catch (error) {
       setAlertType('alert-error');
       setHasError(true);
       setLoading(false);
-      setShowAlert(true);
       setResponseMessage(error?.response?.data?.message);
     }
   };

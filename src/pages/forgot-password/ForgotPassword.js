@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react';
+import { React, useState } from 'react';
 import '@pages/forgot-password/ForgotPassword.scss';
 import { FaArrowLeft } from 'react-icons/fa';
 import Input from '@components/input/Input';
@@ -7,13 +7,10 @@ import { authService } from '@services/api/auth/auth.service';
 import { Link } from 'react-router-dom';
 const ForgotPassword = () => {
   const [hasError, setHasError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
   const [alertType, setAlertType] = useState('');
-  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const userForgotPassword = async (e) => {
-    setLoading(true);
     e.preventDefault();
     try {
       const result = await authService.forgotPassword(email);
@@ -21,10 +18,8 @@ const ForgotPassword = () => {
       setHasError(false);
       setAlertType('alert-success');
     } catch (error) {
-      setLoading(false);
       setHasError(true);
       setAlertType('alert-error');
-      setErrorMessage(error?.response?.data.message);
     }
   };
   return (
