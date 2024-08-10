@@ -10,18 +10,24 @@ const ForgotPassword = () => {
   const [alertType, setAlertType] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const userForgotPassword = async (e) => {
+    setLoading(true);
     e.preventDefault();
     try {
       const result = await authService.forgotPassword(email);
-      setMessage(result?.data?.message);
-      setHasError(false);
+      setMessage(result?.response?.data?.message);
       setAlertType('alert-success');
+      setHasError(false);
     } catch (error) {
-      setHasError(true);
+      setLoading(false);
       setAlertType('alert-error');
+      setHasError(true);
+      setMessage(error?.response?.data?.message);
     }
   };
+
   return (
     <div className="container-wrapper">
       <div className="container-wrapper-auth">
@@ -32,16 +38,14 @@ const ForgotPassword = () => {
                 <div className="login forgot-password">Forgot Password</div>
               </li>
             </ul>
-
             <div className="tab-item">
               <div className="auth-inner">
-                {message ? (
+                {message && alertType && (
                   <div className={`alerts ${alertType}`} role="alert">
                     {message}
                   </div>
-                ) : (
-                  <></>
                 )}
+
                 <form className="forgot-password-form " onSubmit={userForgotPassword}>
                   <div className="form-input-container">
                     <Input
@@ -50,13 +54,17 @@ const ForgotPassword = () => {
                       type="email"
                       value={email}
                       placeholder="Enter email"
-                      labelText="email"
+                      labelText="Email"
                       style={{ border: `${hasError ? '1px solid #fa9b8a' : ''}` }}
                       handleChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
                   {/* button component */}
-                  <Button label="FORGOT PASSWORD" className="auth-button button" disabled={!email ? true : false} />
+                  <Button
+                    label={`${loading ? 'Please wait...' : 'FORGOT PASSWORD'}`}
+                    className="auth-button button"
+                    disabled={!email ? true : false}
+                  />
                   <Link to={'/'}>
                     <span className="login">
                       <FaArrowLeft className="arrow-left" /> Back to Login

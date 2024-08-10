@@ -21,11 +21,16 @@ function ResetPassword() {
     try {
       const body = { password, confirmPassword };
       const response = await authService.resetPassword(searchParams.get('token'), body);
+
       setLoading(false);
       setPassword('');
       setConfirmPassword('');
       setAlertType('alert-success');
-      setResponseMessage(response?.data?.message);
+      setResponseMessage(response?.response?.data?.message);
+      setLoading(false);
+      setPassword('');
+      setConfirmPassword('');
+      setAlertType('alert-success');
     } catch (error) {
       setAlertType('alert-error');
       setHasError(true);

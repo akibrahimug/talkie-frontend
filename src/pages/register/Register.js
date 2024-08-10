@@ -39,16 +39,15 @@ const Register = () => {
         avatarImage
       });
       setStoredUsername(username);
-      Utils.dispatchUser(result, pageReload, dispatch, setUser);
       setLoggedIn(true);
       setHasError(false);
       setAlertType('alert-success');
+      Utils.dispatchUser(result, pageReload, dispatch, setUser);
     } catch (error) {
-      console.log(error);
       setLoading(false);
-      setHasError(true);
       setAlertType('alert-error');
-      setErrorMessage(error?.response?.data.message);
+      setHasError(true);
+      setErrorMessage(error?.response?.data?.message);
     }
   };
 
@@ -60,12 +59,10 @@ const Register = () => {
   }, [loading, user, navigate]);
   return (
     <div className="auth-inner">
-      {hasError && errorMessage ? (
+      {hasError && errorMessage && (
         <div className={`alerts ${alertType}`} role="alert">
           {errorMessage}
         </div>
-      ) : (
-        <></>
       )}
 
       <form className="auth-form" onSubmit={registerUser}>
@@ -81,7 +78,7 @@ const Register = () => {
             handleChange={(e) => setUserName(e.target.value)}
           />
           <Input
-            id="Email"
+            id="email"
             name="Email"
             type="text"
             value={email}
@@ -103,7 +100,7 @@ const Register = () => {
         </div>
         {/* button component */}
         <Button
-          label={`${loading ? 'Please wait ...' : 'SIGNUP'}`}
+          label={`${loading ? 'Please wait...' : 'SIGNUP'}`}
           className="auth-button button"
           disabled={!username || !email || !password ? true : false}
         />

@@ -84,7 +84,7 @@ const Login = () => {
             handleChange={(e) => setPassword(e.target.value)}
           />
           <label className="checkmark-container" htmlFor="checkbox">
-            <input
+            <Input
               id="checkbox"
               type="checkbox"
               name="checkbox"
