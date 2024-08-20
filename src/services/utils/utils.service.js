@@ -45,4 +45,13 @@ export class Utils {
     deleteSessionPayload();
     setLoggedIn(false);
   }
+
+  static appEnviroment() {
+    const env = process.env.REACT_APP_ENVIROMENT;
+    if (env === 'development') {
+      return 'DEV';
+    } else if (env === 'staging') {
+      return 'STG';
+    }
+  }
 }
