@@ -1,5 +1,5 @@
 import { React, useState } from 'react';
-import '@pages/reset-password/ResetPassword.scss';
+import '@pages/auth/reset-password/ResetPassword.scss';
 import { FaArrowLeft } from 'react-icons/fa';
 import Input from '@components/input/Input';
 import Button from '@components/button/Button';

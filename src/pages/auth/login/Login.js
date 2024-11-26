@@ -1,40 +1,39 @@
-import { React, useState, useEffect } from 'react';
-import '@pages/login/Login.scss';
+import { useState, useEffect } from 'react';
 import { FaArrowRight } from 'react-icons/fa';
 import Input from '@components/input/Input';
 import Button from '@components/button/Button';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import '@pages/auth/login/Login.scss';
 import { authService } from '@services/api/auth/auth.service';
 import useLocalStorage from '@hooks/useLocalStorage';
 import { Utils } from '@services/utils/utils.service';
 import useSessionStorage from '@hooks/useSessionStorage';
-import { useDispatch } from 'react-redux';
+
 const Login = () => {
-  const [username, setUserName] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [keepLoggedIn, setkeepLoggedIn] = useState(false);
+  const [keepLoggedIn, setKeepLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [alertType, setAlertType] = useState('');
-  const [loading, setLoading] = useState(false);
   const [user, setUser] = useState();
-
   const [setStoredUsername] = useLocalStorage('username', 'set');
   const [setLoggedIn] = useLocalStorage('keepLoggedIn', 'set');
-  const [pageReload] = useSessionStorage('payload', 'set');
-
+  const [pageReload] = useSessionStorage('pageReload', 'set');
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const loginUser = async (e) => {
+  const loginUser = async (event) => {
     setLoading(true);
-    e.preventDefault();
+    event.preventDefault();
     try {
       const result = await authService.signin({
         username,
         password
       });
-      setLoggedIn(true);
+      setLoggedIn(keepLoggedIn);
       setStoredUsername(username);
       setHasError(false);
       setAlertType('alert-success');
@@ -54,12 +53,10 @@ const Login = () => {
 
   return (
     <div className="auth-inner">
-      {hasError && errorMessage ? (
+      {hasError && errorMessage && (
         <div className={`alerts ${alertType}`} role="alert">
           {errorMessage}
         </div>
-      ) : (
-        <></>
       )}
       <form className="auth-form" onSubmit={loginUser}>
         <div className="form-input-container">
@@ -68,37 +65,36 @@ const Login = () => {
             name="username"
             type="text"
             value={username}
-            placeholder="Enter Username"
             labelText="Username"
+            placeholder="Enter Username"
             style={{ border: `${hasError ? '1px solid #fa9b8a' : ''}` }}
-            handleChange={(e) => setUserName(e.target.value)}
+            handleChange={(event) => setUsername(event.target.value)}
           />
           <Input
             id="password"
             name="password"
-            type="text"
+            type="password"
             value={password}
-            placeholder="Enter password"
             labelText="Password"
+            placeholder="Enter Password"
             style={{ border: `${hasError ? '1px solid #fa9b8a' : ''}` }}
-            handleChange={(e) => setPassword(e.target.value)}
+            handleChange={(event) => setPassword(event.target.value)}
           />
           <label className="checkmark-container" htmlFor="checkbox">
             <Input
               id="checkbox"
-              type="checkbox"
               name="checkbox"
+              type="checkbox"
               value={keepLoggedIn}
-              handleChange={() => setkeepLoggedIn(!keepLoggedIn)}
+              handleChange={() => setKeepLoggedIn(!keepLoggedIn)}
             />
             Keep me signed in
           </label>
         </div>
-        {/* button component */}
         <Button
-          label={`${loading ? 'Please wait ...' : 'LOGIN'}`}
+          label={`${loading ? 'SIGNIN IN PROGRESS...' : 'SIGNIN'}`}
           className="auth-button button"
-          disabled={!username || !password ? true : false}
+          disabled={!username || !password}
         />
 
         <Link to={'/forgot-password'}>

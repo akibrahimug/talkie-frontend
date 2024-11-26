@@ -1,3 +1,4 @@
+@import 'src/breakpoints.scss';
 @mixin bar-styles {
   width: 25px;
   height: 3px;
@@ -12,14 +13,14 @@
   background-color: var(--white-1);
   position: sticky;
   z-index: 20;
-  height: 75px;
+  height: 60px;
   box-shadow: 0 0 20px 0 rgb(44 101 144 / 10%);
   padding: 0 20px;
 
   .header-navbar {
     display: flex;
     justify-content: space-between;
-    height: 65px;
+    height: 60px;
     color: var(--gray-12);
     padding: 0 15px;
 
@@ -182,6 +183,9 @@
 ul .dropdown-ul {
   position: absolute;
 }
+.settings-dropdown {
+  right: -1vw;
+}
 
 .dropdown-ul {
   .dropdown-li {
@@ -221,7 +225,7 @@ ul .dropdown-ul {
   }
 }
 
-@media (max-width: 720px) {
+@include lg {
   .dropdown-ul {
     text-align: left;
     margin-left: 0;
@@ -239,12 +243,12 @@ ul .dropdown-ul {
   .header-navbar .header-nav {
     margin: 0 30px;
     margin-top: 2px;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 90%;
-    background: var(--white-1);
-    box-shadow: 0 0 20px 0 rgb(44 101 144 / 10%);
+    //   position: absolute;
+    //   top: 100%;
+    //   left: 0;
+    //   width: 90%;
+    //   background: var(--white-1);
+    //   box-shadow: 0 0 20px 0 rgb(44 101 144 / 10%);
     text-align: right;
   }
 

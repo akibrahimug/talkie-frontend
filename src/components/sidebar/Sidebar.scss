@@ -1,3 +1,5 @@
+@import '../../breakpoints.scss';
+
 @mixin sidebar-styles {
   background-color: var(--white-1);
   border: 1px solid var(--white-2);
@@ -8,12 +10,14 @@
 
 .app-side-menu {
   background-color: var(--white-10);
-  box-shadow: 1px 5px 5px var(--gray-16);
+  box-shadow: 1px 3px 3px var(--gray-16);
   height: 100vh;
-
+  width: 230px;
+  @include lg {
+    max-width: 60px;
+  }
   .side-menu {
     padding: 2rem 1.5rem;
-
     .list-unstyled {
       margin: 0;
       padding: 0;
@@ -25,20 +29,24 @@
         align-items: center;
         width: 100%;
         padding-bottom: 0.6rem;
-
+        @include lg {
+          justify-content: center;
+        }
         .sidebar-link {
           display: flex;
           justify-content: flex-start;
           align-items: center;
-          width: 85%;
           text-decoration: none;
           border: 1px solid transparent;
           padding: 0.6rem 1.5rem;
+          width: 180px;
           cursor: pointer;
-
+          @include lg {
+            justify-content: center;
+            width: 50px;
+          }
           &:hover {
             @include sidebar-styles;
-
             .menu-icon {
               .icon {
                 color: var(--primary-1);
@@ -49,7 +57,6 @@
 
         .active {
           @include sidebar-styles;
-
           .menu-icon {
             .icon {
               color: var(--primary-1);
@@ -59,6 +66,9 @@
 
         .menu-icon {
           margin-top: 5px;
+          @include lg {
+            margin: 5px 0px 0px 12px;
+          }
           .icon {
             color: var(--gray-13);
             font-weight: 500;
@@ -74,6 +84,10 @@
             font-weight: 500;
             font-size: 1rem;
           }
+        }
+
+        .hide-text {
+          display: none;
         }
       }
     }

@@ -1,5 +1,14 @@
+@import 'src/breakpoints.scss';
+
 .dashboard {
-  display: flex;
+  display: grid;
+  grid-template-areas: 'sidebar content';
+  grid-template-columns: 1fr 6fr;
+  column-gap: 20px;
+  @include xl {
+    grid-template-columns: 1fr 12fr;
+    column-gap: 0px;
+  }
 
   &-sidebar {
     flex: 2;

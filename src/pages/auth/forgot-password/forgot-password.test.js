@@ -1,6 +1,6 @@
 // import { forgotPasswordMockError } from '@mocks/handlers/auth';
 // import { server } from '@mocks/server';
-import ForgotPassword from '@pages/forgot-password/ForgotPassword';
+import ForgotPassword from '@pages/auth/forgot-password/ForgotPassword';
 import { render, screen, waitFor } from '@root/test.utils';
 import userEvent from '@testing-library/user-event';
 import { authService } from '@services/api/auth/auth.service';

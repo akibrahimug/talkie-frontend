@@ -1,6 +1,6 @@
 // import { signupMockError } from '@mocks/handlers/auth';
 // import { server } from '@mocks/server';
-import Register from '@pages/register/Register';
+import Register from '@pages/auth/register/Register';
 import { render, screen, waitFor } from '@root/test.utils';
 import { authService } from '@services/api/auth/auth.service';
 import { Utils } from '@services/utils/utils.service';

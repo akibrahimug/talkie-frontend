@@ -1,8 +1,25 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import '@pages/auth/auth-tabs/AuthTabs.scss';
-import { Login, Register } from '@pages/auth/';
+import Login from '@pages/auth/login/Login';
+import Register from '@pages/auth/register/Register';
+import useLocalStorage from '@hooks/useLocalStorage';
+import { Utils } from '@services/utils/utils.service';
+import { useNavigate } from 'react-router-dom';
+
 const AuthTabs = () => {
   const [type, setType] = useState('Sign In');
+  const keepLoggedIn = useLocalStorage('keepLoggedIn', 'get');
+  const [env, setEnv] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const enviroment = Utils.appEnviroment();
+    setEnv(enviroment);
+    if (keepLoggedIn) {
+      navigate('/app/social/streams');
+    }
+  }, [keepLoggedIn, navigate]);
+
   return (
     <>
       <div className="container-wrapper">

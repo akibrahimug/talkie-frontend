@@ -1,4 +1,4 @@
-import Login from '@pages/login/Login';
+import Login from '@pages/auth/login/Login';
 import { render, screen, waitFor } from '@root/test.utils';
 import { authService } from '@services/api/auth/auth.service';
 import userEvent from '@testing-library/user-event';
@@ -55,7 +55,7 @@ describe('Login', () => {
 
       userEvent.click(buttonElement);
 
-      const newButtonElement = await screen.findByRole('button', { name: /Please wait.../ });
+      const newButtonElement = await screen.findByRole('button', { name: /SIGNIN IN PROGRESS.../ });
       expect(newButtonElement).toBeInTheDocument();
     });
   });

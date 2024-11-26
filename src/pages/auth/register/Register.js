@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react';
-import '@pages/register/Register.scss';
+import '@pages/auth/register/Register.scss';
 import Input from '@components/input/Input';
 import Button from '@components/button/Button';
 import { authService } from '@services/api/auth/auth.service';
