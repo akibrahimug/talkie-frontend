@@ -1,70 +1,135 @@
-# Getting Started with Create React App
+# Portfolio Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[![Next.js](https://img.shields.io/badge/Next.js-14.1.0-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-18.2.0-blue?style=for-the-badge&logo=react)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-4.6.4-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.0.24-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![Storybook](https://img.shields.io/badge/Storybook-8.0.10-FF4785?style=for-the-badge&logo=storybook)](https://storybook.js.org/)
+[![ESLint](https://img.shields.io/badge/ESLint-8.14.0-4B32C3?style=for-the-badge&logo=eslint)](https://eslint.org/)
+[![Prettier](https://img.shields.io/badge/Prettier-2.6.2-F7B93E?style=for-the-badge&logo=prettier)](https://prettier.io/)
+[![Framer Motion](https://img.shields.io/badge/Framer_Motion-6.5.1-0055FF?style=for-the-badge&logo=framer)](https://www.framer.com/motion/)
 
-## Available Scripts
+## 📝 Description
 
-In the project directory, you can run:
+This is a modern, responsive portfolio frontend application built with Next.js and React. It showcases professional work, skills, and experiences in an elegant and interactive way.
 
-### `npm start`
+## ✨ Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- 🎨 Modern and responsive design
+- ⚡ Server-side rendering with Next.js
+- 🎭 Smooth animations with Framer Motion
+- 📱 Mobile-first approach
+- 🎯 TypeScript for type safety
+- 📚 Component documentation with Storybook
+- 🔒 Authentication support with NextAuth.js
+- 🎨 Styling with TailwindCSS
+- 📅 Date handling with date-fns and dayjs
+- 🔄 Data fetching with SWR
+- 🎨 Material UI components integration
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🚀 Getting Started
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Node.js (LTS version recommended)
+- Yarn package manager
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Clone the repository:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+git clone https://github.com/akibrahimug/portfolio-frontend.git
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+2. Install dependencies:
 
-### `npm run eject`
+```bash
+yarn install
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+3. Run the development server:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+yarn dev
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🛠️ Available Scripts
 
-## Learn More
+- `yarn dev` - Run development server
+- `yarn build` - Build production bundle
+- `yarn start` - Start production server
+- `yarn test` - Run tests
+- `yarn format` - Format code with Prettier
+- `yarn storybook` - Run Storybook development server
+- `yarn build-storybook` - Build Storybook for production
+- `yarn commit` - Commit changes using Commitizen
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🏗️ Project Structure
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```
+portfolio-frontend/
+├── .github/          # GitHub workflows and configurations
+├── .husky/           # Git hooks
+├── .storybook/       # Storybook configuration
+├── components/       # React components
+├── pages/           # Next.js pages
+├── public/          # Static assets
+├── styles/          # Global styles
+├── stories/         # Storybook stories
+└── types/           # TypeScript type definitions
+```
 
-### Code Splitting
+## 🔧 Technologies
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- **Framework:** Next.js, React
+- **Language:** TypeScript
+- **Styling:** TailwindCSS, Emotion, Material-UI
+- **State Management:** SWR
+- **Animation:** Framer Motion
+- **Documentation:** Storybook
+- **Code Quality:** ESLint, Prettier
+- **Git Hooks:** Husky
+- **Commit Standard:** Commitizen, Commitlint
+- **CI/CD:** GitHub Actions
+- **Authentication:** NextAuth.js
 
-### Analyzing the Bundle Size
+## 🔐 Environment Variables
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Create a `.env.local` file in the root directory with the following variables:
 
-### Making a Progressive Web App
+```env
+NEXT_PUBLIC_API_URL=your_api_url
+NEXTAUTH_URL=your_auth_url
+NEXTAUTH_SECRET=your_secret
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 🤝 Contributing
 
-### Advanced Configuration
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes using `yarn commit`
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 📜 License
 
-### Deployment
+This project is licensed under the MIT License.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 👤 Author
 
-### `npm run build` fails to minify
+Kasoma Ibrahim
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- GitHub: [@akibrahimug](https://github.com/akibrahimug)
+
+## 🙏 Acknowledgments
+
+- Next.js team for the amazing framework
+- Vercel for hosting
+- All contributors and maintainers
+
+---
+
+⭐️ If you found this project helpful, please give it a star!
