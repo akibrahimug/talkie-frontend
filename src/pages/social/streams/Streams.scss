@@ -1,0 +1,52 @@
+@import 'src/breakpoints.scss';
+.streams {
+  @include xl {
+    margin-top: 0px;
+  }
+  margin-top: 30px;
+  max-width: 1800px;
+  // margin: auto;
+  height: 100vh;
+
+  &-content {
+    @include xl {
+      display: block;
+      column-gap: 0px;
+      margin-top: 0px;
+    }
+    display: grid;
+    grid-template-areas: 'post suggestions';
+    grid-template-columns: 1fr 330px;
+    grid-template-rows: 1fr;
+    column-gap: 20px;
+    margin-top: 20px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    // remove scrollbar
+    overflow: hidden;
+
+    .streams-suggestions {
+      grid-area: suggestions;
+      background-color: var(--white-1);
+      max-height: 600px;
+      border-radius: 16px;
+      margin-right: 20px;
+    }
+
+    .streams-post {
+      @include xl {
+        border-radius: 0px;
+        margin-top: 0px;
+      }
+      grid-area: post;
+      border-radius: 16px;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      // remove scrollbar
+      overflow: hidden;
+      height: 100vh;
+      scroll-behavior: smooth;
+      background-color: var(--white-1);
+    }
+  }
+}

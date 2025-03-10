@@ -1,6 +1,7 @@
 import { floor, random } from 'lodash';
 import { avatarColors } from '@services/utils/static.data';
 import { addUser, clearUser } from '@redux/reducers/user/user.reducer';
+import { clearNotification, addNotification } from '@redux/reducers/notifications/notification.reducer';
 export class Utils {
   static avatarColor() {
     return avatarColors[floor(random(0.9) * avatarColors.length)];
@@ -40,9 +41,47 @@ export class Utils {
 
   static clearStore({ dispatch, deleteStorageUsername, deleteSessionPayload, setLoggedIn }) {
     dispatch(clearUser());
-    // dispatch clear notificationaction
+    dispatch(clearNotification());
     deleteStorageUsername();
     deleteSessionPayload();
     setLoggedIn(false);
+  }
+
+  static dispatchNotification(dispatch, message, type) {
+    dispatch(addNotification({ message, type }));
+  }
+
+  static dispatchClearNotification(dispatch) {
+    dispatch(clearNotification());
+  }
+
+  static appEnviroment() {
+    const env = process.env.REACT_APP_ENVIROMENT;
+    if (env === 'development') {
+      return 'DEV';
+    } else if (env === 'staging') {
+      return 'STG';
+    }
+  }
+
+  static mapSettingsDropdownItems(setSettings) {
+    const items = [];
+    const item = {
+      topText: 'My Profile',
+      subText: 'View your profile'
+    };
+    items.push(item);
+    setSettings(items);
+    return items;
+  }
+
+  static generateString(length) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = ' ';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
   }
 }

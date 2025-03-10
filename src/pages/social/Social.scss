@@ -1,0 +1,22 @@
+@import 'src/breakpoints.scss';
+
+.dashboard {
+  display: grid;
+  grid-template-areas: 'sidebar content';
+  grid-template-columns: 1fr 6fr;
+  column-gap: 20px;
+  @include xl {
+    grid-template-columns: 1fr 12fr;
+    column-gap: 0px;
+  }
+
+  &-sidebar {
+    flex: 2;
+    max-width: 15%;
+  }
+
+  &-content {
+    flex: 6;
+    height: 100vh;
+  }
+}
