@@ -39,6 +39,7 @@
 
   .suggestions-container {
     padding: 0 20px;
+
     grid-area: suggestions-list;
     grid:
       'suggestions'
@@ -46,6 +47,7 @@
 
     .suggestions {
       max-height: 480px;
+      scrollbar-width: none;
       overflow-y: scroll;
       grid-area: suggestions;
       display: grid;
