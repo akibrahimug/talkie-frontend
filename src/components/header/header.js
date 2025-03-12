@@ -16,6 +16,11 @@ import useSessionStorage from '@hooks/useSessionStorage';
 import { useDispatch } from 'react-redux';
 import { userService } from '@services/user/user.service';
 import HeaderSkeleton from './HeaderSkeleton';
+import { notificationsService } from '@services/api/notications/notifications.service';
+import { NotificationUtils } from '@services/utils/notification.utils.service';
+import NotificationPreview from '@components/dialog/NotificationPreview';
+import { socketService } from '@services/sockets/socket.service';
+
 const Header = () => {
   const { profile } = useSelector((state) => state.user);
   const [settings, setSettings] = useState([]);
@@ -30,13 +35,55 @@ const Header = () => {
   const [setLoggedIn] = useLocalStorage('keepLoggedIn', 'delete');
   const [deleteSessionPayload] = useSessionStorage('pageReload', 'delete');
   const dispatch = useDispatch();
+  const [notifications, setNotifications] = useState([]);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [notificationDialogContent, setNotificationDialogContent] = useState({
+    post: '',
+    imgUrl: '',
+    comment: '',
+    reaction: '',
+    senderName: ''
+  });
+  const [storedUsername] = useLocalStorage('username', 'get');
 
   const backgroundColor = `${env === 'DEV' ? '#50b5ff' : env === 'STG' ? '#e9710f' : ''}`;
 
+  const getUserNotifications = async () => {
+    try {
+      const response = await notificationsService.getUserNotifications();
+      const mappedNotifications = NotificationUtils.mapNotificationDropdownItems(
+        response.data.notifications,
+        setNotificationCount
+      );
+      setNotifications(mappedNotifications);
+      socketService?.socket.emit('setup', { userId: storedUsername });
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Error fetching notifications';
+      Utils.dispatchNotification(dispatch, errorMessage, 'error');
+    }
+  };
+
+  const onMarkAsRead = async (notification) => {
+    try {
+      await notificationsService.markNotificationAsRead(notification?._id);
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Error marking notification as read';
+      Utils.dispatchNotification(dispatch, errorMessage, 'error');
+    }
+  };
+
+  const onDeleteNotification = async (messageId) => {
+    try {
+      await notificationsService.deleteNotification(messageId);
+      Utils.dispatchNotification(dispatch, 'Notification deleted successfully', 'success');
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Error deleting notification';
+      Utils.dispatchNotification(dispatch, errorMessage, 'error');
+    }
+  };
+
   const navigate = useNavigate();
   const openChatPage = () => {};
-  const onMarkAsRead = () => {};
-  const onDeleteNotification = () => {};
   const onLogout = async () => {
     try {
       setLoggedIn(false);
@@ -44,17 +91,22 @@ const Header = () => {
       await userService.logoutUser();
       navigate('/');
     } catch (error) {
-      Utils.dispatchNotification(dispatch, error.response.data.message, 'error');
+      Utils.dispatchNotification(dispatch, error.response?.data?.message || 'Error logging out', 'error');
     }
   };
   useEffectOnce(() => {
     Utils.mapSettingsDropdownItems(setSettings);
+    getUserNotifications();
   }, []);
 
   useEffect(() => {
     const enviroment = Utils.appEnviroment();
     setEnv(enviroment);
   }, []);
+
+  useEffect(() => {
+    NotificationUtils.socketIONotification(profile, notifications, setNotifications, 'header', setNotificationCount);
+  }, [profile, notifications]);
 
   return (
     <>
@@ -71,6 +123,26 @@ const Header = () => {
                 openChatPage={openChatPage}
               />
             </div>
+          )}
+          {notificationDialogContent?.senderName && (
+            <NotificationPreview
+              title="Your post"
+              post={notificationDialogContent?.post}
+              imgUrl={notificationDialogContent?.imgUrl}
+              comment={notificationDialogContent?.comment}
+              reaction={notificationDialogContent?.reaction}
+              senderName={notificationDialogContent?.senderName}
+              secondButtonText="Close"
+              secondBtnHandler={() => {
+                setNotificationDialogContent({
+                  post: '',
+                  imgUrl: '',
+                  comment: '',
+                  reaction: '',
+                  senderName: ''
+                });
+              }}
+            />
           )}
           <div className="header-navbar">
             <div className="header-image" data-testid="header-image" onClick={() => navigate('/app/social/streams')}>
@@ -107,14 +179,11 @@ const Header = () => {
                   </span>
                 </span>
                 {isNotificationsActive && (
-                  <ul
-                    className="dropdown-ul"
-                    ref={notificationsRef}
-                    style={{ left: '-7vw', '@media (min-width: 1024px)': { left: '-20vw' } }}>
+                  <ul className="dropdown-ul notification-dropdown-ul" ref={notificationsRef}>
                     <li className="dropdown-li">
                       <Dropdown
-                        data={[]}
-                        notificationCount={0}
+                        data={notifications}
+                        notificationCount={notificationCount}
                         title="Notifications"
                         height={300}
                         onMarkAsRead={onMarkAsRead}
@@ -139,7 +208,11 @@ const Header = () => {
                 }}>
                 <span className="header-list-name">
                   <FaRegEnvelope className="header-list-icon" />
-                  <span className="bg-danger-dots dots" data-testid="messages-dots"></span>
+                  {notificationCount > 0 && (
+                    <span className="bg-danger-dots dots" data-testid="messages-dots">
+                      {notificationCount}
+                    </span>
+                  )}
                 </span>
                 &nbsp;
               </li>

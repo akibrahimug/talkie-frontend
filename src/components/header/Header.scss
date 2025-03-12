@@ -191,6 +191,14 @@ ul .dropdown-ul {
   .dropdown-li {
     list-style: none;
   }
+
+  &.notification-dropdown-ul {
+    left: -7vw;
+
+    @media (min-width: 1024px) {
+      left: -20vw;
+    }
+  }
 }
 
 @keyframes slide-bottom {

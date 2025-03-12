@@ -13,7 +13,7 @@ import ProtectedRoutes from '@pages/ProtectedRoutes';
 import Error from '@pages/error/Error';
 import { Suspense, lazy } from 'react';
 import StreamsSkeleton from '@pages/social/streams/StreamsSkeleton';
-
+import NotificationSkeleton from '@pages/social/notifications/notificationSkeleton';
 // lazy load the routes
 const Social = lazy(() => import('@pages/social/Social'));
 const Streams = lazy(() => import('@pages/social/streams/Streams'));
@@ -23,7 +23,7 @@ const People = lazy(() => import('@pages/social/people/people'));
 const Photos = lazy(() => import('@pages/social/photos/photos'));
 const Followers = lazy(() => import('@pages/social/followers/followers'));
 const Following = lazy(() => import('@pages/social/following/following'));
-const Notifications = lazy(() => import('@pages/social/notifications/notifications'));
+const Notification = lazy(() => import('@pages/social/notifications/notifications'));
 
 export const AppRouter = () => {
   const elements = useRoutes([
@@ -106,8 +106,8 @@ export const AppRouter = () => {
         {
           path: 'notifications',
           element: (
-            <Suspense>
-              <Notifications />
+            <Suspense fallback={<NotificationSkeleton />}>
+              <Notification />
             </Suspense>
           )
         }
