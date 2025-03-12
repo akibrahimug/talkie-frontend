@@ -58,24 +58,27 @@ const Header = () => {
       setNotifications(mappedNotifications);
       socketService?.socket.emit('setup', { userId: storedUsername });
     } catch (error) {
-      Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
+      const errorMessage = error.response?.data?.message || 'Error fetching notifications';
+      Utils.dispatchNotification(dispatch, errorMessage, 'error');
     }
   };
 
   const onMarkAsRead = async (notification) => {
     try {
-      NotificationUtils.markMessageAsRead(notification?._id);
+      await notificationsService.markNotificationAsRead(notification?._id);
     } catch (error) {
-      Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
+      const errorMessage = error.response?.data?.message || 'Error marking notification as read';
+      Utils.dispatchNotification(dispatch, errorMessage, 'error');
     }
   };
 
   const onDeleteNotification = async (messageId) => {
     try {
-      const response = await notificationsService.deleteNotification(messageId);
-      Utils.dispatchNotification(response.data.message, 'success', dispatch);
+      await notificationsService.deleteNotification(messageId);
+      Utils.dispatchNotification(dispatch, 'Notification deleted successfully', 'success');
     } catch (error) {
-      Utils.dispatchNotification(error.response.data.message, 'error', dispatch);
+      const errorMessage = error.response?.data?.message || 'Error deleting notification';
+      Utils.dispatchNotification(dispatch, errorMessage, 'error');
     }
   };
 
@@ -88,7 +91,7 @@ const Header = () => {
       await userService.logoutUser();
       navigate('/');
     } catch (error) {
-      Utils.dispatchNotification(dispatch, error.response.data.message, 'error');
+      Utils.dispatchNotification(dispatch, error.response?.data?.message || 'Error logging out', 'error');
     }
   };
   useEffectOnce(() => {
@@ -176,10 +179,7 @@ const Header = () => {
                   </span>
                 </span>
                 {isNotificationsActive && (
-                  <ul
-                    className="dropdown-ul"
-                    ref={notificationsRef}
-                    style={{ left: '-7vw', '@media (min-width: 1024px)': { left: '-20vw' } }}>
+                  <ul className="dropdown-ul notification-dropdown-ul" ref={notificationsRef}>
                     <li className="dropdown-li">
                       <Dropdown
                         data={notifications}

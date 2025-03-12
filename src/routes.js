@@ -23,7 +23,7 @@ const People = lazy(() => import('@pages/social/people/people'));
 const Photos = lazy(() => import('@pages/social/photos/photos'));
 const Followers = lazy(() => import('@pages/social/followers/followers'));
 const Following = lazy(() => import('@pages/social/following/following'));
-const Notifications = lazy(() => import('@pages/social/notifications/notifications'));
+const Notification = lazy(() => import('@pages/social/notifications/notifications'));
 
 export const AppRouter = () => {
   const elements = useRoutes([
@@ -107,7 +107,7 @@ export const AppRouter = () => {
           path: 'notifications',
           element: (
             <Suspense fallback={<NotificationSkeleton />}>
-              <Notifications />
+              <Notification />
             </Suspense>
           )
         }

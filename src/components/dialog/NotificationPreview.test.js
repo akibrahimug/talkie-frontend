@@ -35,16 +35,17 @@ describe('NotificationPreview', () => {
     render(<NotificationPreview {...props} />);
     const title = screen.getByText('Title');
     const post = screen.getByText('This is my post');
-    const imgElement = screen.getAllByRole('img');
+    const postImage = screen.getByAltText('Post image');
+    const reactionImage = screen.getByAltText('love reaction');
     const comment = screen.getByText('comment');
     const reaction = screen.getByTestId('reaction');
 
     expect(title).toBeInTheDocument();
     expect(post).toBeInTheDocument();
     expect(comment).toBeInTheDocument();
-    expect(imgElement[0]).toHaveAttribute('src', 'https://place-hold.it');
+    expect(postImage).toHaveAttribute('src', 'https://place-hold.it');
     expect(reaction.childNodes[0].textContent).toBe('Danny reacted on your post with');
-    expect(imgElement[1]).toHaveAttribute('src', 'love.png');
+    expect(reactionImage).toHaveAttribute('src', 'love.png');
   });
 
   it('should handle click', () => {

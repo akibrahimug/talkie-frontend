@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
-import '@components/toast/Toast.scss';
+import { useEffect, useCallback, useRef, useState } from 'react';
 import { cloneDeep } from 'lodash';
-import { useDispatch } from 'react-redux';
-import { Utils } from '@services/utils/utils.service';
 
-function Toast(props) {
+import '@components/toast/Toast.scss';
+import { Utils } from '@services/utils/utils.service';
+import { useDispatch } from 'react-redux';
+
+const Toast = (props) => {
   const { toastList, position, autoDelete, autoDeleteTime = 2000 } = props;
   const [list, setList] = useState(toastList);
-  const dispatch = useDispatch();
-  // clone the list
   const listData = useRef([]);
+  const dispatch = useDispatch();
 
   const deleteToast = useCallback(() => {
     listData.current = cloneDeep(list);
@@ -18,7 +18,6 @@ function Toast(props) {
     setList([...listData.current]);
     if (!listData.current.length) {
       list.length = 0;
-      // dispatch notification
       Utils.dispatchClearNotification(dispatch);
     }
   }, [list, dispatch]);
@@ -40,17 +39,17 @@ function Toast(props) {
 
   return (
     <div className={`toast-notification-container ${position}`}>
-      {list.map((toast, index) => (
+      {list.map((toast) => (
         <div
           data-testid="toast-notification"
-          key={index}
+          key={Utils.generateString(10)}
           className={`toast-notification toast ${position}`}
           style={{ backgroundColor: toast.backgroundColor }}>
-          <button className="cancel-button" onClick={() => deleteToast(toast.id)}>
+          <button className="cancel-button" onClick={() => deleteToast()}>
             X
           </button>
           <div className={`toast-notification-image ${toast.description.length <= 73 ? 'toast-icon' : ''}`}>
-            <img src={toast.icon} alt="toast-icon" />
+            <img src={toast.icon} alt="" />
           </div>
           <div className={`toast-notification-message ${toast.description.length <= 73 ? 'toast-message' : ''}`}>
             {toast.description}
@@ -59,7 +58,7 @@ function Toast(props) {
       ))}
     </div>
   );
-}
+};
 
 Toast.propTypes = {
   toastList: PropTypes.array,
