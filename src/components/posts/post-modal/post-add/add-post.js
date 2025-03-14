@@ -9,11 +9,12 @@ import ModalBoxSelection from '@components/posts/post-modal/modal-box-content/mo
 import Button from '@components/button/Button';
 import { PostUtils } from '@services/utils/post.utils.service';
 import { closeModal, toggleGifModal } from '@redux/reducers/modal/modal.reducer';
-// import Giphy from '@components/giphy/Giphy';
+import Giphy from '@components/giphy/giphy';
 import PropTypes from 'prop-types';
 import { ImageUtils } from '@services/utils/image.utils.service';
-// import { postService } from '@services/api/post/post.service';
-// import Spinner from '@components/spinner/Spinner';
+import { setPostImage, setPostVideo, setGifUrl, clearPostData } from '@redux/reducers/post/post.reducer';
+import { postService } from '@services/api/post/post.service';
+import Spinner from '@components/spinner/spinner';
 
 const AddPost = ({ selectedImage, selectedPostVideo }) => {
   const { gifModalIsOpen, feeling } = useSelector((state) => state.modal);
@@ -123,13 +124,13 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
           PostUtils.closePostModal(dispatch);
         }
       } else {
-        // const response = await postService.createPost(postData);
-        // if (response) {
-        //   setApiResponse('success');
-        //   setLoading(false);
-        //   setHasVideo(false);
-        //   PostUtils.closePostModal(dispatch);
-        // }
+        const response = await postService.createPost(postData);
+        if (response) {
+          setApiResponse('success');
+          setLoading(false);
+          setHasVideo(false);
+          PostUtils.closePostModal(dispatch);
+        }
       }
     } catch (error) {
       setHasVideo(false);
@@ -152,14 +153,17 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
     if (gifUrl) {
       setPostImage(gifUrl);
       setHasVideo(false);
+      PostUtils.postInputData(imageInputRef, postData, '', setPostData);
     } else if (image) {
       setPostImage(image);
       setHasVideo(false);
+      PostUtils.postInputData(imageInputRef, postData, '', setPostData);
     } else if (video) {
       setHasVideo(true);
       setPostImage(video);
+      PostUtils.postInputData(imageInputRef, postData, '', setPostData);
     }
-  }, [gifUrl, image, video]);
+  }, [gifUrl, image, postData, video]);
 
   return (
     <>
@@ -169,15 +173,14 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
           <div
             className="modal-box"
             style={{
-              height:
-                selectedPostImage || hasVideo || gifUrl || image || postData?.gifUrl || postData?.image
-                  ? '700px'
-                  : 'auto'
+              height: postImage ? '700px' : 'auto',
+              transition: 'all 0.3s ease',
+              minHeight: postImage ? '600px' : '540px'
             }}>
             {loading && (
               <div className="modal-box-loading" data-testid="modal-box-loading">
                 <span>Posting...</span>
-                {/* <Spinner /> */}
+                <Spinner />
               </div>
             )}
             <div className="modal-box-header">
@@ -244,8 +247,15 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
                     </div>
                     {!hasVideo && <img data-testid="post-image" className="post-image" src={`${postImage}`} alt="" />}
                     {hasVideo && (
-                      <div style={{ marginTop: '-40px' }}>
-                        <video width="100%" controls src={`${video}`} />
+                      <div
+                        className="video-container"
+                        style={{ position: 'relative', maxHeight: '350px', overflow: 'hidden' }}>
+                        <video
+                          width="100%"
+                          style={{ maxHeight: '350px', objectFit: 'contain' }}
+                          controls
+                          src={`${video}`}
+                        />
                       </div>
                     )}
                   </div>
@@ -291,7 +301,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
               <h2>Choose a GIF</h2>
             </div>
             <hr />
-            {/* <Giphy /> */}
+            <Giphy />
           </div>
         )}
       </PostWrapper>

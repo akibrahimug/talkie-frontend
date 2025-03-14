@@ -1,4 +1,4 @@
-import { updatePostItem, setPostImage, setPostVideo } from '@redux/reducers/post/post.reducer';
+import { updatePostItem } from '@redux/reducers/post/post.reducer';
 
 export class ImageUtils {
   static validateFile(file, type) {
@@ -37,32 +37,18 @@ export class ImageUtils {
     const file = event.target.files[0];
     ImageUtils.checkFile(file, type);
     setSelectedImage(file);
-
-    // Create object URL for the file
-    const fileObjectUrl = URL.createObjectURL(file);
-
-    // Update the specific post if needed
-    if (post && post._id) {
-      dispatch(
-        updatePostItem({
-          image: type === 'image' ? fileObjectUrl : '',
-          video: type === 'video' ? fileObjectUrl : '',
-          gifUrl: '',
-          imgId: '',
-          imgVersion: '',
-          videoId: '',
-          videoVersion: '',
-          post
-        })
-      );
-    }
-
-    // Always update the main image/video state
-    if (type === 'image') {
-      dispatch(setPostImage(fileObjectUrl));
-    } else if (type === 'video') {
-      dispatch(setPostVideo(fileObjectUrl));
-    }
+    dispatch(
+      updatePostItem({
+        image: type === 'image' ? URL.createObjectURL(file) : '',
+        video: type === 'video' ? URL.createObjectURL(file) : '',
+        gifUrl: '',
+        imgId: '',
+        imgVersion: '',
+        videoId: '',
+        videoVersion: '',
+        post
+      })
+    );
   }
 
   static readAsBase64(file) {

@@ -21,7 +21,7 @@ const NotificationPreview = ({
           <h4>{title}</h4>
           <div className="dialog-body">
             {post && <span className="dialog-body-post">{post}</span>}
-            {imgUrl && <img className="dialog-body-img" src={imgUrl} alt="Post image" />}
+            {imgUrl && <img className="dialog-body-img" src={imgUrl} alt="Post content" />}
             {comment && <span className="dialog-body-comment">{comment}</span>}
             {reaction && (
               <div className="dialog-body-reaction" data-testid="reaction">

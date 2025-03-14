@@ -1,84 +1,150 @@
-import PostForm from '@components/posts/post-form/PostForm';
-import { existingUser } from '@mocks/data/user.mock';
-import { openModal, toggleGifModal } from '@redux/reducers/modal/modal.reducer';
-import { addUser } from '@redux/reducers/user/user.reducer';
-import { store } from '@redux/store';
-import { render, screen, within } from '@root/test.utils';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { act } from 'react-dom/test-utils';
+import PostForm from '@components/posts/post-form/postForm';
+import { ImageUtils } from '@services/utils/image.utils.service';
+import { Provider } from 'react-redux';
+import { store } from '@redux/store';
+import { openModal, toggleImageModal } from '@redux/reducers/modal/modal.reducer';
 
-describe('PostForm', () => {
+// Mock the redux dispatch
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useDispatch: () => jest.fn().mockImplementation((action) => action)
+}));
+
+// Mock the ImageUtils.checkFile method
+jest.mock('@services/utils/image.utils.service', () => ({
+  ImageUtils: {
+    checkFile: jest.fn(),
+    addFileToRedux: jest.fn()
+  }
+}));
+
+describe('PostForm Component', () => {
   beforeEach(() => {
-    act(() => {
-      store.dispatch(addUser({ token: '123456', profile: existingUser }));
-    });
+    jest.clearAllMocks();
   });
 
-  it('should create post text', () => {
-    render(<PostForm />);
-    const creatPostText = screen.getByText(/create post/i);
-    expect(creatPostText).toBeInTheDocument();
+  test('renders the post form component correctly', () => {
+    render(
+      <Provider store={store}>
+        <PostForm />
+      </Provider>
+    );
+
+    expect(screen.getByTestId('post-form')).toBeInTheDocument();
+    expect(screen.getByText('Create Post')).toBeInTheDocument();
   });
 
-  it('should display avatar', async () => {
-    render(<PostForm />);
-    const inputBodyElement = await screen.findByTestId('input-body');
-    expect(inputBodyElement).toBeInTheDocument();
-    expect(inputBodyElement.childNodes.item(0)).toHaveAttribute('src', 'http://place-hold.it/500x500');
-    expect(inputBodyElement.childNodes.item(1)).toHaveAttribute('data-placeholder', 'Write something here...');
+  test('clicking on photo button opens the file input', () => {
+    const dispatchMock = jest.fn();
+    jest.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(dispatchMock);
+
+    render(
+      <Provider store={store}>
+        <PostForm />
+      </Provider>
+    );
+
+    // Find and click the photo button
+    const photoItems = screen.getAllByText('Photo');
+    fireEvent.click(photoItems[0]);
+
+    // Verify dispatch was called with the correct actions
+    expect(dispatchMock).toHaveBeenCalledWith(openModal({ type: 'add' }));
+    // The second call will be toggleImageModal but not a function directly
+    expect(dispatchMock).toHaveBeenCalledTimes(2);
   });
 
-  it('should open post modal', async () => {
-    render(<PostForm />);
-    const inputBodyElement = await screen.findByTestId('input-body');
-    userEvent.click(inputBodyElement);
-    const postModal = await screen.findByTestId('post-modal');
-    expect(postModal).toBeInTheDocument();
+  test('handleFileChange processes selected image correctly', () => {
+    const dispatchMock = jest.fn();
+    jest.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(dispatchMock);
+
+    render(
+      <Provider store={store}>
+        <PostForm />
+      </Provider>
+    );
+
+    // Create a mock file
+    const file = new File(['(⌐□_□)'], 'test-image.png', { type: 'image/png' });
+
+    // Use old-school DOM APIs for getting the file input
+    // This is a pragmatic approach since Testing Library doesn't handle file inputs well
+    const fileInput = document.querySelector('input[type="file"][name="image"]');
+
+    // Simulate file selection
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    // Verify ImageUtils.checkFile was called with the file and correct type
+    expect(ImageUtils.checkFile).toHaveBeenCalledWith(file, 'image');
+
+    // Verify dispatch was called to open modal
+    expect(dispatchMock).toHaveBeenCalledWith(openModal({ type: 'add' }));
   });
 
-  it('should have 3 list items', async () => {
-    render(<PostForm />);
-    const listElement = await screen.findAllByTestId('list-item');
-    expect(listElement[0].childNodes.length).toEqual(3);
+  test('handles case when no file is selected', () => {
+    const dispatchMock = jest.fn();
+    jest.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(dispatchMock);
+
+    render(
+      <Provider store={store}>
+        <PostForm />
+      </Provider>
+    );
+
+    // Use old-school DOM APIs for getting the file input
+    const fileInput = document.querySelector('input[type="file"][name="image"]');
+
+    // Simulate empty file selection
+    fireEvent.change(fileInput, { target: { files: [] } });
+
+    // Check that neither the ImageUtils.checkFile nor the dispatch was called
+    expect(ImageUtils.checkFile).not.toHaveBeenCalled();
+    expect(dispatchMock).not.toHaveBeenCalled();
   });
 
-  it('should have photo list item', async () => {
-    render(<PostForm />);
-    const listElement = await screen.findAllByTestId('list-item');
-    const { getAllByRole } = within(listElement[0]);
-    const items = getAllByRole('listitem');
-    userEvent.click(items[0]);
-    const postModal = await screen.findByTestId('post-modal');
-    expect(postModal).toBeInTheDocument();
-    expect(items[0]).toBeInTheDocument();
-    expect(items[0].textContent.trim()).toEqual('Photo');
+  test('clicking on video button opens the video file input', () => {
+    const dispatchMock = jest.fn();
+    jest.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(dispatchMock);
+
+    render(
+      <Provider store={store}>
+        <PostForm />
+      </Provider>
+    );
+
+    // Find list items and get the last one (which should be the video button)
+    const videoElement = screen.getByTestId('list-item').querySelectorAll('li')[3];
+    fireEvent.click(videoElement);
+
+    // Verify dispatch was called with correct actions
+    expect(dispatchMock).toHaveBeenCalledWith(openModal({ type: 'add' }));
   });
 
-  it('should have gif list item', async () => {
-    act(() => {
-      store.dispatch(openModal({ type: 'add' }));
-      store.dispatch(toggleGifModal(true));
-    });
-    render(<PostForm />);
-    const listElement = await screen.findAllByTestId('list-item');
-    const { getAllByRole } = within(listElement[0]);
-    const items = getAllByRole('listitem');
-    userEvent.click(items[1]);
-    const postModal = await screen.findByTestId('post-modal');
-    expect(postModal).toBeInTheDocument();
-    expect(items[1]).toBeInTheDocument();
-    expect(items[1].textContent.trim()).toEqual('Gif');
-  });
+  test('handleVideoFileChange processes selected video correctly', () => {
+    const dispatchMock = jest.fn();
+    jest.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(dispatchMock);
 
-  it('should have Feeling list item', async () => {
-    render(<PostForm />);
-    const listElement = await screen.findAllByTestId('list-item');
-    const { getAllByRole } = within(listElement[0]);
-    const items = getAllByRole('listitem');
-    userEvent.click(items[2]);
-    const postModal = await screen.findByTestId('post-modal');
-    expect(postModal).toBeInTheDocument();
-    expect(items[2]).toBeInTheDocument();
-    expect(items[2].textContent.trim()).toEqual('Feeling');
+    render(
+      <Provider store={store}>
+        <PostForm />
+      </Provider>
+    );
+
+    // Create a mock video file
+    const videoFile = new File(['(⌐□_□)'], 'test-video.mp4', { type: 'video/mp4' });
+
+    // Use old-school DOM APIs for getting the video input
+    const videoInput = document.querySelector('input[type="file"][name="video"]');
+
+    // Simulate video file selection
+    fireEvent.change(videoInput, { target: { files: [videoFile] } });
+
+    // Verify ImageUtils.checkFile was called with the file and correct type
+    expect(ImageUtils.checkFile).toHaveBeenCalledWith(videoFile, 'video');
+
+    // Verify dispatch was called to open modal
+    expect(dispatchMock).toHaveBeenCalledWith(openModal({ type: 'add' }));
   });
 });

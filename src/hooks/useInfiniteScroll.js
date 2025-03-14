@@ -2,8 +2,8 @@
 import { useCallback, useEffect } from 'react';
 const useInfiniteScroll = (bodyRef, bottomLineRef, callback) => {
   const handleScroll = useCallback(() => {
-    const containerHeight = bodyRef?.current?.getBoundingClientHeight().height;
-    const { top: bottomLineTop } = bottomLineRef?.current?.getBoundingClientHeight().height;
+    const containerHeight = bodyRef?.current?.getBoundingClientRect().height;
+    const { top: bottomLineTop } = bottomLineRef?.current?.getBoundingClientRect();
 
     if (bottomLineTop <= containerHeight) {
       // call the api to fetch more
@@ -15,7 +15,7 @@ const useInfiniteScroll = (bodyRef, bottomLineRef, callback) => {
     bodyRefCurrent?.addEventListener('scroll', handleScroll, true);
 
     return () => {
-      bodyRefCurrent.removeEventListener('scroll', handleScroll, true);
+      bodyRefCurrent?.removeEventListener('scroll', handleScroll, true);
     };
   }, [bodyRef, handleScroll]);
 };

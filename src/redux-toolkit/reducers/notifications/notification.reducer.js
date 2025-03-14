@@ -32,11 +32,11 @@ const notificationSlice = createSlice({
 
       list = [...uniqBy(list, 'description')];
       return list;
+    },
+    clearNotification: () => {
+      list = [];
+      return list;
     }
-  },
-  clearNotification: () => {
-    list = [];
-    return list;
   }
 });
 

@@ -1,7 +1,7 @@
 import photo from '@assets/images/photo.png';
 import gif from '@assets/images/gif.png';
 import feeling from '@assets/images/feeling.png';
-// import video from '@assets/images/video.png';
+import video from '@assets/images/video.png';
 import Input from '@components/input/Input';
 import useDetectOutsideClick from '@hooks/useDetectOutsideClick';
 import { useRef } from 'react';
@@ -79,7 +79,7 @@ const ModalBoxSelection = ({ setSelectedPostImage, setSelectedVideo }) => {
               }}
               handleChange={handleVideoFileChange}
             />
-            {/* <img src={video} alt="" /> Video */}
+            <img src={video} alt="" /> Video
           </li>
         </ul>
       </div>

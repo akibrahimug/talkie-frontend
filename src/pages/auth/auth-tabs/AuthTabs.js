@@ -23,7 +23,7 @@ const AuthTabs = () => {
   return (
     <>
       <div className="container-wrapper">
-        <div className="environment">DEV</div>
+        <div className="environment">{env}</div>
         <div className="container-wrapper-auth">
           <div className="tabs">
             <div className="tabs-auth">
