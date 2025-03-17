@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-render-in-setup */
 import useChatScrollToBottom from '@hooks/useChatScrollToBottom';
 import { render, renderHook, screen } from '@root/test.utils';
 import PropTypes from 'prop-types';

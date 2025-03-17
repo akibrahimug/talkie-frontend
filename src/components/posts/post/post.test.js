@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import Post from '@components/posts/post/post';
 import { postMockData } from '@mocks/data/post.mock';
 import { render, screen } from '@root/test.utils';

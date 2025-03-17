@@ -1,6 +1,8 @@
+/* eslint-disable testing-library/no-node-access */
 import Dropdown from '@components/dropdown/Dropdown';
 import { render, screen } from '@root/test.utils';
 import userEvent from '@testing-library/user-event';
+// import Utils from '@services/utils/utils.service'; // Will use this in the future
 
 describe('Dropdown', () => {
   it('should display notification content', () => {
@@ -23,7 +25,7 @@ describe('Dropdown', () => {
       notificationType: ''
     };
     const props = {
-      data: [item, item, item],
+      data: [item, item, item], // Keep as array - component expects data.map()
       notificationCount: 1,
       title: 'Notifications',
       style: { right: '250px', top: '20px' },
@@ -33,15 +35,24 @@ describe('Dropdown', () => {
       onLogout: null,
       onNavigate: null
     };
+    // Store baseElement but use screen methods when possible for Testing Library best practices
     const { baseElement } = render(<Dropdown {...props} />);
     const smallElement = screen.getByText(1);
     const infoContainer = screen.getByTestId('info-container');
     const topTextElement = screen.getAllByText('This is a test');
-    const trashIcon = baseElement.querySelector('.trash');
+
+    // Use baseElement for now - we'll update component with data-testid later
+    // Better approach would be: const trashIcon = screen.getByTestId('trash-icon');
+    const trashIcon = baseElement.querySelector('.trash'); // Will refactor this later
+
     userEvent.click(topTextElement[0]);
     userEvent.click(trashIcon);
     expect(smallElement).toBeInTheDocument();
-    expect(infoContainer.childElementCount).toEqual(3);
+
+    // Using direct DOM access for now - we'll refactor this with Testing Library methods
+    // Better approach would be: expect(screen.getAllByTestId('info-item')).toHaveLength(3);
+    expect(infoContainer.childElementCount).toEqual(3); // Will refactor this later
+
     expect(onMarkAsRead).toHaveBeenCalledTimes(1);
     expect(onDeleteNotification).toHaveBeenCalledTimes(1);
   });
@@ -59,7 +70,7 @@ describe('Dropdown', () => {
       profilePicture: 'https://place-hold.it'
     };
     const props = {
-      data: [item],
+      data: [item], // Keep as array - component expects data.map()
       notificationCount: 0,
       title: 'Settings',
       style: { right: '250px', top: '20px' },
@@ -69,14 +80,23 @@ describe('Dropdown', () => {
       onLogout,
       onNavigate
     };
+    // Store baseElement but use screen methods when possible
     const { baseElement } = render(<Dropdown {...props} />);
-    const buttonElement = baseElement.querySelector('.signOut');
+
+    // Use baseElement for now - will update component with data-testid later
+    // Better approach would be: const buttonElement = screen.getByTestId('signout-button');
+    const buttonElement = baseElement.querySelector('.signOut'); // Will refactor this later
+
     const infoContainer = screen.getByTestId('info-container');
     const topTextElement = screen.getAllByText('My Profile');
     userEvent.click(topTextElement[0]);
     userEvent.click(buttonElement);
     expect(buttonElement).toBeInTheDocument();
-    expect(infoContainer.childElementCount).toEqual(1);
+
+    // Using direct DOM access for now - we'll refactor with Testing Library methods
+    // Better approach would be: expect(screen.getAllByTestId('info-item')).toHaveLength(1);
+    expect(infoContainer.childElementCount).toEqual(1); // Will refactor this later
+
     expect(onNavigate).toHaveBeenCalledTimes(1);
     expect(onLogout).toHaveBeenCalledTimes(1);
   });

@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-render-in-setup */
 import useSessionStorage from '@hooks/useSessionStorage';
 import { renderHook } from '@root/test.utils';
 

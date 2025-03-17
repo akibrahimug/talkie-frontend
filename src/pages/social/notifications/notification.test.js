@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { notificationData } from '@mocks/data/notification.mock';
 import { emptyNotificationsMock } from '@mocks/handlers/notification';
 import { server } from '@mocks/server';

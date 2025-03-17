@@ -5,7 +5,7 @@ import { store } from '@redux/store';
 import { render, screen, waitFor, within } from '@root/test.utils';
 // import { socketService } from '@services/socket/socket.service';
 import userEvent from '@testing-library/user-event';
-import { act } from 'react-dom/test-utils';
+// import { act } from 'react-dom/test-utils';
 
 // socketService.setupSocketConnection();
 

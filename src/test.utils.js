@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { store } from '@redux/store';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';

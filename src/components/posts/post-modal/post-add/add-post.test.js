@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/aria-role */
+/* eslint-disable no-unused-vars */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';

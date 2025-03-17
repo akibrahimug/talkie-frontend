@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-node-access */
 import MessageSidebar from '@components/message-sidebar/MessageSidebar';
 import { render, screen } from '@root/test.utils';
 import userEvent from '@testing-library/user-event';

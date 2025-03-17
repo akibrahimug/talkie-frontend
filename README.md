@@ -1,153 +1,337 @@
+# Talkie - A Social Media Web Application
 
-# Getting Started with Create React App
+![Talkie Logo](https://via.placeholder.com/1200x300/5F7FFF/FFFFFF?text=Talkie+Social+Media)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 📑 Table of Contents
 
-## Development Guidelines
+- [Overview](#overview)
+- [Features](#features)
+- [Screenshots](#screenshots)
+- [Technology Stack](#technology-stack)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Environment Variables](#environment-variables)
+  - [Available Scripts](#available-scripts)
+- [Project Structure](#project-structure)
+- [Code Quality](#code-quality)
+  - [Linting and Formatting](#linting-and-formatting)
+  - [Testing](#testing)
+  - [Git Hooks](#git-hooks)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
 
-### Code Quality and Git Hooks
+## 🌟 Overview
 
-This project uses Husky, lint-staged, and commitlint to ensure code quality and consistent commit messages.
+Talkie is a modern social media web application that enables users to connect, share, and communicate with friends and followers. With features like real-time messaging, post sharing, and profile management, Talkie provides a comprehensive social networking experience.
 
-- **Pre-commit Hook**: Before each commit, the pre-commit hook will:
+## ✨ Features
 
-  - Run ESLint to check for linting errors
-  - Run Prettier to ensure consistent code formatting
-  - Run tests related to the changed files
+- **User Authentication**
 
-- **Commit Message Format**: We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+  - Sign up, login, and password recovery
+  - Secure authentication flow
 
-```
-<type>(<scope>): <subject>
-```
+- **Social Feed**
 
-#### Types:
+  - View, create, and interact with posts
+  - Like, comment, and share content
+  - Rich text and media support
+  - Emoji and GIF integration
 
-- `feat`: A new feature
-- `fix`: A bug fix
-- `docs`: Documentation only changes
-- `style`: Changes that do not affect the meaning of the code
-- `refactor`: A code change that neither fixes a bug nor adds a feature
-- `perf`: A code change that improves performance
-- `test`: Adding missing tests or correcting existing tests
-- `chore`: Changes to the build process or auxiliary tools
-- `revert`: Revert to a commit
-- `wip`: Work in progress
+- **Real-time Chat**
 
-#### Examples:
+  - Private messaging between users
+  - Message notifications
+  - Emoji support in chats
 
-```
-feat(user): Add user profile page
-fix(auth): Fix login form validation
-docs(readme): Update installation instructions
-```
+- **Profile Management**
 
-### Testing Git Hooks
+  - Customizable user profiles
+  - Profile pictures and cover photos
+  - Bio and personal information
 
-To test if the git hooks are working properly, run the included test script:
+- **Social Connections**
+
+  - Follow/unfollow users
+  - View followers and following lists
+  - Discover new people to connect with
+
+- **Notifications**
+
+  - Real-time notification system
+  - Activity updates from connections
+
+- **Photo Galleries**
+
+  - Upload and share photos
+  - Organize and browse image collections
+
+- **Responsive Design**
+  - Optimized for desktop and mobile devices
+  - Consistent experience across screen sizes
+
+## 📸 Screenshots
+
+### Home Page / News Feed
+
+![Home Page](https://via.placeholder.com/800x500/DDDDDD/888888?text=Home+Page+Screenshot)
+
+<!-- Replace with actual screenshot of your app's homepage -->
+
+### User Profile
+
+![Profile Page](https://via.placeholder.com/800x500/DDDDDD/888888?text=Profile+Page+Screenshot)
+
+<!-- Replace with actual screenshot of the profile page -->
+
+### Chat Interface
+
+![Chat Interface](https://via.placeholder.com/800x500/DDDDDD/888888?text=Chat+Interface+Screenshot)
+
+<!-- Replace with actual screenshot of the messaging feature -->
+
+### Photo Gallery
+
+![Photo Gallery](https://via.placeholder.com/800x500/DDDDDD/888888?text=Photo+Gallery+Screenshot)
+
+<!-- Replace with actual screenshot of the photo gallery -->
+
+### Notifications
+
+![Notifications](https://via.placeholder.com/800x500/DDDDDD/888888?text=Notifications+Screenshot)
+
+<!-- Replace with actual screenshot of the notifications panel -->
+
+## 💻 Technology Stack
+
+### Frontend
+
+- **React.js** - JavaScript library for building user interfaces
+- **Redux Toolkit** - State management with Redux Toolkit
+- **React Router** - Navigation and routing
+- **Sass** - CSS preprocessor for styling
+- **Socket.io Client** - Real-time communication
+- **Axios** - HTTP client for API requests
+- **React Loading Skeleton** - Loading state UI
+- **Emoji Picker React** - Emoji selection component
+- **React Icons** - Icon library
+- **Date-fns** - JavaScript date utility library
+- **Millify** - Formatting large numbers
+- **Lodash** - Utility library
+
+### Development Tools
+
+- **Jest** - Testing framework
+- **React Testing Library** - Testing React components
+- **MSW** - Mock Service Worker for API mocking
+- **ESLint** - JavaScript linting
+- **Prettier** - Code formatting
+- **Husky** - Git hooks
+- **Commitlint** - Commit message linting
+- **Lint-staged** - Run linters on git staged files
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (v14 or later)
+- npm or yarn
+- Git
+
+### Installation
+
+1. Clone the repository:
 
 ```bash
-yarn test:hooks
+git clone https://github.com/yourusername/talkie-frontend.git
+cd talkie-frontend
 ```
 
-This script will:
+2. Install dependencies:
 
-1. Create a temporary file with deliberate linting errors
-2. Attempt to commit with an incorrectly formatted message (should fail)
-3. Attempt to commit with a correctly formatted message (should still fail due to linting errors)
-4. Clean up by removing the temporary file
+```bash
+yarn install
+# or
+npm install
+```
 
-### Troubleshooting Git Hooks
+3. Start the development server:
 
-If you encounter issues with git hooks:
+```bash
+yarn dev
+# or
+npm run dev
+```
 
-1. **Hooks aren't running**: Make sure they're executable
+The application will be available at `http://localhost:3000`.
 
-   ```bash
-   chmod +x .husky/pre-commit .husky/commit-msg
-   ```
+### Environment Variables
 
-2. **Commit message rejected**: Ensure your message follows the format:
+Create a `.env` file in the root directory with the following variables:
 
-   ```
-   type(scope): Subject starting with capital letter
-   ```
+```
+REACT_APP_API_URL=http://localhost:5000
+REACT_APP_SOCKET_URL=http://localhost:5000
+```
 
-3. **Pre-commit rejected due to linting**: Fix the linting issues or run:
+Adjust the URLs according to your backend setup.
 
-   ```bash
-   yarn lint:fix
-   ```
+### Available Scripts
 
-4. **To bypass hooks temporarily** (use sparingly):
-   ```bash
-   git commit -m "feat: Add feature" --no-verify
-   ```
+- `yarn dev` - Start the development server
+- `yarn build` - Build the application for production
+- `yarn test` - Run tests
+- `yarn lint:check` - Check for linting issues
+- `yarn lint:fix` - Fix linting issues
+- `yarn prettier:check` - Check code formatting
+- `yarn prettier:fix` - Fix code formatting
 
-## Available Scripts
+## 📁 Project Structure
 
-In the project directory, you can run:
+```
+talkie-frontend/
+├── public/             # Public assets and HTML template
+├── src/                # Source code
+│   ├── assets/         # Static assets (images, fonts)
+│   ├── colors/         # Color definitions
+│   ├── components/     # Reusable UI components
+│   │   ├── avatar/
+│   │   ├── button/
+│   │   ├── dialog/
+│   │   ├── dropdown/
+│   │   ├── feelings/
+│   │   ├── giphy/
+│   │   ├── header/
+│   │   ├── input/
+│   │   ├── message-sidebar/
+│   │   ├── posts/
+│   │   ├── select-dropdown/
+│   │   ├── sidebar/
+│   │   ├── spinner/
+│   │   ├── suggestions/
+│   │   └── toast/
+│   ├── hooks/          # Custom React hooks
+│   ├── mocks/          # API mocks for testing
+│   ├── pages/          # Application pages
+│   │   ├── auth/       # Authentication pages
+│   │   ├── error/      # Error pages
+│   │   └── social/     # Social features pages
+│   │       ├── chat/
+│   │       ├── followers/
+│   │       ├── following/
+│   │       ├── notifications/
+│   │       ├── people/
+│   │       ├── photos/
+│   │       ├── profile/
+│   │       └── streams/
+│   ├── redux-toolkit/  # Redux state management
+│   │   ├── api/        # API endpoints
+│   │   └── reducers/   # Redux reducers
+│   ├── services/       # API services
+│   ├── App.js          # Main app component
+│   ├── App.scss        # Main app styles
+│   ├── index.js        # Entry point
+│   ├── index.scss      # Global styles
+│   ├── routes.js       # Application routes
+│   └── setupTests.js   # Test configuration
+├── .eslintignore       # ESLint ignore patterns
+├── .eslintrc           # ESLint configuration
+├── .gitignore          # Git ignore patterns
+├── .prettierignore     # Prettier ignore patterns
+├── .prettierrc.json    # Prettier configuration
+├── config-overrides.js # React app config overrides
+├── jsconfig.json       # JavaScript configuration
+├── package.json        # Package dependencies
+└── README.md           # Project documentation
+```
 
-### `npm start`
+## 🔧 Code Quality
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Linting and Formatting
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+This project uses ESLint and Prettier for code quality and formatting:
 
-### `npm test`
+- ESLint enforces code quality rules
+- Prettier ensures consistent code formatting
+- Configuration files are in the project root
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Run linting checks:
 
-### `npm run build`
+```bash
+yarn lint:check
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Fix linting issues:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+yarn lint:fix
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Check code formatting:
 
-### `npm run eject`
+```bash
+yarn prettier:check
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Fix code formatting:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+yarn prettier:fix
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Testing
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+The project uses Jest and React Testing Library for testing:
 
-## Learn More
+- Unit tests for components and functionality
+- Integration tests for user flows
+- Test mocks for API calls using MSW
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Run tests:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+yarn test
+```
 
-### Code Splitting
+Run tests for changed files only:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```bash
+yarn test:changed
+```
 
-### Analyzing the Bundle Size
+### Git Hooks
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Husky is used to enforce code quality on git operations:
 
-### Making a Progressive Web App
+- **Pre-commit Hook**: Runs linting, formatting, and tests on staged files
+- **Commit Message Hook**: Ensures commit messages follow conventional commit format
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 📦 Deployment
 
-### Advanced Configuration
+To build the application for production:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+```bash
+yarn build
+```
 
-### Deployment
+This will create a `build` directory with optimized production-ready files.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 🤝 Contributing
 
-### `npm run build` fails to minify
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes using conventional commits (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Please ensure your code passes all tests and linting checks before submitting a PR.
 
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+Made with ❤️ by [KASOMA IBRAHIM](https://github.com/akibrahimug)

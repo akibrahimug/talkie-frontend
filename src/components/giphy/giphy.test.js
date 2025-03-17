@@ -1,10 +1,10 @@
 import Giphy from '@components/giphy/giphy';
-import { fireEvent, render, screen, waitFor } from '@root/test.utils';
+import { fireEvent, render, screen } from '@root/test.utils';
 import { GiphyUtils } from '@services/utils/giphy.utils.service';
 
 // Create a mock URL for testing
-const url =
-  'https://media1.giphy.com/media/qg5pk8s2h5kJy/giphy.gif?cid=b6f691b6xs6w6z065eld5ihx7moh2xlo0fyofdhij5zp9xn4&rid=giphy.gif&ct=g';
+// const url =
+//   'https://media1.giphy.com/media/qg5pk8s2h5kJy/giphy.gif?cid=b6f691b6xs6w6z065eld5ihx7moh2xlo0fyofdhij5zp9xn4&rid=giphy.gif&ct=g';
 
 // Mock the GiphyUtils service
 jest.mock('@services/utils/giphy.utils.service', () => ({

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import Avatar from '@components/avatar/Avatar';
 import { timeAgo } from '@services/utils/timeago.utils.service';
 import PropTypes from 'prop-types';

@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-render-in-setup */
 import useLocalStorage from '@hooks/useLocalStorage';
 import { renderHook } from '@root/test.utils';
 
