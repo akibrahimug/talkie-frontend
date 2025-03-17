@@ -35,7 +35,7 @@ describe('NotificationPreview', () => {
     render(<NotificationPreview {...props} />);
     const title = screen.getByText('Title');
     const post = screen.getByText('This is my post');
-    const postImage = screen.getByAltText('Post image');
+    const postImage = screen.getByAltText('Post content');
     const reactionImage = screen.getByAltText('love reaction');
     const comment = screen.getByText('comment');
     const reaction = screen.getByTestId('reaction');

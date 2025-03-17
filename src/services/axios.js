@@ -2,6 +2,9 @@ import axios from 'axios';
 
 const BASE_URL = `${process.env.REACT_APP_BASE_ENDPOINT}/api/v1`;
 
+/**
+ * Axios instance for making API requests.
+ */
 export default axios.create({
   baseURL: BASE_URL,
   headers: {

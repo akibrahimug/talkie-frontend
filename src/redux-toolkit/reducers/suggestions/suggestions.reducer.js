@@ -5,6 +5,10 @@ const initialState = {
   users: []
 };
 
+/**
+ * Suggestions slice for handling suggestions state.
+ * @type {Slice}
+ */
 const suggestionsSlice = createSlice({
   name: 'suggestions',
   initialState,

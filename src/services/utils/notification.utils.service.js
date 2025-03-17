@@ -4,6 +4,9 @@ import { Utils } from '@services/utils/utils.service';
 import { cloneDeep, find, findIndex, remove, sumBy } from 'lodash';
 import { timeAgo } from '@services/utils/timeago.utils.service';
 
+/**
+ * NotificationUtils class for handling notification operations.
+ */
 export class NotificationUtils {
   // SocketIO notification
   static socketIONotification = (profile, notifications, setNotifications, type, setNotificationsCount) => {
@@ -64,7 +67,12 @@ export class NotificationUtils {
     });
   };
 
-  // Map notification dropdown items
+  /**
+   * Map notification dropdown items.
+   * @param {object} notificationData - The notification data
+   * @param {function} setNotificationsCount - The function to set the notifications count
+   * @returns {array} - The mapped notification items
+   */
   static mapNotificationDropdownItems(notificationData, setNotificationsCount) {
     const items = [];
     // Map notification items

@@ -1,3 +1,9 @@
+/**
+ * Custom hook to handle session storage operations.
+ * @param {string} key - The key to store or retrieve from session storage.
+ * @param {string} type - The type of operation ('get', 'set', or 'delete').
+ * @returns {any} - The result of the operation.
+ */
 const useSessionStorage = (key, type) => {
   try {
     if (type === 'get') {

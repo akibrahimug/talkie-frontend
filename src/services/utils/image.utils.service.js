@@ -1,6 +1,15 @@
-import { updatePostItem, setPostImage, setPostVideo } from '@redux/reducers/post/post.reducer';
+import { updatePostItem } from '@redux/reducers/post/post.reducer';
 
+/**
+ * ImageUtils class for handling image operations.
+ */
 export class ImageUtils {
+  /**
+   * Validate file type.
+   * @param {File} file - The file to validate
+   * @param {string} type - The type of file (image or video)
+   * @returns {boolean} - Whether the file is valid
+   */
   static validateFile(file, type) {
     if (type === 'image') {
       const validImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
@@ -11,6 +20,12 @@ export class ImageUtils {
     }
   }
 
+  /**
+   * Check file size.
+   * @param {File} file - The file to check
+   * @param {string} type - The type of file (image or video)
+   * @returns {string} - The error message if the file is too large
+   */
   static checkFileSize(file, type) {
     let fileError = '';
     const isValid = ImageUtils.validateFile(file, type);
@@ -24,6 +39,11 @@ export class ImageUtils {
     return fileError;
   }
 
+  /**
+   * Check file.
+   * @param {File} file - The file to check
+   * @param {string} type - The type of file (image or video)
+   */
   static checkFile(file, type) {
     if (!ImageUtils.validateFile(file, type)) {
       return window.alert(`File ${file.name} not accepted`);
@@ -33,38 +53,37 @@ export class ImageUtils {
     }
   }
 
+  /**
+   * Add file to redux.
+   * @param {Event} event - The event
+   * @param {object} post - The post
+   * @param {function} setSelectedImage - The function to set the selected image
+   * @param {function} dispatch - The dispatch function
+   * @param {string} type - The type of file (image or video)
+   */
   static async addFileToRedux(event, post, setSelectedImage, dispatch, type) {
     const file = event.target.files[0];
     ImageUtils.checkFile(file, type);
     setSelectedImage(file);
-
-    // Create object URL for the file
-    const fileObjectUrl = URL.createObjectURL(file);
-
-    // Update the specific post if needed
-    if (post && post._id) {
-      dispatch(
-        updatePostItem({
-          image: type === 'image' ? fileObjectUrl : '',
-          video: type === 'video' ? fileObjectUrl : '',
-          gifUrl: '',
-          imgId: '',
-          imgVersion: '',
-          videoId: '',
-          videoVersion: '',
-          post
-        })
-      );
-    }
-
-    // Always update the main image/video state
-    if (type === 'image') {
-      dispatch(setPostImage(fileObjectUrl));
-    } else if (type === 'video') {
-      dispatch(setPostVideo(fileObjectUrl));
-    }
+    dispatch(
+      updatePostItem({
+        image: type === 'image' ? URL.createObjectURL(file) : '',
+        video: type === 'video' ? URL.createObjectURL(file) : '',
+        gifUrl: '',
+        imgId: '',
+        imgVersion: '',
+        videoId: '',
+        videoVersion: '',
+        post
+      })
+    );
   }
 
+  /**
+   * Read file as base64.
+   * @param {File} file - The file to read
+   * @returns {Promise<string>} - The file value
+   */
   static readAsBase64(file) {
     const reader = new FileReader();
     const fileValue = new Promise((resolve, reject) => {
@@ -81,6 +100,11 @@ export class ImageUtils {
     return fileValue;
   }
 
+  /**
+   * Get background image color.
+   * @param {string} imageUrl - The image URL
+   * @returns {Promise<string>} - The background image color
+   */
   static getBackgroundImageColor(imageUrl) {
     const image = new Image();
     image.crossOrigin = 'Anonymous';
@@ -103,6 +127,13 @@ export class ImageUtils {
     return backgroundImageColor;
   }
 
+  /**
+   * Convert RGB to hex.
+   * @param {number} red - The red value
+   * @param {number} green - The green value
+   * @param {number} blue - The blue value
+   * @returns {string} - The hex value
+   */
   static convertRGBToHex(red, green, blue) {
     red = red.toString(16);
     green = green.toString(16);

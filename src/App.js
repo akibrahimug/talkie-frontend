@@ -9,6 +9,9 @@ import { useSelector } from 'react-redux';
 const App = () => {
   const { notifications } = useSelector((state) => state);
 
+  /**
+   * Setup socket connection.
+   */
   useEffect(() => {
     socketService.setupSocketConnection();
   }, []);

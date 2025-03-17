@@ -5,13 +5,19 @@ import Register from '@pages/auth/register/Register';
 import useLocalStorage from '@hooks/useLocalStorage';
 import { Utils } from '@services/utils/utils.service';
 import { useNavigate } from 'react-router-dom';
-
+/**
+ * AuthTabs component for handling authentication tabs.
+ * @returns {JSX.Element}
+ */
 const AuthTabs = () => {
   const [type, setType] = useState('Sign In');
   const keepLoggedIn = useLocalStorage('keepLoggedIn', 'get');
   const [env, setEnv] = useState('');
   const navigate = useNavigate();
 
+  /**
+   * Effect to set the environment and navigate to the appropriate page.
+   */
   useEffect(() => {
     const enviroment = Utils.appEnviroment();
     setEnv(enviroment);
@@ -23,7 +29,7 @@ const AuthTabs = () => {
   return (
     <>
       <div className="container-wrapper">
-        <div className="environment">DEV</div>
+        <div className="environment">{env}</div>
         <div className="container-wrapper-auth">
           <div className="tabs">
             <div className="tabs-auth">

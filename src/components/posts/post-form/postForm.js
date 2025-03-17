@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import photo from '@assets/images/photo.png';
 import gif from '@assets/images/gif.png';
 import feeling from '@assets/images/feeling.png';
-// import video from '@assets/images/video.png';
+import video from '@assets/images/video.png';
 import '@components/posts/post-form/postForm.scss';
 import {
   openModal,
@@ -60,11 +60,31 @@ const PostForm = () => {
   };
 
   const handleFileChange = (event) => {
-    ImageUtils.addFileToRedux(event, '', setSelectedPostImage, dispatch, 'image');
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate the file
+    ImageUtils.checkFile(file, 'image');
+
+    // Set the local state
+    setSelectedPostImage(file);
+
+    // Open the modal immediately after setting the image
+    dispatch(openModal({ type: 'add' }));
   };
 
   const handleVideoFileChange = (event) => {
-    ImageUtils.addFileToRedux(event, '', setSelectedPostVideo, dispatch, 'video');
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate the file
+    ImageUtils.checkFile(file, 'video');
+
+    // Set the local state
+    setSelectedPostVideo(file);
+
+    // Open the modal immediately after setting the video
+    dispatch(openModal({ type: 'add' }));
   };
 
   return (
@@ -123,7 +143,7 @@ const PostForm = () => {
                   }}
                   handleChange={handleVideoFileChange}
                 />
-                {/* <img src={video} alt="" /> Video */}
+                <img src={video} alt="" /> Video
               </li>
             </ul>
           </div>

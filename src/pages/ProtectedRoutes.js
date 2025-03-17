@@ -9,6 +9,12 @@ import { useNavigate } from 'react-router-dom';
 import useEffectOnce from '@hooks/useEffectOnce';
 import { Navigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
+
+/**
+ * ProtectedRoutes component for handling protected routes.
+ * @param {React.ReactNode} children - The child components to wrap.
+ * @returns {React.ReactNode} - The wrapped child components or a redirect to the login page.
+ */
 function ProtectedRoutes({ children }) {
   const { profile, token } = useSelector((state) => state.user);
   const navigate = useNavigate();
@@ -20,7 +26,9 @@ function ProtectedRoutes({ children }) {
   const [setLoggedIn] = useLocalStorage('keepLoggedIn', 'set');
   const [deleteSessionPayload] = useSessionStorage('pageReload', 'delete');
   const dispatch = useDispatch();
-
+  /**
+   * Check if the user is logged in.
+   */
   const checkUser = useCallback(async () => {
     try {
       const response = await userService.checkCurrentUser();

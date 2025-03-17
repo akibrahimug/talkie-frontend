@@ -1,8 +1,14 @@
 import { io } from 'socket.io-client';
 
+/**
+ * SocketService class for handling socket operations.
+ */
 class SocketService {
   socket;
 
+  /**
+   * Setup socket connection.
+   */
   setupSocketConnection() {
     this.socket = io(process.env.REACT_APP_BASE_ENDPOINT, {
       transports: ['websocket'],
@@ -11,6 +17,9 @@ class SocketService {
     this.socketConnectionEvent();
   }
 
+  /**
+   * Handle socket connection events.
+   */
   socketConnectionEvent() {
     this.socket.on('connect', () => {
       console.log('Connected to the server');
