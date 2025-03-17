@@ -7,50 +7,44 @@ import reducer, {
   toggleFeelingModal,
   toggleGifModal,
   toggleImageModal,
-  toggleReactionsModal
+  toggleReactionsModal,
+  toggleVideoModal
 } from '@redux/reducers/modal/modal.reducer';
 
-const initialState = {
-  type: '',
-  isOpen: false,
-  feeling: '',
-  image: '',
-  data: null,
-  feelingsIsOpen: false,
-  openFileDialog: false,
-  gifModalIsOpen: false,
-  reactionsModalIsOpen: false,
-  commentsModalIsOpen: false,
-  deleteDialogIsOpen: false
-};
-
-const modalData = {
-  type: 'add',
-  isOpen: true,
-  feeling: 'happy',
-  image: 'https://place-hold.it',
-  data: { username: 'Matt' },
-  feelingsIsOpen: true,
-  openFileDialog: true,
-  gifModalIsOpen: true,
-  reactionsModalIsOpen: true,
-  commentsModalIsOpen: true,
-  deleteDialogIsOpen: true
-};
-
 describe('modal reducer', () => {
+  let initialState;
+  let modalData;
+
   beforeEach(() => {
-    initialState.type = '';
-    initialState.isOpen = false;
-    initialState.feeling = '';
-    initialState.image = '';
-    initialState.data = null;
-    initialState.feelingsIsOpen = false;
-    initialState.openFileDialog = false;
-    initialState.gifModalIsOpen = false;
-    initialState.reactionsModalIsOpen = false;
-    initialState.commentsModalIsOpen = false;
-    initialState.deleteDialogIsOpen = false;
+    initialState = {
+      type: '',
+      isOpen: false,
+      feeling: '',
+      image: '',
+      data: null,
+      feelingsIsOpen: false,
+      openFileDialog: false,
+      openVideoDialog: false,
+      gifModalIsOpen: false,
+      reactionsModalIsOpen: false,
+      commentsModalIsOpen: false,
+      deleteDialogIsOpen: false
+    };
+
+    modalData = {
+      type: 'add',
+      isOpen: true,
+      feeling: '',
+      image: '',
+      data: null,
+      feelingsIsOpen: false,
+      openFileDialog: false,
+      openVideoDialog: false,
+      gifModalIsOpen: false,
+      reactionsModalIsOpen: false,
+      commentsModalIsOpen: false,
+      deleteDialogIsOpen: false
+    };
   });
 
   it('should return the initial state', () => {
@@ -58,14 +52,15 @@ describe('modal reducer', () => {
   });
 
   it('should open modal', () => {
-    expect(reducer(initialState, openModal({ type: 'add', data: 'This is a message' }))).toEqual({
+    expect(reducer(initialState, openModal({ type: 'add', data: 'test data' }))).toEqual({
       type: 'add',
       isOpen: true,
       feeling: '',
       image: '',
-      data: 'This is a message',
+      data: 'test data',
       feelingsIsOpen: false,
       openFileDialog: false,
+      openVideoDialog: false,
       gifModalIsOpen: false,
       reactionsModalIsOpen: false,
       commentsModalIsOpen: false,
@@ -82,6 +77,7 @@ describe('modal reducer', () => {
       data: null,
       feelingsIsOpen: false,
       openFileDialog: false,
+      openVideoDialog: false,
       gifModalIsOpen: false,
       reactionsModalIsOpen: false,
       commentsModalIsOpen: false,
@@ -90,14 +86,15 @@ describe('modal reducer', () => {
   });
 
   it('should add post feeling', () => {
-    expect(reducer(initialState, addPostFeeling({ feeling: 'happy' }))).toEqual({
-      type: '',
-      isOpen: false,
+    expect(reducer(modalData, addPostFeeling({ feeling: 'happy' }))).toEqual({
+      type: 'add',
+      isOpen: true,
       feeling: 'happy',
       image: '',
       data: null,
       feelingsIsOpen: false,
       openFileDialog: false,
+      openVideoDialog: false,
       gifModalIsOpen: false,
       reactionsModalIsOpen: false,
       commentsModalIsOpen: false,
@@ -105,47 +102,16 @@ describe('modal reducer', () => {
     });
   });
 
-  it('should toggleImageModal', () => {
-    expect(reducer(initialState, toggleImageModal(true))).toEqual({
-      type: '',
-      isOpen: false,
-      feeling: '',
-      image: '',
-      data: null,
-      feelingsIsOpen: false,
-      openFileDialog: true,
-      gifModalIsOpen: false,
-      reactionsModalIsOpen: false,
-      commentsModalIsOpen: false,
-      deleteDialogIsOpen: false
-    });
-  });
-
-  it('should toggleFeelingModal', () => {
-    expect(reducer(initialState, toggleFeelingModal(true))).toEqual({
-      type: '',
-      isOpen: false,
-      feeling: '',
-      image: '',
-      data: null,
-      feelingsIsOpen: true,
-      openFileDialog: false,
-      gifModalIsOpen: false,
-      reactionsModalIsOpen: false,
-      commentsModalIsOpen: false,
-      deleteDialogIsOpen: false
-    });
-  });
-
-  it('should toggleGifModal', () => {
-    expect(reducer(initialState, toggleGifModal(true))).toEqual({
-      type: '',
-      isOpen: false,
+  it('should toggle gif modal', () => {
+    expect(reducer(modalData, toggleGifModal(true))).toEqual({
+      type: 'add',
+      isOpen: true,
       feeling: '',
       image: '',
       data: null,
       feelingsIsOpen: false,
       openFileDialog: false,
+      openVideoDialog: false,
       gifModalIsOpen: true,
       reactionsModalIsOpen: false,
       commentsModalIsOpen: false,
@@ -153,15 +119,16 @@ describe('modal reducer', () => {
     });
   });
 
-  it('should toggleReactionsModal', () => {
-    expect(reducer(initialState, toggleReactionsModal(true))).toEqual({
-      type: '',
-      isOpen: false,
+  it('should toggle reactions modal', () => {
+    expect(reducer(modalData, toggleReactionsModal(true))).toEqual({
+      type: 'add',
+      isOpen: true,
       feeling: '',
       image: '',
       data: null,
       feelingsIsOpen: false,
       openFileDialog: false,
+      openVideoDialog: false,
       gifModalIsOpen: false,
       reactionsModalIsOpen: true,
       commentsModalIsOpen: false,
@@ -169,15 +136,16 @@ describe('modal reducer', () => {
     });
   });
 
-  it('should toggleCommentsModal', () => {
-    expect(reducer(initialState, toggleCommentsModal(true))).toEqual({
-      type: '',
-      isOpen: false,
+  it('should toggle comments modal', () => {
+    expect(reducer(modalData, toggleCommentsModal(true))).toEqual({
+      type: 'add',
+      isOpen: true,
       feeling: '',
       image: '',
       data: null,
       feelingsIsOpen: false,
       openFileDialog: false,
+      openVideoDialog: false,
       gifModalIsOpen: false,
       reactionsModalIsOpen: false,
       commentsModalIsOpen: true,
@@ -185,15 +153,67 @@ describe('modal reducer', () => {
     });
   });
 
-  it('should toggleDeleteDialog', () => {
-    expect(reducer(initialState, toggleDeleteDialog({ toggle: true, data: 'deleted data' }))).toEqual({
-      type: '',
-      isOpen: false,
+  it('should toggle feelings modal', () => {
+    expect(reducer(modalData, toggleFeelingModal(true))).toEqual({
+      type: 'add',
+      isOpen: true,
+      feeling: '',
+      image: '',
+      data: null,
+      feelingsIsOpen: true,
+      openFileDialog: false,
+      openVideoDialog: false,
+      gifModalIsOpen: false,
+      reactionsModalIsOpen: false,
+      commentsModalIsOpen: false,
+      deleteDialogIsOpen: false
+    });
+  });
+
+  it('should toggle image modal', () => {
+    expect(reducer(modalData, toggleImageModal(true))).toEqual({
+      type: 'add',
+      isOpen: true,
+      feeling: '',
+      image: '',
+      data: null,
+      feelingsIsOpen: false,
+      openFileDialog: true,
+      openVideoDialog: false,
+      gifModalIsOpen: false,
+      reactionsModalIsOpen: false,
+      commentsModalIsOpen: false,
+      deleteDialogIsOpen: false
+    });
+  });
+
+  it('should toggle video modal', () => {
+    expect(reducer(modalData, toggleVideoModal(true))).toEqual({
+      type: 'add',
+      isOpen: true,
+      feeling: '',
+      image: '',
+      data: null,
+      feelingsIsOpen: false,
+      openFileDialog: false,
+      openVideoDialog: true,
+      gifModalIsOpen: false,
+      reactionsModalIsOpen: false,
+      commentsModalIsOpen: false,
+      deleteDialogIsOpen: false
+    });
+  });
+
+  it('should toggle delete dialog', () => {
+    expect(reducer(modalData, toggleDeleteDialog({ toggle: true, data: 'deleted data' }))).toEqual({
+      type: 'add',
+      isOpen: true,
       feeling: '',
       image: '',
       data: 'deleted data',
       feelingsIsOpen: false,
       openFileDialog: false,
+      openVideoDialog: false,
       gifModalIsOpen: false,
       reactionsModalIsOpen: false,
       commentsModalIsOpen: false,

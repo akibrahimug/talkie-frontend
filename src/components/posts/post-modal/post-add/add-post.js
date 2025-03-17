@@ -12,7 +12,6 @@ import { closeModal, toggleGifModal } from '@redux/reducers/modal/modal.reducer'
 import Giphy from '@components/giphy/giphy';
 import PropTypes from 'prop-types';
 import { ImageUtils } from '@services/utils/image.utils.service';
-import { setPostImage, setPostVideo, setGifUrl, clearPostData } from '@redux/reducers/post/post.reducer';
 import { postService } from '@services/api/post/post.service';
 import Spinner from '@components/spinner/spinner';
 

@@ -12,7 +12,7 @@ import useEffectOnce from '@hooks/useEffectOnce';
 import { getPosts } from '@redux/api/posts';
 import { uniqBy } from 'lodash';
 import useInfiniteScroll from '@hooks/useInfiniteScroll';
-
+import { PostUtils } from '@services/utils/post.utils.service';
 const Streams = () => {
   const bodyRef = useRef(null);
   const bottomLineRef = useRef();
@@ -118,6 +118,13 @@ const Streams = () => {
       });
     }
   };
+
+  /**
+   * Effect to handle socket events for posts.(this is for real time updates)
+   */
+  useEffect(() => {
+    PostUtils.socketIOPost(posts, setPosts);
+  }, [posts]);
 
   return (
     <div className="streams" data-testid="streams">

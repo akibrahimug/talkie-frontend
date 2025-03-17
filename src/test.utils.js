@@ -2,7 +2,13 @@ import { store } from '@redux/store';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { createBrowserHistory } from 'history';
-import { BrowserRouter as Router } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  createRoutesFromElements,
+  Route,
+  createBrowserRouter,
+  RouterProvider
+} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 /**
@@ -12,9 +18,10 @@ import PropTypes from 'prop-types';
  * @returns {React.ReactNode} - The wrapped components
  */
 const Providers = ({ children }) => {
+  // For tests, use the simple Router to avoid configuration complexities
   return (
     <Provider store={store}>
-      <Router>{children}</Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{children}</Router>
     </Provider>
   );
 };

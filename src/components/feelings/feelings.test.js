@@ -1,6 +1,6 @@
 import Feelings from '@components/feelings/feelings';
-import ModalBoxContent from '@components/posts/post-modal/modal-box-content/ModalBoxContent';
-import { render, screen } from '@root/test.utils';
+import ModalBoxContent from '@components/posts/post-modal/modal-box-content/modal-box-content';
+import { render, screen, within } from '@root/test.utils';
 import userEvent from '@testing-library/user-event';
 
 describe('Feelings', () => {
@@ -15,8 +15,8 @@ describe('Feelings', () => {
     render(<ModalBoxContent />);
     const listElement = screen.queryAllByTestId('feelings-item');
     userEvent.click(listElement[0]);
-    const selectedFeelings = screen.getByRole('generic', { name: /inline display/i });
-    const feelingImage = screen.getByRole('img', { name: /feeling icon/i });
+    const selectedFeelings = screen.getByTestId('box-feeling');
+    const feelingImage = within(selectedFeelings).getByAltText('');
     expect(selectedFeelings).toBeInTheDocument();
     expect(feelingImage).toBeInTheDocument();
     expect(feelingImage).toHaveAttribute('src', 'happy.jpg');
