@@ -1,11 +1,40 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+#!/bin/sh
+
+# Define colors for better visibility
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+echo "${BLUE}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${NC}"
+echo "${BLUE}┃      ${YELLOW}Validating commit message for Talkie App        ${BLUE}┃${NC}"
+echo "${BLUE}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${NC}"
 
 # First, let's install commitlint if not already installed
 if ! command -v commitlint &> /dev/null; then
-  echo "Installing commitlint packages..."
+  echo "${YELLOW}⏳ Installing commitlint packages...${NC}"
   yarn add --dev @commitlint/cli @commitlint/config-conventional
 fi
 
+echo "${YELLOW}⏳ Checking commit message format...${NC}"
+
+# Get commit message content
+commit_msg=$(cat "$1")
+echo "${YELLOW}Your commit message:${NC} ${commit_msg}"
+
 # Check commit message format
-npx --no -- commitlint --edit ${1}
+npx --no -- commitlint --edit "$1"
+exit_code=$?
+
+if [ $exit_code -ne 0 ]; then
+  echo "${RED}❌ Commit message validation failed.${NC}"
+  echo "${YELLOW}💡 Hint: Your commit message should follow the format:${NC}"
+  echo "    type(scope): Subject with first letter capitalized"
+  echo "${YELLOW}💡 Example:${NC}"
+  echo "    feat(auth): Add login functionality"
+  echo "    fix(ui): Resolve button alignment issue"
+  exit 1
+else
+  echo "${GREEN}✅ Commit message format validated successfully!${NC}"
+fi

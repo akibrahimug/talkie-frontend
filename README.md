@@ -41,6 +41,48 @@ fix(auth): Fix login form validation
 docs(readme): Update installation instructions
 ```
 
+### Testing Git Hooks
+
+To test if the git hooks are working properly, run the included test script:
+
+```bash
+yarn test:hooks
+```
+
+This script will:
+
+1. Create a temporary file with deliberate linting errors
+2. Attempt to commit with an incorrectly formatted message (should fail)
+3. Attempt to commit with a correctly formatted message (should still fail due to linting errors)
+4. Clean up by removing the temporary file
+
+### Troubleshooting Git Hooks
+
+If you encounter issues with git hooks:
+
+1. **Hooks aren't running**: Make sure they're executable
+
+   ```bash
+   chmod +x .husky/pre-commit .husky/commit-msg
+   ```
+
+2. **Commit message rejected**: Ensure your message follows the format:
+
+   ```
+   type(scope): Subject starting with capital letter
+   ```
+
+3. **Pre-commit rejected due to linting**: Fix the linting issues or run:
+
+   ```bash
+   yarn lint:fix
+   ```
+
+4. **To bypass hooks temporarily** (use sparingly):
+   ```bash
+   git commit -m "feat: Add feature" --no-verify
+   ```
+
 ## Available Scripts
 
 In the project directory, you can run:
