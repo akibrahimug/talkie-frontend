@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# First, let's install commitlint if not already installed
+if ! command -v commitlint &> /dev/null; then
+  echo "Installing commitlint packages..."
+  yarn add --dev @commitlint/cli @commitlint/config-conventional
+fi
+
+# Check commit message format
+npx --no -- commitlint --edit ${1}

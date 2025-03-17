@@ -2,6 +2,45 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Development Guidelines
+
+### Code Quality and Git Hooks
+
+This project uses Husky, lint-staged, and commitlint to ensure code quality and consistent commit messages.
+
+- **Pre-commit Hook**: Before each commit, the pre-commit hook will:
+
+  - Run ESLint to check for linting errors
+  - Run Prettier to ensure consistent code formatting
+  - Run tests related to the changed files
+
+- **Commit Message Format**: We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+
+```
+<type>(<scope>): <subject>
+```
+
+#### Types:
+
+- `feat`: A new feature
+- `fix`: A bug fix
+- `docs`: Documentation only changes
+- `style`: Changes that do not affect the meaning of the code
+- `refactor`: A code change that neither fixes a bug nor adds a feature
+- `perf`: A code change that improves performance
+- `test`: Adding missing tests or correcting existing tests
+- `chore`: Changes to the build process or auxiliary tools
+- `revert`: Revert to a commit
+- `wip`: Work in progress
+
+#### Examples:
+
+```
+feat(user): Add user profile page
+fix(auth): Fix login form validation
+docs(readme): Update installation instructions
+```
+
 ## Available Scripts
 
 In the project directory, you can run:
