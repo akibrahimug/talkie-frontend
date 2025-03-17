@@ -5,6 +5,10 @@ import infoIcon from '@assets/images/info.svg';
 import warningIcon from '@assets/images/warning.svg';
 import { cloneDeep, uniqBy } from 'lodash';
 
+/**
+ * Initial state for the notification slice.
+ * @type {Array}
+ */
 const initialState = [];
 let list = [];
 const toastIcons = [
@@ -13,10 +17,19 @@ const toastIcons = [
   { info: infoIcon, backgroundColor: '#5bc0de' },
   { warning: warningIcon, backgroundColor: '#f0ad4e' }
 ];
+/**
+ * Notification slice for handling notification state.
+ * @type {Slice}
+ */
 const notificationSlice = createSlice({
   name: 'notifications',
   initialState,
   reducers: {
+    /**
+     * Add notification.
+     * @param {object} state - The state
+     * @param {object} action - The action
+     */
     addNotification: (state, action) => {
       const { message, type } = action.payload;
       const toast = toastIcons.find((toast) => toast[type]);
@@ -33,6 +46,10 @@ const notificationSlice = createSlice({
       list = [...uniqBy(list, 'description')];
       return list;
     },
+    /**
+     * Clear notification.
+     * @param {object} state - The state
+     */
     clearNotification: () => {
       list = [];
       return list;

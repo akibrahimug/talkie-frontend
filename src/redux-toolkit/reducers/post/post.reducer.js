@@ -3,6 +3,10 @@ import { emptyPostData } from '@services/utils/static.data';
 
 const initialState = emptyPostData;
 
+/**
+ * Post slice for handling post state.
+ * @type {Slice}
+ */
 const postSlice = createSlice({
   name: 'post',
   initialState,
@@ -12,6 +16,10 @@ const postSlice = createSlice({
         state[key] = value;
       }
     },
+    /**
+     * Clear post.
+     * @param {object} state - The state
+     */
     clearPost: () => {
       return emptyPostData;
     }

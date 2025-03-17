@@ -1,5 +1,11 @@
 // Hook to set, get, or delete from local storage
 
+/**
+ * Custom hook to handle local storage operations.
+ * @param {string} key - The key to store or retrieve from local storage.
+ * @param {string} type - The type of operation ('get', 'set', or 'delete').
+ * @returns {any} - The result of the operation.
+ */
 const useLocalStorage = (key, type) => {
   try {
     if (type === 'get') {
