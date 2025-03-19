@@ -42,7 +42,8 @@
     "prepare": "husky",
     "hooks:pre-commit": "sh .husky/pre-commit",
     "hooks:commit-msg": "sh .husky/commit-msg",
-    "test:hooks": "chmod +x ./test-commit-hook.sh && ./test-commit-hook.sh"
+    "test:hooks": "chmod +x ./test-commit-hook.sh && ./test-commit-hook.sh",
+    "cleanup:duplicates": "chmod +x ./cleanup-duplicates.sh && ./cleanup-duplicates.sh"
   },
   "lint-staged": {
     "src/**/*.{js,jsx}": [

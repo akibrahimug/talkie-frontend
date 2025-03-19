@@ -14,7 +14,7 @@ echo "${BLUE}┗━━━━━━━━━━━━━━━━━━━━━�
 
 # Find all duplicate files with '2' in the name
 echo "${YELLOW}🔍 Finding duplicate files...${NC}"
-DUPLICATES=$(find src -name "* 2.js" -o -name "* 2.jsx")
+DUPLICATES=$(find src -name "* 2.ts" -o -name "* 2.tsx" && find src -name "* 2.scss" -o -name "* 2.scss" && find . -name "* 2.json" -o -name "* 2.json" && find . -name "* 2.md" -o -name "* 2.md" && find . -name "* 2.txt" -o -name "* 2.txt" && find . -name "* 2.yml" -o -name "* 2.yml" && find . -name "* 2.js" -o -name "* 2.js" && find src -name "* 2" -o -name "* 2" && find src -name "* 2.ts" -o -name "* 2.tsx" && find src -name "* 2.scss" -o -name "* 2.scss" && find . -name "* 2.json" -o -name "* 2.json" && find . -name "* 2.md" -o -name "* 2.md" && find . -name "* 2.txt" -o -name "* 2.txt" && find . -name "* 2.yml" -o -name "* 2.yml" && find . -name "* 2.js" -o -name "* 2.js" && find src -name "* 2" -o -name "* 2" && find . -name "* 2" -o -name "* 2" && find . -name "* 2.png" -o -name "* 2.png" && find . -name "* 2.jpg" -o -name "* 2.jpg" && find . -name "* 2.jpeg" -o -name "* 2.jpeg" && find . -name "* 2.gif" -o -name "* 2.gif" && find . -name "* 2.svg" -o -name "* 2.svg" && find . -name "* 2.webp" -o -name "* 2.webp" )
 
 if [ -z "$DUPLICATES" ]; then
   echo "${GREEN}✅ No duplicate files found!${NC}"

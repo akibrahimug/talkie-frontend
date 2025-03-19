@@ -6,7 +6,7 @@ import { FaPencilAlt, FaRegTrashAlt } from 'react-icons/fa';
 import { find } from 'lodash';
 import { feelingsList, privacyList } from '@services/utils/static.data';
 import '@components/posts/post/post.scss';
-// import PostCommentSection from '@components/posts/post-comment-section/PostCommentSection';
+import PostCommentSection from '@components/posts/post-comment-section/postCommentSection';
 import { useDispatch, useSelector } from 'react-redux';
 // import ReactionsModal from '@components/posts/reactions/reactions-modal/ReactionsModal';
 import { Utils } from '@services/utils/utils.service';
@@ -195,7 +195,7 @@ const Post = ({ post, showIcons }) => {
                 </div>
               )}
               {(post?.reactions.length > 0 || post?.commentsCount > 0) && <hr />}
-              {/* <PostCommentSection post={post} /> */}
+              <PostCommentSection post={post} />
             </div>
           </div>
           {/* {selectedPostId === post?._id && <CommentInputBox post={post} />} */}
