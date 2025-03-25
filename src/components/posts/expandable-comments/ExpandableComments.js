@@ -32,10 +32,18 @@ const ExpandableComments = ({ post, isExpanded, onToggle }) => {
 
     setIsLoading(true);
     try {
+      // Add null check to handle potential undefined response during testing
       const response = await postService.getPostComments(post?._id);
-      setComments(response.data.comments);
+
+      if (response && response.data && response.data.comments) {
+        setComments(response.data.comments);
+      } else {
+        console.log('Invalid response format from getPostComments');
+        setComments([]);
+      }
     } catch (error) {
-      console.log('Error fetching comments:', error?.response?.data?.message || error.message);
+      console.log('Error fetching comments:', error?.message || 'Unknown error');
+      setComments([]);
     } finally {
       setIsLoading(false);
     }

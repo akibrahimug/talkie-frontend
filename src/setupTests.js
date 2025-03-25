@@ -77,3 +77,16 @@ afterAll(() => {
   console.error = originalConsoleError;
   console.warn = originalConsoleWarn;
 });
+
+// Mock the socket service
+jest.mock('@services/sockets/socket.service', () => ({
+  socketService: {
+    socket: {
+      emit: jest.fn(),
+      on: jest.fn((event, callback) => {
+        return jest.fn();
+      }),
+      off: jest.fn()
+    }
+  }
+}));

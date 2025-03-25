@@ -448,3 +448,26 @@
     opacity: 1;
   }
 }
+
+// Override for privacy button when in a colored background
+.post-form-container .post-form .post-form-content.with-bg .user-info-container .user-info-details .privacy-display {
+  background-color: var(--white-1) !important;
+
+  &:hover {
+    background-color: var(--white-1) !important;
+  }
+
+  &.active {
+    background-color: var(--white-1) !important;
+  }
+}
+
+/* Global fix for all privacy display buttons inside colored backgrounds */
+.post-form-content.with-bg .privacy-display,
+.post-form-content.with-bg .privacy-display:hover,
+.post-form-content.with-bg .privacy-display.active,
+.post-form-container .post-form .post-form-content.with-bg .privacy-display,
+.post-form-container .post-form .post-form-content.with-bg .privacy-display:hover,
+.post-form-container .post-form .post-form-content.with-bg .privacy-display.active {
+  background-color: var(--white-1) !important;
+}
