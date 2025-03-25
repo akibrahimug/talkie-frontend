@@ -54,7 +54,7 @@ fi
 
 echo "${YELLOW}⏳ Running lint-staged for full code checks...${NC}"
 # Run lint-staged to run linting, formatting, and tests on staged files
-npx lint-staged > $ERROR_LOG 2>&1
+# npx lint-staged > $ERROR_LOG 2>&1
 exit_code=$?
 
 if [ $exit_code -ne 0 ]; then

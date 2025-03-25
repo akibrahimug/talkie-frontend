@@ -12,7 +12,7 @@ const Reactions = ({ handleClick, showLabel = true }) => {
         {reactionList.map((reaction, index) => (
           <li key={index} onClick={() => handleClick(reaction)} data-testid="reaction">
             {showLabel && <label>{reaction}</label>}
-            <img src={reactionsMap[reaction]} alt="" />
+            <div className="reaction-icon-container">{reactionsMap[reaction]}</div>
           </li>
         ))}
       </ul>
@@ -21,7 +21,7 @@ const Reactions = ({ handleClick, showLabel = true }) => {
 };
 
 Reactions.propTypes = {
-  handleClick: PropTypes.func,
+  handleClick: PropTypes.func.isRequired,
   showLabel: PropTypes.bool
 };
 

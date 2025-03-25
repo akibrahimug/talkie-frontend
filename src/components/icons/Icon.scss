@@ -1,0 +1,25 @@
+.phosphor-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+
+  // Common icon styles for different contexts
+  &.icon {
+    // This matches the original "icon" class used in the app
+    width: 20px;
+    height: 20px;
+  }
+
+  &.globe-icon {
+    // This matches the original "globe-icon" class used in the app
+    font-size: 20px;
+    margin-right: 8px;
+  }
+
+  &.banner-nav-item-name-icon {
+    // This matches the original "banner-nav-item-name-icon" class used in the app
+    margin-right: 5px;
+    font-size: 18px;
+  }
+}

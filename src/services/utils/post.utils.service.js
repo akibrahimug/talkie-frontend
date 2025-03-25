@@ -104,7 +104,7 @@ export class PostUtils {
   static dispatchNotification(message, type, setApiResponse, setLoading, dispatch) {
     setApiResponse(type);
     setLoading(false);
-    Utils.dispatchNotification(message, type, dispatch);
+    Utils.dispatchNotification(dispatch, message, type);
   }
 
   /**

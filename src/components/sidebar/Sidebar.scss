@@ -13,6 +13,8 @@
   box-shadow: 1px 3px 3px var(--gray-16);
   height: 100vh;
   width: 230px;
+  position: relative;
+  z-index: 50;
   @include lg {
     max-width: 60px;
   }
@@ -65,9 +67,8 @@
         }
 
         .menu-icon {
-          margin-top: 5px;
           @include lg {
-            margin: 5px 0px 0px 12px;
+            margin: 0px 0px 0px 12px;
           }
           .icon {
             color: var(--gray-13);

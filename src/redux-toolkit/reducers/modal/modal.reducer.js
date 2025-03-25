@@ -7,16 +7,18 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   type: '',
   isOpen: false,
-  feeling: '',
-  image: '',
+  feelingIsOpen: false,
+  deleteDialogIsOpen: false,
   data: null,
-  feelingsIsOpen: false,
-  openFileDialog: false,
-  openVideoDialog: false,
+  feeling: {},
   gifModalIsOpen: false,
   reactionsModalIsOpen: false,
   commentsModalIsOpen: false,
-  deleteDialogIsOpen: false
+  feeling: '',
+  image: '',
+  feelingsIsOpen: false,
+  openFileDialog: false,
+  openVideoDialog: false
 };
 
 /**

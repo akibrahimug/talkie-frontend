@@ -40,6 +40,11 @@
 
       .comment-alt {
         margin-right: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
       }
 
       span {
@@ -80,7 +85,14 @@
             width: 18px;
             height: 18px;
             margin-top: 2px;
-            object-fit: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            svg {
+              width: 14px;
+              height: 14px;
+            }
           }
 
           span {

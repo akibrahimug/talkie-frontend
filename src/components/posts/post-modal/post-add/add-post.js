@@ -15,7 +15,7 @@ import { ImageUtils } from '@services/utils/image.utils.service';
 import { postService } from '@services/api/post/post.service';
 import Spinner from '@components/spinner/spinner';
 
-const AddPost = ({ selectedImage, selectedPostVideo }) => {
+const AddPost = ({ selectedImage, selectedPostVideo, updateGif }) => {
   const { gifModalIsOpen, feeling } = useSelector((state) => state.modal);
   const postState = useSelector((state) => state.post) || {};
   const { gifUrl, image, privacy, video } = postState;
@@ -300,7 +300,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
               <h2>Choose a GIF</h2>
             </div>
             <hr />
-            <Giphy />
+            <Giphy handleGifSelection={updateGif} />
           </div>
         )}
       </PostWrapper>
@@ -309,6 +309,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
 };
 AddPost.propTypes = {
   selectedImage: PropTypes.any,
-  selectedPostVideo: PropTypes.any
+  selectedPostVideo: PropTypes.any,
+  updateGif: PropTypes.func
 };
 export default AddPost;

@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { FaRegCommentAlt } from 'react-icons/fa';
 import '@components/posts/comment-area/commentArea.scss';
 import Reactions from '@components/posts/reactions/reactions';
 import { useCallback, useEffect, useState } from 'react';
@@ -12,6 +11,7 @@ import { addReactions } from '@redux/reducers/post/user-post-reaction.reducer';
 import { socketService } from '@services/sockets/socket.service';
 import useLocalStorage from '@hooks/useLocalStorage';
 import { clearPost, updatePostItem } from '@redux/reducers/post/post.reducer';
+import Icon from '@components/icons';
 
 /**
  * Comment area component.
@@ -183,7 +183,7 @@ const CommentArea = ({ post }) => {
         <div className="likes-block" onClick={() => addReactionPost('like')}>
           <div className={`likes-block-icons reaction-icon ${userSelectedReaction.toLowerCase()}`}>
             <div className={`reaction-display ${userSelectedReaction.toLowerCase()} `} data-testid="selected-reaction">
-              <img className="reaction-img" src={reactionsMap[userSelectedReaction.toLowerCase()]} alt="" />
+              <div className="reaction-img">{reactionsMap[userSelectedReaction.toLowerCase()]}</div>
               <span>{userSelectedReaction}</span>
             </div>
           </div>
@@ -194,7 +194,7 @@ const CommentArea = ({ post }) => {
       </div>
       <div className="comment-block" onClick={toggleCommentInput}>
         <span className="comments-text">
-          <FaRegCommentAlt className="comment-alt" /> <span>Comments</span>
+          <Icon name="ChatTeardrop" className="comment-alt" weight="regular" /> <span>Comments</span>
         </span>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '@assets/images/logo.svg';
-import { FaCaretDown, FaCaretUp, FaRegBell, FaRegEnvelope } from 'react-icons/fa';
+import { FAIcon } from '@components/icons';
 import '@components/header/Header.scss';
 import Avatar from '@components/avatar/Avatar';
 import { Utils } from '@services/utils/utils.service';
@@ -173,7 +173,7 @@ const Header = () => {
                   setIsSettingsActive(false);
                 }}>
                 <span className="header-list-name">
-                  <FaRegBell className="header-list-icon" />
+                  <FAIcon icon="FaRegBell" className="header-list-icon" />
                   <span className="bg-danger-dots dots" data-testid="notification-dots">
                     5
                   </span>
@@ -207,7 +207,7 @@ const Header = () => {
                   setIsSettingsActive(false);
                 }}>
                 <span className="header-list-name">
-                  <FaRegEnvelope className="header-list-icon" />
+                  <FAIcon icon="FaRegEnvelope" className="header-list-icon" />
                   {notificationCount > 0 && (
                     <span className="bg-danger-dots dots" data-testid="messages-dots">
                       {notificationCount}
@@ -236,9 +236,9 @@ const Header = () => {
                 <span className="header-list-name profile-name">
                   {profile?.username}
                   {isSettingsActive ? (
-                    <FaCaretDown className="header-list-icon caret" />
+                    <FAIcon icon="FaCaretDown" className="header-list-icon caret" />
                   ) : (
-                    <FaCaretUp className="header-list-icon caret" />
+                    <FAIcon icon="FaCaretUp" className="header-list-icon caret" />
                   )}
                 </span>
                 {isSettingsActive && (

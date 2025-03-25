@@ -17,6 +17,10 @@ class TimeAgo {
   /**
    * Transform the date to a human readable format.
    * @param {string|Date} value - The date to transform
+   * @subDays - The number of days to subtract from the current date
+   * @isSameDay - The date to compare
+   * @getISOWeek - The week to compare
+   * @format - The format to transform the date to
    * @returns {string} - The transformed date
    */
   chatMessageTransform(value) {

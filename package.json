@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@loadable/component": "^5.15.2",
+    "@phosphor-icons/react": "^2.1.7",
     "@reduxjs/toolkit": "^1.8.4",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.4.8",
@@ -39,6 +40,7 @@
     "build": "CI=false react-app-rewired build",
     "test": "react-app-rewired test --coverage --forceExit --detectOpenHandles --watchAll=false",
     "test:changed": "echo '\\033[1;33m🧪 Running tests for changed files...\\033[0m' && react-app-rewired test --findRelatedTests --coverage --forceExit --detectOpenHandles --watchAll=false",
+    "test:icons": "react-app-rewired test --testPathPattern=src/components/icons/__tests__ --coverage --forceExit --detectOpenHandles --watchAll=false",
     "prepare": "husky",
     "hooks:pre-commit": "sh .husky/pre-commit",
     "hooks:commit-msg": "sh .husky/commit-msg",
@@ -77,6 +79,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
+    "camelcase": "^8.0.0",
     "eslint": "^8.22.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-standard": "^17.0.0",
@@ -90,6 +93,7 @@
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "history": "^5.3.0",
     "husky": "^9.1.7",
+    "identity-obj-proxy": "^3.0.0",
     "jest-canvas-mock": "^2.4.0",
     "lint-staged": "^15.5.0",
     "prettier": "^2.7.1",
@@ -133,7 +137,11 @@
       ],
       "@root/(.*)": [
         "<rootDir>/src/$1"
-      ]
-    }
+      ],
+      "\\.(css|scss)$": "identity-obj-proxy"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(@phosphor-icons)/)"
+    ]
   }
 }
