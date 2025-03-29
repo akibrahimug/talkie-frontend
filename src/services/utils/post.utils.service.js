@@ -268,4 +268,24 @@ export class PostUtils {
       setPosts(posts);
     }
   }
+
+  /**
+   * Prepares a post object with media fields cleared to prevent them from appearing in the post form.
+   * @param {object} post - The post object to prepare
+   * @returns {object} - The post object with media fields cleared
+   */
+  static preparePostWithoutMedia(post) {
+    if (!post) return {};
+
+    return {
+      ...post,
+      gifUrl: '',
+      image: '',
+      video: '',
+      imgId: '',
+      imgVersion: '',
+      videoId: '',
+      videoVersion: ''
+    };
+  }
 }

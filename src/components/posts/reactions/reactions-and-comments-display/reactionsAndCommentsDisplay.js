@@ -6,13 +6,14 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { postService } from '@services/api/post/post.service';
 import { reactionsMap } from '@services/utils/static.data';
 import { updatePostItem } from '@redux/reducers/post/post.reducer';
-import { toggleReactionsModal, toggleCommentsModal } from '@redux/reducers/modal/modal.reducer';
+import { toggleReactionsModal } from '@redux/reducers/modal/modal.reducer';
 import ExpandableComments from '@components/posts/expandable-comments/ExpandableComments';
 import Reactions from '@components/posts/reactions/reactions';
 import { cloneDeep, filter, find } from 'lodash';
 import { addReactions } from '@redux/reducers/post/user-post-reaction.reducer';
 import { socketService } from '@services/sockets/socket.service';
 import Icon from '@components/icons';
+import { PostUtils } from '@services/utils/post.utils.service';
 
 /**
  * @description Displays the reactions and comments for a post
@@ -20,22 +21,22 @@ import Icon from '@components/icons';
  * @returns {JSX} The reactions and comments display component
  */
 const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
-  const { reactionsModalIsOpen, commentsModalIsOpen } = useSelector((state) => state.modal);
+  const { reactionsModalIsOpen } = useSelector((state) => state.modal);
   const { profile } = useSelector((state) => state.user);
   let { reactions: userReactions = [] } = useSelector((state) => state.userPostReactions || { reactions: [] });
   const [post, setPost] = useState(initialPost);
   const [postReactions, setPostReactions] = useState([]);
   const [reactions, setReactions] = useState([]);
-  const [postCommentNames, setPostCommentNames] = useState([]);
+  const [postCommentNames] = useState([]);
   const [isLoadingReactions, setIsLoadingReactions] = useState(false);
-  const [isLoadingComments, setIsLoadingComments] = useState(false);
+  const [isLoadingComments] = useState(false);
   const [hasLoadedReactions, setHasLoadedReactions] = useState(false);
-  const [hasLoadedComments, setHasLoadedComments] = useState(false);
   const [commentsExpanded, setCommentsExpanded] = useState(false);
-  const [userSelectedReaction, setUserSelectedReaction] = useState('like');
+  const [userSelectedReaction, setUserSelectedReaction] = useState('');
   const reactionsTimeoutRef = useRef(null);
   const commentsTimeoutRef = useRef(null);
   const dispatch = useDispatch();
+  const [showReactionsMenu, setShowReactionsMenu] = useState(false);
 
   // Update local post state when initialPost changes
   useEffect(() => {
@@ -62,62 +63,25 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
   }, [post?._id, hasLoadedReactions, isLoadingReactions]);
 
   /**
-   * @description Fetch the current user's reaction for this post
-   * @returns {void}
+   * @description Gets the user's reaction to this post
    */
-  const fetchUserReactionForPost = useCallback(async () => {
-    if (!post?._id || !profile?.username) return;
-
+  const getUserReaction = useCallback(async () => {
     try {
-      const response = await postService.getSinglePostReactionByUsername(post._id, profile.username);
+      const response = await postService.getSinglePostReactionByUsername(post._id, profile?.username);
+      const userReaction = response?.data?.reactions;
 
-      if (response && response.data && Object.keys(response.data.reactions).length > 0) {
-        const userReaction = response.data.reactions.type;
-        console.log('Fetched user reaction:', userReaction);
-        setUserSelectedReaction(Utils.firstLetterUpperCase(userReaction));
-
-        // Update Redux store with this reaction if needed
-        const existingReaction = find(userReactions, (reaction) => reaction.postId === post._id);
-
-        if (!existingReaction) {
-          const updatedReactions = [
-            ...userReactions,
-            {
-              avatarColor: profile.avatarColor || '',
-              createdAt: response.data.reactions.createdAt || new Date().toISOString(),
-              postId: post._id,
-              profilePicture: profile.profilePicture || '',
-              username: profile.username,
-              type: userReaction
-            }
-          ];
-
-          dispatch(addReactions(updatedReactions));
-        }
+      // Only set a reaction if the user has one, otherwise leave it blank
+      if (userReaction && Object.keys(userReaction).length > 0) {
+        setUserSelectedReaction(userReaction.type);
+      } else {
+        // Reset to empty if no reaction found
+        setUserSelectedReaction('');
       }
     } catch (error) {
-      console.log('Error fetching user reaction:', error?.response?.data?.message || error.message);
+      console.error('Error getting user reaction:', error);
+      setUserSelectedReaction('');
     }
-  }, [post?._id, profile?.username, profile?.avatarColor, profile?.profilePicture, userReactions, dispatch]);
-
-  /**
-   * @description Fetches the comments names for a post
-   * @returns {void}
-   */
-  const getPostCommentsNames = useCallback(async () => {
-    if (hasLoadedComments || isLoadingComments) return;
-
-    setIsLoadingComments(true);
-    try {
-      const response = await postService.getPostCommentsNames(post?._id);
-      setPostCommentNames([...new Set(response.data.comments.names)]);
-      setHasLoadedComments(true);
-    } catch (error) {
-      console.log('Error fetching comment names:', error?.response?.data?.message || error.message);
-    } finally {
-      setIsLoadingComments(false);
-    }
-  }, [post?._id, hasLoadedComments, isLoadingComments]);
+  }, [post._id, profile?.username]);
 
   /**
    * @description Delayed fetch for reactions on hover
@@ -127,17 +91,6 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
     if (reactionsTimeoutRef.current) clearTimeout(reactionsTimeoutRef.current);
     reactionsTimeoutRef.current = setTimeout(() => {
       getPostReactions();
-    }, 300);
-  };
-
-  /**
-   * @description Delayed fetch for comments on hover
-   * @returns {void}
-   */
-  const handleCommentsHover = () => {
-    if (commentsTimeoutRef.current) clearTimeout(commentsTimeoutRef.current);
-    commentsTimeoutRef.current = setTimeout(() => {
-      getPostCommentsNames();
     }, 300);
   };
 
@@ -159,17 +112,10 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
    * @returns {void}
    */
   const openReactionsComponent = () => {
-    dispatch(updatePostItem(post));
+    // Use the utility function to prepare the post without media
+    const postWithoutMedia = PostUtils.preparePostWithoutMedia(post);
+    dispatch(updatePostItem(postWithoutMedia));
     dispatch(toggleReactionsModal(!reactionsModalIsOpen));
-  };
-
-  /**
-   * @description Opens the comments modal
-   * @returns {void}
-   */
-  const openCommentsModal = () => {
-    dispatch(updatePostItem(post));
-    dispatch(toggleCommentsModal(true));
   };
 
   /**
@@ -179,148 +125,194 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
   const toggleCommentsSection = () => {
     setCommentsExpanded(!commentsExpanded);
     if (!commentsExpanded) {
-      dispatch(updatePostItem(post));
+      // Use the utility function to prepare the post without media
+      const postWithoutMedia = PostUtils.preparePostWithoutMedia(post);
+      dispatch(updatePostItem(postWithoutMedia));
     }
   };
 
   /**
-   * @description Add reaction to post.
-   * @param {string} reaction - The reaction to add.
+   * @description Handle showing reactions menu
+   */
+  const handleShowReactionsMenu = () => {
+    setShowReactionsMenu(true);
+  };
+
+  /**
+   * @description Handle hiding reactions menu
+   */
+  const handleHideReactionsMenu = () => {
+    setShowReactionsMenu(false);
+  };
+
+  /**
+   * @description Handle reaction button click
+   */
+  const handleReactionButtonClick = () => {
+    // Only toggle off an existing reaction
+    if (userSelectedReaction) {
+      addReactionPost(userSelectedReaction);
+    }
+    // Do nothing if no reaction - user must select a specific reaction
+  };
+
+  /**
+   * @description Add reaction to post
+   * @param {string} reaction - The reaction type
+   * @returns {Promise<void>}
    */
   const addReactionPost = async (reaction) => {
     try {
-      // 1. First get the current reaction status
-      const reactionResponse = await postService.getSinglePostReactionByUsername(post?._id, profile?.username);
+      console.log('Adding reaction from ReactionsAndCommentsDisplay:', reaction);
 
-      // 2. Create a deep copy of the post to update
-      const updatedPost = cloneDeep(post);
+      // Get current reaction status
+      const reactionResponse = await postService.getSinglePostReactionByUsername(post._id, profile?.username);
+      console.log('Current reaction status:', reactionResponse.data.reactions);
 
-      // Store original reaction counts to revert in case of error
-      const originalReactions = cloneDeep(post.reactions);
+      // Create a deep copy of the post
+      const updatedPost = PostUtils.preparePostWithoutMedia({
+        _id: post._id,
+        reactions: cloneDeep(post.reactions || {})
+      });
 
       const hasExistingReaction = Object.keys(reactionResponse.data.reactions).length > 0;
       const previousReaction = hasExistingReaction ? reactionResponse.data.reactions.type : '';
       const isSameReaction = previousReaction === reaction;
 
-      // 4. Update post reaction counts
+      console.log('Has existing reaction?', hasExistingReaction);
+      console.log('Previous reaction:', previousReaction);
+      console.log('Is same reaction?', isSameReaction);
+
+      // Update UI immediately for better user experience
       if (!hasExistingReaction) {
-        // No previous reaction, increment the new reaction count
         updatedPost.reactions[reaction] += 1;
+        setUserSelectedReaction(reaction);
       } else if (isSameReaction) {
-        // Same reaction, decrement to remove it
         if (updatedPost.reactions[previousReaction] > 0) {
           updatedPost.reactions[previousReaction] -= 1;
         }
+        setUserSelectedReaction(''); // Clear current reaction
       } else {
-        // Different reaction, decrement previous and increment new
         if (updatedPost.reactions[previousReaction] > 0) {
           updatedPost.reactions[previousReaction] -= 1;
         }
         updatedPost.reactions[reaction] += 1;
+        setUserSelectedReaction(reaction);
       }
 
-      // 3. Prepare the reactions data for API call - IMPORTANT: Make sure all fields have proper values
-      const reactionsData = {
-        userTo: post?.userId || '',
-        postId: post?._id || '',
-        type: reaction || 'like', // Default to 'like' if reaction is undefined
-        postReactions: updatedPost.reactions || {},
-        profilePicture: profile?.profilePicture || '',
-        previousReaction: previousReaction || ''
-      };
+      // Update the post state with the reaction
+      setPost({ ...post, reactions: updatedPost.reactions });
 
-      // 5. Make the database API calls with proper error handling
-      let dbUpdateSuccessful = false;
+      // Update Redux state - first remove any existing reactions for this post
+      const filteredReactions = filter(userReactions, (item) => item?.postId !== post._id);
 
-      try {
-        if (!hasExistingReaction) {
-          // Add new reaction
-          const response = await postService.addReaction(reactionsData);
-          dbUpdateSuccessful = response && response.status === 200;
-        } else if (isSameReaction) {
-          // Remove existing reaction
-          const response = await postService.removeReaction(post?._id, previousReaction, updatedPost.reactions);
-          dbUpdateSuccessful = response && response.status === 200;
-        } else {
-          // Change reaction
-          const response = await postService.addReaction(reactionsData);
-          dbUpdateSuccessful = response && response.status === 200;
-        }
-      } catch (dbError) {
-        console.error('Database error when updating reaction:', dbError?.response?.data?.message || dbError.message);
-        // Show error visually
-        alert('There was an error saving your reaction. Please try again.');
-        return; // Exit early
-      }
-
-      // Only update UI if database update was successful
-      if (dbUpdateSuccessful) {
-        console.log('Reaction saved successfully');
-
-        // 6. Update local state and UI
-        setPost(updatedPost);
-        setReactions(Utils.formattedReactions(updatedPost.reactions));
-
-        // 7. Update selected reaction display
-        if (isSameReaction && hasExistingReaction) {
-          setUserSelectedReaction('Like');
-        } else {
-          setUserSelectedReaction(Utils.firstLetterUpperCase(reaction));
-        }
-
-        // 8. Update Redux state
-        // Create new reactions array for user reactions in Redux
-        const postReactions = filter(userReactions, (item) => item?.postId !== post?._id);
-
-        if (!isSameReaction || !hasExistingReaction) {
-          postReactions.push({
-            avatarColor: profile?.avatarColor || '',
+      // Only add the new reaction if user is adding a reaction or changing from one to another
+      let newReactionsArray = filteredReactions;
+      if (!isSameReaction || !hasExistingReaction) {
+        newReactionsArray = [
+          ...filteredReactions,
+          {
+            avatarColor: profile?.avatarColor,
             createdAt: `${new Date()}`,
-            postId: post?._id || '',
-            profilePicture: profile?.profilePicture || '',
-            username: profile?.username || '',
-            type: reaction || 'like'
-          });
+            postId: post._id,
+            profilePicture: profile?.profilePicture,
+            username: profile?.username,
+            type: reaction
+          }
+        ];
+      }
+
+      // Update Redux immediately
+      dispatch(addReactions(newReactionsArray));
+
+      // Make API call based on the scenario
+      if (!hasExistingReaction || !isSameReaction) {
+        try {
+          // Use the simplified approach first for better reliability
+          await postService.addReactionBasic(post._id, reaction, post?.userId);
+          console.log('Successfully added reaction using simplified method');
+        } catch (basicError) {
+          console.error('Error with simplified reaction method:', basicError);
+
+          // Fallback to the original method if the simplified one fails
+          const reactionsData = {
+            userTo: post?.userId,
+            postId: post._id,
+            type: reaction,
+            postReactions: updatedPost.reactions,
+            profilePicture: profile?.profilePicture,
+            previousReaction: previousReaction
+          };
+
+          await postService.addReaction(reactionsData);
         }
+      } else if (isSameReaction && previousReaction) {
+        let retryCount = 0;
+        const maxRetries = 2;
+        let removeSuccess = false;
 
-        // Update Redux state with new reactions
-        dispatch(addReactions([...postReactions]));
+        while (retryCount < maxRetries && !removeSuccess) {
+          try {
+            console.log(`Attempting to remove reaction (attempt ${retryCount + 1}):`, {
+              postId: post._id,
+              previousReaction
+            });
 
-        // 9. Update the post in Redux
-        dispatch(updatePostItem(updatedPost));
+            // Force UI update AGAIN before API call to ensure button shows as unselected
+            setUserSelectedReaction('');
 
-        // 10. Send socket notification
+            await postService.removeReactionBasic(post._id, previousReaction);
+            console.log('Successfully removed reaction');
+            removeSuccess = true;
+
+            // Force UI update again after successful API call
+            setUserSelectedReaction('');
+
+            // Make sure no reactions exist for this post in Redux
+            dispatch(addReactions(filteredReactions));
+          } catch (removeError) {
+            console.error(`Error removing reaction (attempt ${retryCount + 1}):`, removeError);
+            retryCount++;
+
+            if (retryCount >= maxRetries) {
+              Utils.dispatchNotification(
+                dispatch,
+                'Unable to sync with server, but your reaction was removed locally. Please try again later.',
+                'warning'
+              );
+
+              // Even though the server sync failed, keep the UI updated
+              setUserSelectedReaction('');
+            } else {
+              // Wait before retrying
+              await new Promise((resolve) => setTimeout(resolve, 500));
+            }
+          }
+        }
+      }
+
+      // Send socket notification
+      if (socketService?.socket?.connected) {
         const socketReactionData = {
-          userTo: post?.userId || '',
-          postId: post?._id || '',
-          username: profile?.username || '',
-          avatarColor: profile?.avatarColor || '',
-          type: reaction || 'like',
-          postReactions: updatedPost.reactions || {},
-          profilePicture: profile?.profilePicture || '',
-          previousReaction: previousReaction || ''
+          userTo: post?.userId,
+          postId: post._id,
+          username: profile?.username,
+          avatarColor: profile?.avatarColor,
+          type: reaction,
+          postReactions: updatedPost.reactions,
+          profilePicture: profile?.profilePicture,
+          previousReaction: previousReaction
         };
         socketService?.socket?.emit('reaction', socketReactionData);
-      } else {
-        console.log('Database update for reaction failed.');
-        // Revert to original reaction counts if DB update failed
-        setPost({ ...post, reactions: originalReactions });
-        setReactions(Utils.formattedReactions(originalReactions));
       }
+
+      // Hide the reactions menu
+      handleHideReactionsMenu();
     } catch (error) {
-      console.error('Error handling reaction:', error?.response?.data?.message || error.message);
-      alert('Something went wrong when adding your reaction. Please try again.');
+      console.error('Error adding reaction:', error);
+      Utils.dispatchNotification(dispatch, error?.response?.data?.message || 'Error handling reaction', 'error');
     }
   };
-
-  /**
-   * @description Selected user reaction
-   */
-  const selectedUserReaction = useCallback(() => {
-    const userReaction = find(userReactions, (reaction) => reaction.postId === post?._id);
-    const result = userReaction ? Utils.firstLetterUpperCase(userReaction.type) : 'Like';
-    setUserSelectedReaction(result);
-  }, [post?._id, userReactions]);
 
   /**
    * @description Formats the reactions
@@ -329,68 +321,91 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
   useEffect(() => {
     setReactions(Utils.formattedReactions(post?.reactions));
 
+    // Check if there are any reactions of the user's selected type
+    // If not, reset the button state to unselected
+    if (userSelectedReaction && post?.reactions) {
+      const reactionCount = post.reactions[userSelectedReaction] || 0;
+      if (reactionCount === 0) {
+        setUserSelectedReaction('');
+      }
+    }
+
+    // Fix for stale ref issue - store refs in local variables
+    const reactionsTimeout = reactionsTimeoutRef.current;
+    const commentsTimeout = commentsTimeoutRef.current;
+
     // Clear timeout refs on unmount
     return () => {
-      if (reactionsTimeoutRef.current) clearTimeout(reactionsTimeoutRef.current);
-      if (commentsTimeoutRef.current) clearTimeout(commentsTimeoutRef.current);
+      if (reactionsTimeout) clearTimeout(reactionsTimeout);
+      if (commentsTimeout) clearTimeout(commentsTimeout);
     };
-  }, [post]);
+  }, [post, userSelectedReaction]);
 
   /**
    * @description Setup socket listeners for real-time updates
    * @returns {void}
    */
   useEffect(() => {
-    if (post?._id) {
-      socketService?.socket?.on('reaction', (data) => {
-        if (data?.postId === post?._id) {
-          // Update post reactions in real time
-          const updatedPost = { ...post, reactions: data.postReactions };
-          setPost(updatedPost);
-          setReactions(Utils.formattedReactions(data.postReactions));
-        }
-      });
+    if (!post?._id) return;
 
-      // Cleanup socket listeners on unmount
-      return () => {
-        socketService?.socket?.off('reaction');
-      };
-    }
-  }, [post?._id]);
+    // Create a reference to the current post to use in cleanup
+    const currentPostId = post._id;
+
+    // Handle reaction updates
+    const handleReactionUpdate = (data) => {
+      if (data?.postId === currentPostId) {
+        // Update post reactions in real time
+        const updatedPost = { ...post, reactions: data.postReactions };
+        setPost(updatedPost);
+        setReactions(Utils.formattedReactions(data.postReactions));
+
+        // Also refresh the user's selected reaction
+        getUserReaction();
+      }
+    };
+
+    // Handle comment updates - use 'Update comment' to match backend event name
+    const handleCommentUpdate = (data) => {
+      if (data?.postId === currentPostId) {
+        // Update post comments count in real time
+        const updatedPost = { ...post, commentsCount: data.commentsCount };
+        setPost(updatedPost);
+
+        // Also update in Redux
+        dispatch(updatePostItem(updatedPost));
+      }
+    };
+
+    socketService?.socket?.on('reaction', handleReactionUpdate);
+    socketService?.socket?.on('Update comment', handleCommentUpdate);
+
+    // Cleanup socket listeners on unmount
+    return () => {
+      socketService?.socket?.off('reaction', handleReactionUpdate);
+      socketService?.socket?.off('Update comment', handleCommentUpdate);
+    };
+  }, [post, getUserReaction, dispatch]);
 
   /**
-   * @description Fetch user's reaction when component mounts or post changes
+   * @description Call getUserReaction when the component mounts or when the post changes
    */
   useEffect(() => {
-    if (post?._id) {
-      fetchUserReactionForPost();
+    if (post?._id && profile?.username) {
+      getUserReaction();
     }
-  }, [post?._id, fetchUserReactionForPost]);
-
-  /**
-   * @description Update selected user reaction when user reactions change
-   */
-  useEffect(() => {
-    selectedUserReaction();
-  }, [selectedUserReaction, userReactions]);
+  }, [post?._id, profile?.username, getUserReaction, post?.reactions]);
 
   /**
    * @description Renders the reaction icons
    * @returns {JSX}
    */
   const renderReactionIcons = () => {
+    // Take only the top 3 reactions to display in a stacked format
     return reactions.length > 0
-      ? reactions.map((reaction) => (
+      ? reactions.slice(0, 3).map((reaction) => (
           <div className="tooltip-container" key={reaction?.type}>
-            <div data-testid="reaction-img" className="reaction-img" onMouseEnter={handleReactionsHover}>
+            <div data-testid="reaction-img" className="reaction-img">
               {reactionsMap[reaction?.type]}
-            </div>
-            <div className="tooltip-container-text tooltip-container-bottom" data-testid="reaction-tooltip">
-              <p className="title">
-                <div className="title-icon">{reactionsMap[reaction?.type]}</div>
-                {reaction?.type.toUpperCase()}
-              </p>
-              <div className="likes-block-icons-list">{renderReactionsTooltipContent(reaction)}</div>
             </div>
           </div>
         ))
@@ -398,136 +413,65 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
   };
 
   /**
-   * @description Renders the tooltip content for reactions
-   * @param {Object} reaction - The reaction object
+   * @description Renders the reaction button text and icon
    * @returns {JSX}
    */
-  const renderReactionsTooltipContent = (reaction) => {
-    if (isLoadingReactions) {
+  const renderReactionButtonContent = () => {
+    // Ensure the button shows "Like" if the user's selected reaction count is 0
+    if (!userSelectedReaction || (post?.reactions && post.reactions[userSelectedReaction] === 0)) {
       return (
-        <div className="loading-spinner">
-          <Icon name="SpinnerGap" className="circle-notch" />
-        </div>
+        <>
+          <span className="reaction-button-icon">
+            <Icon name="ThumbsUp" className="reaction-icon" weight="regular" />
+          </span>
+          <span>Like</span>
+        </>
       );
-    }
-
-    if (postReactions.length === 0) {
-      return <span className="no-reactions">No reactions yet</span>;
     }
 
     return (
       <>
-        {postReactions.slice(0, 19).map((postReaction) => (
-          <div key={Utils.generateString(10)}>
-            {postReaction?.type === reaction?.type && <span key={postReaction?._id}>{postReaction?.username}</span>}
-          </div>
-        ))}
-        {postReactions.length > 20 && <span className="more-reactions">and {postReactions.length - 20} others...</span>}
+        <span className="reaction-button-icon">{reactionsMap[userSelectedReaction]}</span>
+        <span>{Utils.firstLetterUpperCase(userSelectedReaction)}</span>
       </>
     );
   };
-
-  /**
-   * @description Renders the comments tooltip content
-   * @returns {JSX}
-   */
-  const renderCommentsTooltipContent = () => {
-    if (isLoadingComments) {
-      return (
-        <div className="loading-spinner">
-          <Icon name="SpinnerGap" className="circle-notch" />
-        </div>
-      );
-    }
-
-    if (postCommentNames.length === 0) {
-      return <span className="no-comments">No comments yet</span>;
-    }
-
-    return (
-      <>
-        {postCommentNames.slice(0, 19).map((name) => (
-          <span key={Utils.generateString(10)}>{name}</span>
-        ))}
-        {postCommentNames.length > 20 && (
-          <span className="more-comments">and {postCommentNames.length - 20} others...</span>
-        )}
-      </>
-    );
-  };
-
-  // Socket.IO listener for real-time updates
-  useEffect(() => {
-    if (post?._id) {
-      socketService.socket.on('reaction', (data) => {
-        if (data.postId === post._id) {
-          console.log('Socket reaction update received:', data);
-          // Refresh reactions without triggering flickering
-          getPostReactions();
-
-          // Update user's reaction if this is their reaction
-          if (data.username === profile?.username) {
-            setUserSelectedReaction(Utils.firstLetterUpperCase(data.type));
-          }
-        }
-      });
-
-      return () => {
-        socketService.socket.off('reaction');
-      };
-    }
-  }, [post?._id, profile?.username]);
-
-  // Fetch user's reaction for this post
-  useEffect(() => {
-    fetchUserReactionForPost();
-  }, [post?._id, fetchUserReactionForPost]);
 
   return (
     <div className="reactions-display">
       <div className="reaction-comments-container">
-        <div className="reaction">
-          <div className="reactions-popup">
-            <div className="likes-block" onClick={() => addReactionPost(userSelectedReaction.toLowerCase())}>
-              <div className={`likes-block-icons reaction-icon ${userSelectedReaction.toLowerCase()}`}>
-                <div
-                  className={`reaction-display ${userSelectedReaction.toLowerCase()} `}
-                  data-testid="selected-reaction">
-                  <div className="reaction-img">{reactionsMap[userSelectedReaction.toLowerCase()]}</div>
-                  <span>{userSelectedReaction}</span>
-                </div>
+        {/* Reactions summary - shows the count and icons */}
+        <div className="reactions-summary" onClick={openReactionsComponent}>
+          <div className="reactions-icons">{renderReactionIcons()}</div>
+          <span className="reactions-count">{sumAllReactions(reactions)}</span>
+        </div>
+
+        {/* Facebook-style reaction buttons */}
+        <div className="reaction-buttons-container">
+          {/* Like/React button */}
+          <div
+            className={`reaction-button ${userSelectedReaction ? `selected-${userSelectedReaction}` : ''}`}
+            onMouseEnter={handleShowReactionsMenu}
+            onMouseLeave={handleHideReactionsMenu}
+            onClick={handleReactionButtonClick}>
+            {renderReactionButtonContent()}
+
+            {/* Reactions hover menu */}
+            {showReactionsMenu && (
+              <div className="reactions-menu">
+                <Reactions handleClick={addReactionPost} showLabel={true} currentReaction={userSelectedReaction} />
               </div>
-            </div>
-            <div className="reactions-container app-reactions">
-              <Reactions handleClick={addReactionPost} />
-            </div>
+            )}
           </div>
-        </div>
-        <div className="comment" data-testid="comment-container" onClick={toggleCommentsSection}>
-          <span className="comments-text">
-            <Icon name="ChatTeardrop" className="comment-alt" weight="regular" />
-            <span>
-              {post?.commentsCount > 0
-                ? `${Utils.shortenLargeNumbers(post?.commentsCount)} ${
-                    post?.commentsCount === 1 ? 'Comment' : 'Comments'
-                  }`
-                : 'Add Comment'}
+
+          {/* Comment button */}
+          <div className="reaction-button" onClick={toggleCommentsSection}>
+            <span className="reaction-button-icon">
+              <Icon name="ChatTeardrop" className="comment-icon" weight="regular" />
             </span>
-          </span>
+            <span>Comment</span>
+          </div>
         </div>
-
-        {post?.reactions.length > 0 && (
-          <div className="reactions-summary" onClick={openReactionsComponent}>
-            <div className="reactions-icons">{renderReactionIcons()}</div>
-            <span className="reactions-count">{sumAllReactions(reactions)}</span>
-          </div>
-        )}
-
-        {post?.commentsCount > 0 && (
-          <div className="comments-summary" onClick={openCommentsModal}>
-            <span className="view-comments">View all {post.commentsCount} comments</span>
-          </div>
-        )}
       </div>
 
       <ExpandableComments post={post} isExpanded={commentsExpanded} onToggle={toggleCommentsSection} />

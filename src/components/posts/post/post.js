@@ -12,7 +12,6 @@ import ReactionsModal from '@components/posts/reactions/reactions-modal/Reaction
 import { Utils } from '@services/utils/utils.service';
 import useLocalStorage from '@hooks/useLocalStorage';
 import CommentInputBox from '@components/posts/comments/comment-input/CommentInputBox';
-import CommentsModal from '@components/posts/comments/comments-modal/CommentsModal';
 import { useState, useEffect } from 'react';
 import ImageModal from '@components/image-modal/ImageModal';
 import { openModal, toggleDeleteDialog } from '@redux/reducers/modal/modal.reducer';
@@ -23,7 +22,7 @@ import { ImageUtils } from '@services/utils/image.utils.service';
 
 const Post = ({ post, showIcons }) => {
   const { _id } = useSelector((state) => state.post);
-  const { reactionsModalIsOpen, commentsModalIsOpen, deleteDialogIsOpen } = useSelector((state) => state.modal);
+  const { reactionsModalIsOpen, deleteDialogIsOpen } = useSelector((state) => state.modal);
   const [showImageModal, setShowImageModal] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
   const [backgroundImageColor, setBackgroundImageColor] = useState('');
@@ -81,7 +80,6 @@ const Post = ({ post, showIcons }) => {
   return (
     <>
       {reactionsModalIsOpen && <ReactionsModal />}
-      {commentsModalIsOpen && <CommentsModal />}
       {showImageModal && (
         <ImageModal image={`${imageUrl}`} onCancel={() => setShowImageModal(!showImageModal)} showArrow={false} />
       )}

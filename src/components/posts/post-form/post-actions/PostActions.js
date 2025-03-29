@@ -6,7 +6,6 @@ import gif from '@assets/images/gif.png';
 import feeling from '@assets/images/feeling.png';
 import video from '@assets/images/video.png';
 import './PostActions.scss';
-import SelectDropdown from '@components/select-dropdown/selectDropdown';
 
 /**
  * @description Component for post form action buttons

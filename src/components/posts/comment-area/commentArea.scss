@@ -1,174 +1,68 @@
 .comment-area {
   padding: 10px 0;
-  display: grid;
-  grid-template-areas: 'like-icon comment-icon';
-  grid-template-columns: max-content 1fr;
-  grid-template-rows: 1fr;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 10px;
+  box-sizing: border-box;
   font-size: 14px;
 
-  .app-reactions {
-    display: none;
-  }
-
-  .reactions {
+  .comment-button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 8px;
     cursor: pointer;
-    display: block;
     position: relative;
+    font-weight: 500;
+    color: var(--gray-10);
+    transition: all 0.2s ease;
+    gap: 6px;
+    font-size: 14px;
+    border-top: 1px solid var(--white-4);
+    margin-top: 2px;
 
-    .reactions-container {
-      position: absolute;
-      bottom: 100%;
-      padding-bottom: 15px;
-      margin-left: -10px;
+    &:hover {
+      background-color: var(--white-3);
+      transform: translateY(-1px);
     }
 
-    &:hover .app-reactions {
-      display: block;
-      animation: drop 500ms ease;
-    }
-  }
-
-  .comment-block {
-    grid-area: comment-icon;
-    margin-left: auto;
-    padding-top: 2px;
-    cursor: pointer;
-
-    .comments-text {
+    .comment-button-icon {
       display: flex;
       align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
 
-      .comment-alt {
-        margin-right: 5px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      svg {
         width: 20px;
         height: 20px;
       }
-
-      span {
-        font-weight: 400;
-        font-size: 15px;
-      }
     }
   }
-
-  .like-icon {
-    grid-area: like-icon;
-    display: block;
-    cursor: pointer;
-    margin-top: 2px;
-
-    .likes-block {
-      display: grid;
-      grid-template-areas: 'reactions-icon-display reactions-count';
-      grid-template-columns: max-content 1fr;
-      grid-template-rows: 1fr;
-      cursor: pointer;
-
-      .reactions-icon-display {
-        grid-area: reactions-icon-display;
-      }
-
-      .reactions-count {
-        grid-area: reactions-count;
-      }
-
-      .likes-block-icons {
-        .reaction-display {
-          display: flex;
-          align-items: center;
-
-          .reaction-img {
-            margin-right: 5px;
-            width: 18px;
-            height: 18px;
-            margin-top: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            svg {
-              width: 14px;
-              height: 14px;
-            }
-          }
-
-          span {
-            font-weight: 400;
-            font-size: 15px;
-          }
-        }
-
-        .love {
-          color: var(--red-1);
-        }
-
-        .like {
-          color: var(--primary-1);
-        }
-
-        .sad {
-          color: var(--yellow-1);
-        }
-
-        .wow {
-          color: var(--yellow-1);
-        }
-
-        .happy {
-          color: var(--yellow-1);
-        }
-
-        .angry {
-          color: var(--orange-1);
-        }
-
-        .thumbs-up {
-          margin-right: 5px;
-        }
-      }
-
-      .reaction-icon {
-        img {
-          margin-bottom: 4px;
-        }
-      }
-
-      .love {
-        color: var(--red-1);
-      }
-
-      .like {
-        color: var(--primary-1);
-      }
-
-      .sad {
-        color: var(--yellow-1);
-      }
-
-      .wow {
-        color: var(--yellow-1);
-      }
-
-      .happy {
-        color: var(--yellow-1);
-      }
-
-      .angry {
-        color: var(--orange-1);
-      }
-    }
+}
+// Animation for reactions menu
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
   }
 }
 
 @keyframes drop {
   0% {
-    transform: translateY(-50px);
+    transform: translateY(-20px);
+    opacity: 0;
   }
 
   100% {
     transform: translateY(0);
+    opacity: 1;
   }
 }

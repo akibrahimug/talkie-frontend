@@ -19,24 +19,12 @@ const SelectDropdown = ({ isActive, setSelectedItem, items = [], parentRef }) =>
   // Calculate position based on parent element, once and keep it consistent
   useEffect(() => {
     const calculatePosition = () => {
-      if (parentRef && parentRef.current) {
-        const rect = parentRef.current.getBoundingClientRect();
-
-        // Always position directly below the button
-        const newPosition = {
-          top: rect.bottom + window.scrollY + 10, // 10px below button
-          left: rect.left + window.scrollX // Directly aligned with button left edge
-        };
-
-        // Only update if position has changed significantly to avoid unnecessary rerenders
-        if (
-          !hasPositioned ||
-          Math.abs(newPosition.top - position.top) > 5 ||
-          Math.abs(newPosition.left - position.left) > 5
-        ) {
-          setPosition(newPosition);
-          setHasPositioned(true);
-        }
+      if (parentRef?.current && dropdownRef?.current) {
+        const parentRect = parentRef.current.getBoundingClientRect();
+        const left = parentRect.left;
+        const top = parentRect.bottom + window.scrollY + 8; // Add 8px offset
+        setPosition({ left, top });
+        setHasPositioned(true);
       }
     };
 
@@ -52,7 +40,7 @@ const SelectDropdown = ({ isActive, setSelectedItem, items = [], parentRef }) =>
       window.removeEventListener('resize', calculatePosition);
       window.removeEventListener('scroll', calculatePosition);
     };
-  }, [isActive, parentRef]); // Remove hasPositioned dependency to avoid recalculation cycles
+  }, [isActive, parentRef, dropdownRef, setPosition, hasPositioned, position.left, position.top]);
 
   return (
     <div className="menu-container" data-testid="menu-container" ref={menuRef}>

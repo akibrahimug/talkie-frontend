@@ -2,7 +2,6 @@ import reducer, {
   addPostFeeling,
   closeModal,
   openModal,
-  toggleCommentsModal,
   toggleDeleteDialog,
   toggleFeelingModal,
   toggleGifModal,
@@ -28,7 +27,6 @@ describe('modal reducer', () => {
       openVideoDialog: false,
       gifModalIsOpen: false,
       reactionsModalIsOpen: false,
-      commentsModalIsOpen: false,
       deleteDialogIsOpen: false
     };
 
@@ -44,7 +42,6 @@ describe('modal reducer', () => {
       openVideoDialog: false,
       gifModalIsOpen: false,
       reactionsModalIsOpen: false,
-      commentsModalIsOpen: false,
       deleteDialogIsOpen: false
     };
   });
@@ -66,7 +63,6 @@ describe('modal reducer', () => {
       openVideoDialog: false,
       gifModalIsOpen: false,
       reactionsModalIsOpen: false,
-      commentsModalIsOpen: false,
       deleteDialogIsOpen: false
     });
   });
@@ -84,7 +80,6 @@ describe('modal reducer', () => {
       openVideoDialog: false,
       gifModalIsOpen: false,
       reactionsModalIsOpen: false,
-      commentsModalIsOpen: false,
       deleteDialogIsOpen: false
     });
   });
@@ -102,7 +97,6 @@ describe('modal reducer', () => {
       openVideoDialog: false,
       gifModalIsOpen: false,
       reactionsModalIsOpen: false,
-      commentsModalIsOpen: false,
       deleteDialogIsOpen: false
     });
   });
@@ -120,7 +114,6 @@ describe('modal reducer', () => {
       openVideoDialog: false,
       gifModalIsOpen: true,
       reactionsModalIsOpen: false,
-      commentsModalIsOpen: false,
       deleteDialogIsOpen: false
     });
   });
@@ -138,25 +131,6 @@ describe('modal reducer', () => {
       openVideoDialog: false,
       gifModalIsOpen: false,
       reactionsModalIsOpen: true,
-      commentsModalIsOpen: false,
-      deleteDialogIsOpen: false
-    });
-  });
-
-  it('should toggle comments modal', () => {
-    expect(reducer(modalData, toggleCommentsModal(true))).toEqual({
-      type: 'add',
-      isOpen: true,
-      feeling: '',
-      image: '',
-      data: null,
-      feelingIsOpen: false,
-      feelingsIsOpen: false,
-      openFileDialog: false,
-      openVideoDialog: false,
-      gifModalIsOpen: false,
-      reactionsModalIsOpen: false,
-      commentsModalIsOpen: true,
       deleteDialogIsOpen: false
     });
   });
@@ -174,7 +148,6 @@ describe('modal reducer', () => {
       openVideoDialog: false,
       gifModalIsOpen: false,
       reactionsModalIsOpen: false,
-      commentsModalIsOpen: false,
       deleteDialogIsOpen: false
     });
   });
@@ -192,7 +165,6 @@ describe('modal reducer', () => {
       openVideoDialog: false,
       gifModalIsOpen: false,
       reactionsModalIsOpen: false,
-      commentsModalIsOpen: false,
       deleteDialogIsOpen: false
     });
   });
@@ -210,7 +182,6 @@ describe('modal reducer', () => {
       openVideoDialog: true,
       gifModalIsOpen: false,
       reactionsModalIsOpen: false,
-      commentsModalIsOpen: false,
       deleteDialogIsOpen: false
     });
   });
@@ -228,7 +199,6 @@ describe('modal reducer', () => {
       openVideoDialog: false,
       gifModalIsOpen: false,
       reactionsModalIsOpen: false,
-      commentsModalIsOpen: false,
       deleteDialogIsOpen: true
     });
   });

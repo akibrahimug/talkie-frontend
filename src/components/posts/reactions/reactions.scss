@@ -1,86 +1,193 @@
 @media screen and (max-width: 576px) {
-  .react-box {
+  .fb-reactions {
     transform: scale(0.7);
   }
 }
 
-.reactions {
-  list-style-type: none;
-  margin: 0;
-  border-radius: 150px;
-  background: var(--white-1);
-  box-shadow: 0 0 60px rgb(0 0 0 / 20%);
+.fb-reactions {
+  position: relative;
+  z-index: 1000;
 
-  ul {
-    margin: 0;
-    padding: 0 5px;
+  .reactions-wrapper {
     display: flex;
-    height: 50px;
-  }
-
-  li {
-    display: inline-block;
-    padding: 4px;
-    transform: scale(1) translateY(0);
-    transition: transform 200ms ease;
+    background: var(--white-1);
+    border-radius: 30px;
+    padding: 5px 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
     position: relative;
-    text-align: center;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+    transition: transform 0.2s ease, opacity 0.2s ease, visibility 0.2s;
 
-    .reaction-icon-container {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      svg {
-        width: 30px;
-        height: 30px;
-      }
-    }
-
-    label {
-      border-radius: 10px;
-      font-size: 11px;
-      color: var(--white-1);
-      background: var(--black-3);
-      visibility: hidden;
-      position: absolute;
-      margin-top: -32px;
-      text-align: center;
-      line-height: 20px;
-      padding: 5px;
-      width: 50px;
-      margin-left: -5px;
+    &.visible {
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(0) scale(1);
     }
 
     &::before {
-      content: attr(data-hover);
+      content: '';
       position: absolute;
-      bottom: 120%;
+      bottom: -8px;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translateX(-50%) rotate(45deg);
+      width: 15px;
+      height: 15px;
+      background: var(--white-1);
+      border-radius: 3px;
+      box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  .reaction-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 4px;
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    padding: 4px 3px;
+
+    &.hovered {
+      transform: scale(1.3) translateY(-7px);
+      z-index: 10;
+    }
+
+    &.selected {
+      .reaction-icon-container {
+        transform: scale(1.2);
+        filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
+      }
+    }
+
+    .reaction-icon-wrapper {
+      position: relative;
+      transition: transform 0.2s ease;
+    }
+
+    .reaction-icon-container {
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+
+      svg {
+        width: 32px;
+        height: 32px;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+      }
+    }
+
+    .reaction-label {
+      position: absolute;
+      bottom: -20px;
+      font-size: 11px;
+      font-weight: 600;
       color: var(--white-1);
-      padding: 0 8px;
-      border-radius: 20px;
-      font-weight: bold;
-      line-height: 20px;
-      font-size: 12px;
-      background: rgb(0 0 0 / 76%);
-      display: none;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 3px 8px;
+      border-radius: 10px;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
     }
 
-    &:hover {
-      transform: scale(1) translateY(-5px);
-      transition: transform 200ms ease;
-
-      label {
-        visibility: visible;
-      }
-
-      &::before {
-        display: inline-block;
-      }
+    &:hover .reaction-label {
+      opacity: 1;
+      transform: translateY(0);
     }
+  }
+}
+
+// For individual reaction buttons in posts
+.reaction-button {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  color: var(--gray-10);
+  gap: 6px;
+
+  &:hover {
+    background-color: var(--white-3);
+    transform: translateY(-1px);
+  }
+
+  .reaction-button-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  &.selected-like {
+    color: var(--primary-1);
+    .reaction-button-icon {
+      filter: drop-shadow(0 0 2px rgba(24, 119, 242, 0.2));
+    }
+  }
+  &.selected-love {
+    color: var(--red-1);
+    .reaction-button-icon {
+      filter: drop-shadow(0 0 2px rgba(243, 62, 88, 0.2));
+    }
+  }
+  &.selected-happy,
+  &.selected-wow,
+  &.selected-sad {
+    color: var(--yellow-1);
+    .reaction-button-icon {
+      filter: drop-shadow(0 0 2px rgba(247, 177, 37, 0.2));
+    }
+  }
+  &.selected-angry {
+    color: var(--orange-1);
+    .reaction-button-icon {
+      filter: drop-shadow(0 0 2px rgba(233, 113, 15, 0.2));
+    }
+  }
+}
+
+// Animation for reaction appearance
+@keyframes reactionPop {
+  0% {
+    transform: scale(0) translateY(50px);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) translateY(-5px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+// Animation for floating effect
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+  100% {
+    transform: translateY(0);
   }
 }

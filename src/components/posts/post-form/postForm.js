@@ -3,8 +3,6 @@ import { useRef, useState, useEffect } from 'react';
 import { ImageUtils } from '@services/utils/image.utils.service';
 import { PostUtils } from '@services/utils/post.utils.service';
 import { postService } from '@services/api/post/post.service';
-import { toggleGifModal } from '@redux/reducers/modal/modal.reducer';
-import { openModal } from '@redux/reducers/modal/modal.reducer';
 import Spinner from '@components/spinner/spinner';
 import AddPost from '@components/posts/post-modal/post-add/add-post';
 import '@components/posts/post-form/postForm.scss';
@@ -15,11 +13,8 @@ import SelectDropdown from '@components/select-dropdown/selectDropdown';
 import useDetectOutsideClick from '@hooks/useDetectOutsideClick';
 import { privacyList } from '@services/utils/static.data';
 import { find } from 'lodash';
-
-// Import our newly created components
 import PostHeader from '@components/posts/post-form/post-header/PostHeader';
 import TextInput from '@components/posts/post-form/text-input/TextInput';
-import FeelingDisplay from '@components/posts/post-form/feeling-display/FeelingDisplay';
 import FeelingsPicker from '@components/posts/post-form/feelings-picker/FeelingsPicker';
 import MediaPreview from '@components/posts/post-form/media-preview/MediaPreview';
 import ColorPicker from '@components/posts/post-form/color-picker/ColorPicker';
@@ -27,7 +22,7 @@ import PostActions from '@components/posts/post-form/post-actions/PostActions';
 
 const PostForm = () => {
   const { profile } = useSelector((state) => state.user);
-  const { type, isOpen, gifModalIsOpen } = useSelector((state) => state.modal);
+  const { type, isOpen } = useSelector((state) => state.modal);
   const postState = useSelector((state) => state.post) || {};
   const { gifUrl, image, privacy, video, feeling: postFeeling } = postState;
 
@@ -106,7 +101,7 @@ const PostForm = () => {
       setPostImage(video);
       setIsGif(false);
     }
-  }, [gifUrl, image, video]);
+  }, [gifUrl, image, postData, video]);
 
   // Update the useEffect - add privacy display logic
   useEffect(() => {
