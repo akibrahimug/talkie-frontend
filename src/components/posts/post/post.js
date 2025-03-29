@@ -12,13 +12,16 @@ import ReactionsModal from '@components/posts/reactions/reactions-modal/Reaction
 import { Utils } from '@services/utils/utils.service';
 import useLocalStorage from '@hooks/useLocalStorage';
 import CommentInputBox from '@components/posts/comments/comment-input/CommentInputBox';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import ImageModal from '@components/image-modal/ImageModal';
-import { openModal, toggleDeleteDialog } from '@redux/reducers/modal/modal.reducer';
+import { openModal, toggleDeleteDialog, toggleReactionsModal } from '@redux/reducers/modal/modal.reducer';
 import { clearPostData, updatePostItem } from '@redux/reducers/post/post.reducer';
 import Dialog from '@components/dialog/Dialog';
 import { postService } from '@services/api/post/post.service';
 import { ImageUtils } from '@services/utils/image.utils.service';
+
+// Lazy load the ReactionsModal component
+const LazyReactionsModal = lazy(() => import('@components/posts/reactions/reactions-modal/ReactionsModal'));
 
 const Post = ({ post, showIcons }) => {
   const { _id } = useSelector((state) => state.post);
@@ -62,6 +65,13 @@ const Post = ({ post, showIcons }) => {
     dispatch(updatePostItem(post));
   };
 
+  // Handle errors with ReactionsModal
+  const handleReactionsModalError = () => {
+    console.error('Error loading ReactionsModal');
+    dispatch(toggleReactionsModal(false));
+    Utils.dispatchNotification(dispatch, 'Could not load reactions. Please try again.', 'error');
+  };
+
   const getBackgroundImageColor = async (post) => {
     let imageUrl = '';
     if (post?.imgId && !post?.gifUrl && post.bgColor === '#ffffff') {
@@ -79,7 +89,11 @@ const Post = ({ post, showIcons }) => {
 
   return (
     <>
-      {reactionsModalIsOpen && <ReactionsModal />}
+      {reactionsModalIsOpen && (
+        <Suspense fallback={<div className="modal-loading">Loading reactions...</div>}>
+          <LazyReactionsModal />
+        </Suspense>
+      )}
       {showImageModal && (
         <ImageModal image={`${imageUrl}`} onCancel={() => setShowImageModal(!showImageModal)} showArrow={false} />
       )}

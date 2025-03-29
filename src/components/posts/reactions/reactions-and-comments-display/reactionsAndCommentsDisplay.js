@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { postService } from '@services/api/post/post.service';
 import { reactionsMap } from '@services/utils/static.data';
-import { updatePostItem } from '@redux/reducers/post/post.reducer';
+import { updatePostItem, clearPost } from '@redux/reducers/post/post.reducer';
 import { toggleReactionsModal } from '@redux/reducers/modal/modal.reducer';
 import ExpandableComments from '@components/posts/expandable-comments/ExpandableComments';
 import Reactions from '@components/posts/reactions/reactions';
@@ -113,10 +113,38 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
    * @returns {void}
    */
   const openReactionsComponent = () => {
-    // Use the utility function to prepare the post without media
-    const postWithoutMedia = PostUtils.preparePostWithoutMedia(post);
-    dispatch(updatePostItem(postWithoutMedia));
-    dispatch(toggleReactionsModal(!reactionsModalIsOpen));
+    try {
+      // Make sure we have a valid post ID before opening the modal
+      if (!post?._id) {
+        console.error('Cannot open reactions modal: Post ID is missing');
+        Utils.dispatchNotification(dispatch, 'Unable to display reactions at this time', 'error');
+        return;
+      }
+
+      console.log('Opening reactions modal for post ID:', post._id);
+
+      // First clear any existing post data to avoid contamination
+      dispatch(clearPost());
+
+      // Create a minimal post object with only what's needed
+      const minimalPostData = {
+        _id: post._id,
+        reactions: post.reactions || {}
+      };
+
+      console.log('Setting post data for reactions modal:', minimalPostData);
+
+      // Update the post data in Redux
+      dispatch(updatePostItem(minimalPostData));
+
+      // Then toggle the modal with a small delay to ensure post data is set first
+      setTimeout(() => {
+        dispatch(toggleReactionsModal(true));
+      }, 50);
+    } catch (error) {
+      console.error('Error opening reactions modal:', error);
+      Utils.dispatchNotification(dispatch, 'Error displaying reactions', 'error');
+    }
   };
 
   /**

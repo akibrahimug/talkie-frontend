@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import '@components/posts/modal-wrappers/reaction-wrapper/ReactionWrapper.scss';
+import '@components/posts/modal-wrappers/reaction-wrapper/reaction-wrapper.scss';
 
 const ReactionWrapper = ({ children, closeModal }) => {
   return (
