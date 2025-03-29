@@ -7,16 +7,16 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   type: '',
   isOpen: false,
-  feeling: '',
-  image: '',
+  feelingIsOpen: false,
+  deleteDialogIsOpen: false,
   data: null,
-  feelingsIsOpen: false,
-  openFileDialog: false,
-  openVideoDialog: false,
+  feeling: '',
   gifModalIsOpen: false,
   reactionsModalIsOpen: false,
-  commentsModalIsOpen: false,
-  deleteDialogIsOpen: false
+  image: '',
+  feelingsIsOpen: false,
+  openFileDialog: false,
+  openVideoDialog: false
 };
 
 /**
@@ -51,7 +51,6 @@ const modalSlice = createSlice({
       state.feelingsIsOpen = false;
       state.gifModalIsOpen = false;
       state.reactionsModalIsOpen = false;
-      state.commentsModalIsOpen = false;
       state.openFileDialog = false;
       state.openVideoDialog = false;
       state.deleteDialogIsOpen = false;
@@ -106,14 +105,6 @@ const modalSlice = createSlice({
       state.reactionsModalIsOpen = action.payload;
     },
     /**
-     * Toggle comments modal.
-     * @param {object} state - The state
-     * @param {object} action - The action
-     */
-    toggleCommentsModal: (state, action) => {
-      state.commentsModalIsOpen = action.payload;
-    },
-    /**
      * Toggle delete dialog.
      * @param {object} state - The state
      * @param {object} action - The action
@@ -135,7 +126,6 @@ export const {
   toggleFeelingModal,
   toggleGifModal,
   toggleReactionsModal,
-  toggleCommentsModal,
   toggleDeleteDialog
 } = modalSlice.actions;
 export default modalSlice.reducer;

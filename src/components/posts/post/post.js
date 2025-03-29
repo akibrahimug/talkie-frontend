@@ -2,19 +2,18 @@
 import Avatar from '@components/avatar/Avatar';
 import { timeAgo } from '@services/utils/timeago.utils.service';
 import PropTypes from 'prop-types';
-import { FaPencilAlt, FaRegTrashAlt } from 'react-icons/fa';
+import { FAIcon } from '@components/icons';
 import { find } from 'lodash';
 import { feelingsList, privacyList } from '@services/utils/static.data';
 import '@components/posts/post/post.scss';
-// import PostCommentSection from '@components/posts/post-comment-section/PostCommentSection';
+import PostCommentSection from '@components/posts/post-comment-section/postCommentSection';
 import { useDispatch, useSelector } from 'react-redux';
-// import ReactionsModal from '@components/posts/reactions/reactions-modal/ReactionsModal';
+import ReactionsModal from '@components/posts/reactions/reactions-modal/ReactionsModal';
 import { Utils } from '@services/utils/utils.service';
 import useLocalStorage from '@hooks/useLocalStorage';
-// import CommentInputBox from '@components/posts/comments/comment-input/CommentInputBox';
-// import CommentsModal from '@components/posts/comments/comments-modal/CommentsModal';
+import CommentInputBox from '@components/posts/comments/comment-input/CommentInputBox';
 import { useState, useEffect } from 'react';
-// import ImageModal from '@components/image-modal/ImageModal';
+import ImageModal from '@components/image-modal/ImageModal';
 import { openModal, toggleDeleteDialog } from '@redux/reducers/modal/modal.reducer';
 import { clearPostData, updatePostItem } from '@redux/reducers/post/post.reducer';
 import Dialog from '@components/dialog/Dialog';
@@ -23,7 +22,7 @@ import { ImageUtils } from '@services/utils/image.utils.service';
 
 const Post = ({ post, showIcons }) => {
   const { _id } = useSelector((state) => state.post);
-  const { reactionsModalIsOpen, commentsModalIsOpen, deleteDialogIsOpen } = useSelector((state) => state.modal);
+  const { reactionsModalIsOpen, deleteDialogIsOpen } = useSelector((state) => state.modal);
   const [showImageModal, setShowImageModal] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
   const [backgroundImageColor, setBackgroundImageColor] = useState('');
@@ -80,11 +79,10 @@ const Post = ({ post, showIcons }) => {
 
   return (
     <>
-      {/* {reactionsModalIsOpen && <ReactionsModal />}
-      {commentsModalIsOpen && <CommentsModal />}
+      {reactionsModalIsOpen && <ReactionsModal />}
       {showImageModal && (
         <ImageModal image={`${imageUrl}`} onCancel={() => setShowImageModal(!showImageModal)} showArrow={false} />
-      )} */}
+      )}
       {deleteDialogIsOpen && (
         <Dialog
           title="Are you sure you want to delete this post?"
@@ -122,8 +120,8 @@ const Post = ({ post, showIcons }) => {
                 </h5>
                 {showIcons && (
                   <div className="post-icons" data-testid="post-icons">
-                    <FaPencilAlt className="pencil" onClick={openPostModal} />
-                    <FaRegTrashAlt className="trash" onClick={openDeleteDialog} />
+                    <FAIcon icon="FaPencilAlt" className="pencil" onClick={openPostModal} />
+                    <FAIcon icon="FaRegTrashAlt" className="trash" onClick={openDeleteDialog} />
                   </div>
                 )}
               </div>
@@ -195,10 +193,10 @@ const Post = ({ post, showIcons }) => {
                 </div>
               )}
               {(post?.reactions.length > 0 || post?.commentsCount > 0) && <hr />}
-              {/* <PostCommentSection post={post} /> */}
+              <PostCommentSection post={post} />
             </div>
           </div>
-          {/* {selectedPostId === post?._id && <CommentInputBox post={post} />} */}
+          {selectedPostId === post?._id && <CommentInputBox post={post} />}
         </div>
       </div>
     </>

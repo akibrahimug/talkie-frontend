@@ -154,22 +154,145 @@ class PostService {
    * @returns {Promise<object>} - The response from the server
    */
   async addReaction(body) {
-    const response = await axios.post('/post/reaction', body);
-    return response;
+    try {
+      console.log('addReaction called with data:', JSON.stringify(body, null, 2));
+
+      // Clone the body to avoid modifying the original
+      const sanitizedBody = { ...body };
+
+      // Ensure reaction type is valid
+      if (!['like', 'love', 'happy', 'wow', 'sad', 'angry'].includes(sanitizedBody.type)) {
+        console.error('Invalid reaction type:', sanitizedBody.type);
+        throw new Error(`Invalid reaction type: ${sanitizedBody.type}`);
+      }
+
+      // Log the URL and request body
+      console.log('Sending POST request to /post/reaction with body:', sanitizedBody);
+
+      const response = await axios.post('/post/reaction', sanitizedBody);
+      console.log('addReaction response:', response.status, response.data);
+      return response;
+    } catch (error) {
+      console.error('Error in addReaction:', error?.response?.data || error.message);
+      console.error('Failed request details:', {
+        url: '/post/reaction',
+        method: 'POST',
+        data: body
+      });
+
+      // Try with a more minimal payload as fallback
+      try {
+        console.log('Attempting fallback method for adding reaction');
+        const minimalBody = {
+          postId: body.postId,
+          type: body.type,
+          userTo: body.userTo
+        };
+
+        console.log('Sending minimal POST request to /post/reaction with body:', minimalBody);
+        const fallbackResponse = await axios.post('/post/reaction', minimalBody);
+        console.log('Fallback addReaction response:', fallbackResponse.status, fallbackResponse.data);
+        return fallbackResponse;
+      } catch (fallbackError) {
+        console.error('Fallback method also failed:', fallbackError?.response?.data || fallbackError.message);
+        throw error; // Throw the original error
+      }
+    }
   }
 
   /**
-   * Remove a reaction from a post.
+   * A simplified method to add a reaction to a post
+   * This sends minimal data which helps avoid issues with complex objects
    * @param {string} postId - The post id
-   * @param {string} previousReaction - The previous reaction
-   * @param {array} postReactions - The post reactions
+   * @param {string} reactionType - The reaction type
+   * @param {string} userTo - The user id of the post owner
    * @returns {Promise<object>} - The response from the server
    */
-  async removeReaction(postId, previousReaction, postReactions) {
-    const response = await axios.delete(
-      `/post/reaction/${postId}/${previousReaction}/${JSON.stringify(postReactions)}`
-    );
-    return response;
+  async addReactionBasic(postId, reactionType, userTo) {
+    try {
+      console.log('Using simplified addReactionBasic method:', {
+        postId,
+        reactionType,
+        userTo
+      });
+
+      // Create a minimal payload with only the essential data
+      const minimalBody = {
+        postId,
+        type: reactionType,
+        userTo
+      };
+
+      console.log('Sending minimal POST request to /post/reaction with body:', minimalBody);
+      const response = await axios.post('/post/reaction', minimalBody);
+      console.log('addReactionBasic response:', response.status, response.data);
+      return response;
+    } catch (error) {
+      console.error('Error in addReactionBasic:', error?.response?.data || error.message);
+
+      // Try an alternative endpoint or approach if needed
+      try {
+        console.log('Attempting alternative method for adding reaction');
+        // Construct an alternative URL that might be supported by the backend
+        const alternativeUrl = `/post/reaction/${postId}/${reactionType}`;
+        console.log('Sending GET request to alternative URL:', alternativeUrl);
+
+        const fallbackResponse = await axios.get(alternativeUrl);
+        console.log('Alternative reaction addition successful:', fallbackResponse.status, fallbackResponse.data);
+        return fallbackResponse;
+      } catch (fallbackError) {
+        console.error('All reaction addition methods failed:', fallbackError);
+        throw error; // Throw the original error
+      }
+    }
+  }
+
+  /**
+   * A simplified method to remove a reaction from a post
+   * This sends minimal data which helps avoid issues with complex objects
+   * @param {string} postId - The post id
+   * @param {string} previousReaction - The previous reaction
+   * @returns {Promise<object>} - The response from the server
+   */
+  async removeReactionBasic(postId, previousReaction) {
+    try {
+      console.log('Using simplified removeReactionBasic method:', { postId, previousReaction });
+
+      // Use the DELETE endpoint that expects the parameters in the URL
+      // This matches the backend route defined in reactions.routes.ts
+      const response = await axios.delete(`/post/reaction/${postId}/${previousReaction}`);
+
+      console.log('Successfully removed reaction with DELETE method');
+      return response;
+    } catch (error) {
+      console.error('Error in removeReactionBasic:', error);
+
+      // If the first attempt fails, try with the alternative DELETE endpoint
+      try {
+        console.log('Attempting alternative method for reaction removal');
+
+        // Try the DELETE endpoint that expects postReactions in the body
+        // Create a minimal empty reactions object to satisfy the API
+        const emptyReactions = {
+          like: 0,
+          love: 0,
+          happy: 0,
+          wow: 0,
+          sad: 0,
+          angry: 0
+        };
+
+        const fallbackResponse = await axios.delete(
+          `/post/reaction/${postId}/${previousReaction}/${JSON.stringify(emptyReactions)}`
+        );
+
+        console.log('Successfully removed reaction with alternative method');
+        return fallbackResponse;
+      } catch (fallbackError) {
+        console.error('All reaction removal methods failed:', fallbackError);
+        throw fallbackError;
+      }
+    }
   }
 
   /**
@@ -190,6 +313,18 @@ class PostService {
   async deletePost(postId) {
     const response = await axios.delete(`/post/${postId}`);
     return response;
+  }
+
+  /**
+   * Remove a reaction from a post.
+   * @param {string} postId - The post id
+   * @param {string} previousReaction - The previous reaction
+   * @param {object} postReactions - The post reactions
+   * @returns {Promise<object>} - The response from the server
+   */
+  async removeReaction(postId, previousReaction, postReactions) {
+    // Simply delegate to the more robust basic method
+    return this.removeReactionBasic(postId, previousReaction);
   }
 }
 

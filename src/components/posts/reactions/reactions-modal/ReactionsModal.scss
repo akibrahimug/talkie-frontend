@@ -1,0 +1,180 @@
+.reactions-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+
+  &-content {
+    width: 95%;
+    max-width: 500px;
+    max-height: 90vh;
+    background-color: var(--white-1);
+    border-radius: 12px;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  &-header {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--white-4);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--black-1);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: var(--gray-10);
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: var(--white-4);
+        color: var(--black-1);
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  &-body {
+    padding: 0;
+    overflow-y: auto;
+    max-height: 70vh;
+
+    .reactions-loading,
+    .no-reactions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 0;
+
+      p {
+        margin-top: 15px;
+        color: var(--gray-8);
+        font-size: 16px;
+      }
+    }
+
+    .reactions-list {
+      .reaction-item {
+        display: flex;
+        align-items: center;
+        padding: 14px 20px;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background-color: var(--white-3);
+        }
+
+        .reaction-avatar {
+          margin-right: 15px;
+        }
+
+        .reaction-info {
+          flex: 1;
+
+          .reaction-username {
+            margin: 0 0 4px;
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--black-1);
+          }
+
+          .reaction-time {
+            font-size: 13px;
+            color: var(--gray-10);
+          }
+        }
+
+        .reaction-type {
+          .reaction-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+
+            svg {
+              width: 28px;
+              height: 28px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &-footer {
+    padding: 18px 20px;
+    border-top: 1px solid var(--white-4);
+    background-color: var(--white-2);
+
+    .add-reaction-section {
+      p {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--gray-10);
+        margin-bottom: 12px;
+      }
+
+      .reactions {
+        ul {
+          justify-content: center;
+        }
+
+        li {
+          transform: scale(0.9);
+          transition: transform 0.2s ease;
+          margin: 0 8px;
+
+          &:hover {
+            transform: scale(1.1);
+            z-index: 5;
+          }
+
+          .reaction-icon-container {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

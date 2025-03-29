@@ -2,77 +2,57 @@ import blessed from '@assets/feelings/blessed.jpg';
 import excited from '@assets/feelings/excited.jpg';
 import happy from '@assets/feelings/happy.jpg';
 import loved from '@assets/feelings/loved.jpg';
-import angry from '@assets/reactions/angry.png';
-import happyReaction from '../../assets/reactions/happy.png';
-import like from '@assets/reactions/like.png';
-import love from '@assets/reactions/love.png';
-import sad from '@assets/reactions/sad.png';
-import wow from '@assets/reactions/wow.png';
-import {
-  FaBirthdayCake,
-  FaComments,
-  FaGlobe,
-  FaHeart,
-  FaImages,
-  FaKey,
-  FaLock,
-  FaNewspaper,
-  FaRegBell,
-  FaRegUser,
-  FaUser,
-  FaUserCheck,
-  FaUserPlus,
-  FaUsers
-} from 'react-icons/fa';
+import Icon from '@components/icons';
+import React from 'react';
 
 export const sideBarItems = [
   {
     index: 1,
     name: 'Streams',
     url: '/app/social/streams',
-    iconName: 'FaNewspaper'
+    iconName: 'Newspaper'
   },
   {
     index: 2,
     name: 'Chat',
     url: '/app/social/chat/messages',
-    iconName: 'FaComments'
+    iconName: 'ChatCircle'
   },
   {
     index: 3,
     name: 'People',
     url: '/app/social/people',
-    iconName: 'FaUsers'
+    iconName: 'UsersThree'
   },
   {
     index: 4,
     name: 'Following',
     url: '/app/social/following',
-    iconName: 'FaUserPlus'
+    iconName: 'UserPlus'
   },
   {
     index: 5,
     name: 'Followers',
     url: '/app/social/followers',
-    iconName: 'FaHeart'
+    iconName: 'Heart'
   },
   {
     index: 6,
     name: 'Photos',
     url: '/app/social/photos',
-    iconName: 'FaImages'
+    iconName: 'Image'
   },
   {
     index: 7,
     name: 'Notifications',
     url: '/app/social/notifications',
-    iconName: 'FaRegBell'
+    iconName: 'Bell'
   },
   {
     index: 8,
     name: 'Profile',
     url: '/app/social/profile',
-    iconName: 'FaRegUser'
+    iconName: 'User'
   }
 ];
 
@@ -100,32 +80,32 @@ export const feelingsList = [
 ];
 
 export const fontAwesomeIcons = {
-  FaNewspaper: <FaNewspaper className="icon" />,
-  FaComments: <FaComments className="icon" />,
-  FaUsers: <FaUsers className="icon" />,
-  FaUserPlus: <FaUserPlus className="icon" />,
-  FaHeart: <FaHeart className="icon" />,
-  FaImages: <FaImages className="icon" />,
-  FaRegBell: <FaRegBell className="icon" />,
-  FaBirthdayCake: <FaBirthdayCake className="icon" />,
-  FaRegUser: <FaRegUser className="icon" />
+  Newspaper: <Icon name="Newspaper" className="icon" weight="regular" />,
+  ChatCircle: <Icon name="ChatCircle" className="icon" weight="regular" />,
+  UsersThree: <Icon name="UsersThree" className="icon" weight="regular" />,
+  UserPlus: <Icon name="UserPlus" className="icon" weight="regular" />,
+  Heart: <Icon name="Heart" className="icon" weight="regular" />,
+  Image: <Icon name="Image" className="icon" weight="regular" />,
+  Bell: <Icon name="Bell" className="icon" weight="regular" />,
+  Cake: <Icon name="Cake" className="icon" weight="regular" />,
+  User: <Icon name="User" className="icon" weight="regular" />
 };
 
 export const privacyList = [
   {
     topText: 'Public',
     subText: 'Anyone on SocialApp',
-    icon: <FaGlobe className="globe-icon globe" />
+    icon: <Icon name="Globe" className="globe-icon globe" weight="regular" />
   },
   {
     topText: 'Followers',
     subText: 'Your followers on SocialApp',
-    icon: <FaUserCheck className="globe-icon globe" />
+    icon: <Icon name="UserCheck" className="globe-icon globe" weight="regular" />
   },
   {
     topText: 'Private',
     subText: 'For you only',
-    icon: <FaLock className="globe-icon globe" />
+    icon: <Icon name="LockSimple" className="globe-icon globe" weight="regular" />
   }
 ];
 
@@ -193,13 +173,12 @@ export const emptyPostData = {
 };
 
 export const reactionsMap = {
-  like,
-  love,
-  wow,
-  sad,
-  happy,
-  angry,
-  happyReaction
+  like: <Icon name="ThumbsUp" weight="fill" color="#50b5ff" size="lg" />,
+  love: <Icon name="Heart" weight="fill" color="#f33e58" size="lg" />,
+  wow: <Icon name="Smiley" weight="duotone" color="#f7b124" size="lg" />,
+  sad: <Icon name="SmileyMeh" weight="fill" color="#f7b124" size="lg" />,
+  happy: <Icon name="SmileyWink" weight="fill" color="#f7b124" size="lg" />,
+  angry: <Icon name="SmileyAngry" weight="fill" color="#e9710f" size="lg" />
 };
 
 export const reactionsColor = {
@@ -244,18 +223,22 @@ export const notificationItems = [
 
 export const tabItems = (showPassword, showNotification) => {
   const items = [
-    { key: 'Timeline', show: true, icon: <FaUser className="banner-nav-item-name-icon" /> },
-    { key: 'Followers', show: true, icon: <FaHeart className="banner-nav-item-name-icon" /> },
-    { key: 'Gallery', show: true, icon: <FaImages className="banner-nav-item-name-icon" /> },
+    { key: 'Timeline', show: true, icon: <Icon name="User" className="banner-nav-item-name-icon" weight="regular" /> },
+    {
+      key: 'Followers',
+      show: true,
+      icon: <Icon name="Heart" className="banner-nav-item-name-icon" weight="regular" />
+    },
+    { key: 'Gallery', show: true, icon: <Icon name="Image" className="banner-nav-item-name-icon" weight="regular" /> },
     {
       key: 'Change Password',
       show: showPassword,
-      icon: <FaKey className="banner-nav-item-name-icon" />
+      icon: <Icon name="Key" className="banner-nav-item-name-icon" weight="regular" />
     },
     {
       key: 'Notifications',
       show: showNotification,
-      icon: <FaRegBell className="banner-nav-item-name-icon" />
+      icon: <Icon name="Bell" className="banner-nav-item-name-icon" weight="regular" />
     }
   ];
   return items;

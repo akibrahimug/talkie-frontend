@@ -5,6 +5,7 @@ import notificationReducer from '@redux/reducers/notifications/notification.redu
 import modalReducer from '@redux/reducers/modal/modal.reducer';
 import postReducer from '@redux/reducers/post/post.reducer';
 import postsReducer from './reducers/post/posts.reducer';
+import userPostReactionsReducer from '@redux/reducers/post/user-post-reaction.reducer';
 /**
  * Configure the Redux store.
  * @type {Store}
@@ -16,6 +17,7 @@ export const store = configureStore({
     notifications: notificationReducer,
     modal: modalReducer,
     post: postReducer,
-    allPosts: postsReducer
+    allPosts: postsReducer,
+    userPostReactions: userPostReactionsReducer
   }
 });

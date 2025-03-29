@@ -104,7 +104,7 @@ export class PostUtils {
   static dispatchNotification(message, type, setApiResponse, setLoading, dispatch) {
     setApiResponse(type);
     setLoading(false);
-    Utils.dispatchNotification(message, type, dispatch);
+    Utils.dispatchNotification(dispatch, message, type);
   }
 
   /**
@@ -267,5 +267,25 @@ export class PostUtils {
       posts.splice(index, 1, post);
       setPosts(posts);
     }
+  }
+
+  /**
+   * Prepares a post object with media fields cleared to prevent them from appearing in the post form.
+   * @param {object} post - The post object to prepare
+   * @returns {object} - The post object with media fields cleared
+   */
+  static preparePostWithoutMedia(post) {
+    if (!post) return {};
+
+    return {
+      ...post,
+      gifUrl: '',
+      image: '',
+      video: '',
+      imgId: '',
+      imgVersion: '',
+      videoId: '',
+      videoVersion: ''
+    };
   }
 }

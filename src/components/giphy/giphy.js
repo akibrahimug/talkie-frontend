@@ -9,16 +9,21 @@ import { updatePostItem } from '@redux/reducers/post/post.reducer';
 import { toggleGifModal } from '@redux/reducers/modal/modal.reducer';
 import Spinner from '@components/spinner/spinner';
 import { Utils } from '@services/utils/utils.service';
+import PropTypes from 'prop-types';
 
-const Giphy = () => {
+const Giphy = ({ handleGifSelection }) => {
   const { gifModalIsOpen } = useSelector((state) => state.modal);
   const [gifs, setGifs] = useState([]);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
   const selectGif = (gif) => {
-    dispatch(updatePostItem({ gifUrl: gif, image: '', video: '' }));
-    dispatch(toggleGifModal(!gifModalIsOpen));
+    if (handleGifSelection) {
+      handleGifSelection(gif);
+    } else {
+      dispatch(updatePostItem({ gifUrl: gif, image: '', video: '' }));
+      dispatch(toggleGifModal(!gifModalIsOpen));
+    }
   };
 
   useEffect(() => {
@@ -28,7 +33,7 @@ const Giphy = () => {
   return (
     <>
       <div className="giphy-container" id="editable" data-testid="giphy-container">
-        <div className="giphy-container-picker" style={{ height: '500px' }}>
+        <div className="giphy-container-picker">
           <div className="giphy-container-picker-form">
             <FaSearch className="search" />
             <Input
@@ -42,28 +47,40 @@ const Giphy = () => {
             />
           </div>
 
-          {loading && <Spinner />}
+          {loading && (
+            <div className="giphy-loading">
+              <Spinner />
+              <p>Loading GIFs...</p>
+            </div>
+          )}
 
-          <ul className="giphy-container-picker-list" data-testid="unorderedList">
-            {gifs.map((gif) => (
-              <li
-                className="giphy-container-picker-list-item"
-                data-testid="list-item"
-                key={Utils.generateString(10)}
-                onClick={() => selectGif(gif.images.original.url)}>
-                <img style={{ width: '470px' }} src={`${gif.images.original.url}`} alt="" />
-              </li>
-            ))}
-          </ul>
-
-          {!gifs && !loading && (
-            <ul className="giphy-container-picker-list">
-              <li className="giphy-container-picker-list-no-item">No GIF found</li>
+          {gifs && gifs.length > 0 ? (
+            <ul className="giphy-container-picker-list" data-testid="unorderedList">
+              {gifs.map((gif) => (
+                <li
+                  className="giphy-container-picker-list-item"
+                  data-testid="list-item"
+                  key={Utils.generateString(10)}
+                  onClick={() => selectGif(gif.images.original.url)}>
+                  <img src={`${gif.images.original.url}`} alt="GIF" />
+                </li>
+              ))}
             </ul>
+          ) : (
+            !loading && (
+              <div className="giphy-container-picker-list">
+                <div className="giphy-container-picker-list-no-item">No GIFs found</div>
+              </div>
+            )
           )}
         </div>
       </div>
     </>
   );
 };
+
+Giphy.propTypes = {
+  handleGifSelection: PropTypes.func
+};
+
 export default Giphy;

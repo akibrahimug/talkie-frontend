@@ -14,7 +14,7 @@ echo "${BLUE}┗━━━━━━━━━━━━━━━━━━━━━�
 
 # Find all duplicate files with '2' in the name
 echo "${YELLOW}🔍 Finding duplicate files...${NC}"
-DUPLICATES=$(find src -name "* 2.js" -o -name "* 2.jsx")
+DUPLICATES=$(find src -name "* [2,3,4,5,6].ts" -o -name "* [2,3,4,5,6].tsx" && find src -name "* [2,3,4,5,6].scss" -o -name "* [2,3,4,5,6].scss" && find . -name "* [2,3,4,5,6].json" -o -name "* [2,3,4,5,6].json" && find . -name "* [2,3,4,5,6].md" -o -name "* [2,3,4,5,6].md" && find . -name "* [2,3,4,5,6].txt" -o -name "* [2,3,4,5,6].txt" && find . -name "* [2,3,4,5,6].yml" -o -name "* [2,3,4,5,6].yml" && find . -name "* [2,3,4,5,6].js" -o -name "* [2,3,4,5,6].js" && find src -name "* [2,3,4,5,6]" -o -name "* [2,3,4,5,6]" && find src -name "* [2,3,4,5,6].ts" -o -name "* [2,3,4,5,6].tsx" && find src -name "* [2,3,4,5,6].scss" -o -name "* [2,3,4,5,6].scss" && find . -name "* [2,3,4,5,6].json" -o -name "* [2,3,4,5,6].json" && find . -name "* [2,3,4,5,6].md" -o -name "* [2,3,4,5,6].md" && find . -name "* [2,3,4,5,6].txt" -o -name "* [2,3,4,5,6].txt" && find . -name "* [2,3,4,5,6].yml" -o -name "* [2,3,4,5,6].yml" && find . -name "* [2,3,4,5,6].js" -o -name "* [2,3,4,5,6].js" && find src -name "* [2,3,4,5,6]" -o -name "* [2,3,4,5,6]" && find . -name "* [2,3,4,5,6]" -o -name "* [2,3,4,5,6]" && find . -name "* [2,3,4,5,6].png" -o -name "* [2,3,4,5,6].png" && find . -name "* [2,3,4,5,6].jpg" -o -name "* [2,3,4,5,6].jpg" && find . -name "* [2,3,4,5,6].jpeg" -o -name "* [2,3,4,5,6].jpeg" && find . -name "* [2,3,4,5,6].gif" -o -name "* [2,3,4,5,6].gif" && find . -name "* [2,3,4,5,6].svg" -o -name "* [2,3,4,5,6].svg" && find . -name "* [2,3,4,5,6].webp" -o -name "* [2,3,4,5,6].webp" )
 
 if [ -z "$DUPLICATES" ]; then
   echo "${GREEN}✅ No duplicate files found!${NC}"

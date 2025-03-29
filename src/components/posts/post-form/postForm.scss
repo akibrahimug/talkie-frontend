@@ -1,84 +1,473 @@
-.post-form {
-  background: var(--white-1);
-  height: 240px;
-  border-radius: 16px;
-  padding: 0 8px;
+.post-form-container {
+  width: 100%;
+  position: relative;
 
-  &-header {
-    height: 60px;
-    border-bottom: 1px solid var(--white-4);
+  .post-form {
+    background-color: var(--white-1);
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
 
-    .post-form-title {
-      height: 60px;
-      line-height: 60px;
-      font-size: 19.6px;
-      font-weight: normal;
-      color: var(--gray-11);
-      padding-left: 10px;
-    }
-  }
+    .post-form-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--white-4);
 
-  &-body {
-    height: 164px;
-    padding: 15px 0;
-
-    hr {
-      border: 0;
-      border-top: 1px solid var(--white-4);
-      margin-top: 10px;
-      margin-bottom: 20px;
+      .post-form-title {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+        text-align: center;
+        color: var(--gray-11);
+      }
     }
 
-    .post-form-input-body {
-      display: flex;
-      line-height: 25px;
-      height: 65px;
-      align-items: center;
-      padding: 0 15px;
-      cursor: pointer;
+    .post-form-content {
+      transition: all 0.3s ease;
 
-      .post-form-input {
-        background: transparent;
-        font-size: 18px;
-        color: var(--gray-8);
-        padding: 0.375rem 0.75rem;
-        border: none;
-        outline: none;
-        cursor: pointer;
+      &.with-bg {
+        margin: 10px;
+        border-radius: 12px;
 
-        &:empty::before {
-          content: attr(data-placeholder);
-          color: var(--gray-1);
+        .user-info-container {
+          .avatar-container {
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+          }
+
+          .user-info-details {
+            .user-feeling-display {
+              background-color: var(--white-1);
+              padding: 5px 10px;
+              border-radius: 15px;
+              box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+              border: 1px solid rgba(255, 255, 255, 0.3);
+            }
+
+            .privacy-display {
+              background-color: var(--white-1);
+              box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+              border: 1px solid rgba(255, 255, 255, 0.3);
+
+              &:hover {
+                background-color: var(--white-1);
+              }
+            }
+          }
         }
       }
     }
 
-    .post-form-list {
-      padding: 0;
-      margin: 0;
-      align-items: center;
-      display: flex;
-      list-style: none;
+    // Override the privacy display styles when inside colored background
+    .post-form-content.with-bg {
+      .user-info-container {
+        .user-info-details {
+          .privacy-display {
+            background-color: var(--white-1) !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
 
-      &-item {
+            &:hover {
+              background-color: var(--white-1) !important;
+            }
+
+            &.active {
+              background-color: var(--white-1) !important;
+            }
+
+            .privacy-icon {
+              color: var(--primary-1);
+            }
+
+            .privacy-text {
+              color: var(--primary-1);
+            }
+
+            .dropdown-arrow {
+              color: var(--primary-1);
+            }
+          }
+        }
+      }
+
+      // This is a more general selector that might be overriding the specific one above
+      .privacy-display {
+        background-color: var(--white-1);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(4px);
+
+        &:hover {
+          background-color: var(--white-1);
+        }
+
+        &.active {
+          background-color: var(--white-1);
+        }
+
+        .privacy-icon {
+          color: var(--primary-1);
+        }
+
+        .privacy-text {
+          color: var(--primary-1);
+        }
+
+        .dropdown-arrow {
+          color: var(--primary-1);
+        }
+      }
+    }
+
+    .post-form-user-info {
+      padding: 12px 16px;
+
+      .user-info-container {
         display: flex;
-        color: var(--primary-1);
-        background: var(--white-7);
-        border-radius: 5px;
-        padding: 0.5rem;
-        margin-right: 1rem;
-        cursor: pointer;
+        align-items: center;
+        gap: 10px;
 
-        img {
-          padding-right: 5px;
+        .user-info-details {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 10px;
+
+          .username {
+            font-weight: 600;
+            color: var(--black-1);
+            font-size: 15px;
+          }
+        }
+
+        .user-feeling-display {
+          display: flex;
+          align-items: center;
+          font-size: 14px;
+          color: var(--gray-10);
+
+          span {
+            font-weight: 600;
+            color: var(--primary-1);
+            margin: 0 4px;
+          }
+
+          .remove-feeling {
+            background: none;
+            border: none;
+            padding: 0 4px;
+            font-size: 16px;
+            line-height: 1;
+            color: var(--gray-9);
+            cursor: pointer;
+            margin-left: 4px;
+
+            &:hover {
+              color: var(--gray-11);
+            }
+          }
+        }
+
+        .privacy-display {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 14px;
+          color: var(--primary-1);
+          cursor: pointer;
+          padding: 6px 12px;
+          border-radius: 20px;
+          position: relative;
+          background-color: rgba(var(--primary-rgb), 0.1);
+          font-weight: 500;
+          border: none;
+          margin-top: 5px;
+          margin-bottom: 5px;
+          width: auto;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background-color: rgba(var(--primary-rgb), 0.15);
+          }
+
+          &.active {
+            background-color: rgba(var(--primary-rgb), 0.15);
+          }
+
+          .privacy-icon {
+            color: var(--primary-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .privacy-text {
+            font-weight: 500;
+          }
+
+          .dropdown-arrow {
+            font-size: 10px;
+            margin-left: 2px;
+            color: var(--primary-1);
+            transition: transform 0.2s ease;
+          }
+
+          &.active .dropdown-arrow {
+            transform: rotate(180deg);
+          }
+
+          > div {
+            position: static;
+          }
+        }
+      }
+    }
+
+    .post-form-input-area {
+      padding: 0 16px 16px 16px;
+      transition: all 0.3s ease;
+
+      .text-input-container {
+        width: 100%;
+      }
+
+      .post-form-input-container {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+
+        .post-form-textarea {
+          flex: 1;
+          border: none;
+          background-color: transparent;
+          resize: none;
+          outline: none;
+          font-size: 16px;
+          padding: 8px 0;
+          min-height: 40px;
+          color: var(--gray-11);
+          width: 100%;
+          font-family: inherit;
+
+          &::placeholder {
+            color: var(--gray-5);
+          }
+
+          &.with-color-bg {
+            font-weight: 500;
+            color: white;
+
+            &::placeholder {
+              color: rgba(255, 255, 255, 0.7);
+            }
+          }
+        }
+      }
+    }
+
+    .post-form-expanded-content {
+      margin-top: 16px;
+      padding: 0 16px;
+
+      .post-form-loading {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.9);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+
+        span {
+          margin-bottom: 10px;
+          font-weight: bold;
+          font-size: 18px;
+          color: var(--gray-2);
+        }
+      }
+    }
+
+    .post-form-tools {
+      padding: 8px 16px;
+      border-top: none;
+      border-bottom: none;
+    }
+
+    .post-form-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--white-4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .post-form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        .post-action-button {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 12px;
+          background: none;
+          border: none;
+          border-radius: 6px;
+          font-size: 14px;
+          color: var(--gray-10);
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+
+          &:hover {
+            background-color: var(--white-4);
+            color: var(--primary-1);
+          }
+
+          img {
+            width: 20px;
+            height: 20px;
+          }
+
+          .file-input {
+            display: none;
+          }
         }
       }
 
-      .image-select {
-        .file-input {
-          display: none;
+      .post-button {
+        background-color: var(--primary-1);
+        color: var(--white-1);
+        border: none;
+        border-radius: 6px;
+        padding: 8px 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background-color: var(--primary-2);
+        }
+
+        &:disabled {
+          background-color: var(--gray-5);
+          cursor: not-allowed;
         }
       }
     }
   }
+}
+
+.gif-picker-container {
+  position: relative;
+  width: 100%;
+  background-color: var(--white-1);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin: 15px 0;
+  overflow: hidden;
+  z-index: 10;
+  animation: slideDown 0.3s ease;
+
+  .gif-picker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--white-4);
+    position: sticky;
+    top: 0;
+    background-color: var(--white-1);
+    z-index: 2;
+
+    h4 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--black-2);
+    }
+
+    .close-gif-picker {
+      background: none;
+      border: none;
+      font-size: 22px;
+      color: var(--gray-7);
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: var(--white-4);
+      }
+    }
+  }
+
+  .giphy-container {
+    &-picker {
+      height: 500px;
+
+      &-list {
+        height: 450px !important;
+        max-height: 450px !important;
+      }
+    }
+  }
+}
+
+// Define primary RGB variable for rgba usage
+:root {
+  --primary-rgb: 0, 149, 246;
+}
+
+// Animation keyframes
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Override for privacy button when in a colored background
+.post-form-container .post-form .post-form-content.with-bg .user-info-container .user-info-details .privacy-display {
+  background-color: var(--white-1) !important;
+
+  &:hover {
+    background-color: var(--white-1) !important;
+  }
+
+  &.active {
+    background-color: var(--white-1) !important;
+  }
+}
+
+/* Global fix for all privacy display buttons inside colored backgrounds */
+.post-form-content.with-bg .privacy-display,
+.post-form-content.with-bg .privacy-display:hover,
+.post-form-content.with-bg .privacy-display.active,
+.post-form-container .post-form .post-form-content.with-bg .privacy-display,
+.post-form-container .post-form .post-form-content.with-bg .privacy-display:hover,
+.post-form-container .post-form .post-form-content.with-bg .privacy-display.active {
+  background-color: var(--white-1) !important;
 }

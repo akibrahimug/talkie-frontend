@@ -1,0 +1,81 @@
+.comment-input-box {
+  padding: 12px;
+  border-top: 1px solid var(--white-4);
+  margin-top: 8px;
+
+  form {
+    width: 100%;
+
+    .input-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .avatar-container {
+        flex-shrink: 0;
+      }
+
+      .input-wrapper {
+        flex: 1;
+        position: relative;
+
+        input {
+          width: 100%;
+          border: 1px solid var(--white-4);
+          border-radius: 20px;
+          padding: 10px 40px 10px 15px;
+          font-size: 14px;
+          outline: none;
+          transition: border-color 0.2s ease;
+
+          &:focus {
+            border-color: var(--primary-1);
+          }
+
+          &:disabled {
+            background-color: var(--white-4);
+            cursor: not-allowed;
+          }
+        }
+
+        button {
+          position: absolute;
+          right: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          color: var(--primary-1);
+          cursor: pointer;
+          padding: 5px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: color 0.2s ease;
+
+          &:hover:not(:disabled) {
+            color: var(--primary-2);
+          }
+
+          &:disabled {
+            color: var(--gray-7);
+            cursor: not-allowed;
+          }
+
+          .spinner {
+            animation: spin 1s linear infinite;
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

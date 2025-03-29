@@ -1,0 +1,32 @@
+.feeling-display {
+  margin-top: 10px;
+  padding: 6px 12px;
+  background-color: rgba(var(--primary-rgb), 0.1);
+  color: var(--primary-1);
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+
+  span {
+    font-weight: 600;
+    margin: 0 4px;
+  }
+
+  .remove-feeling {
+    background: none;
+    border: none;
+    color: var(--gray-10);
+    cursor: pointer;
+    padding: 2px;
+    margin-left: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--gray-11);
+    }
+  }
+}
