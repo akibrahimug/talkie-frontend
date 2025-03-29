@@ -19,6 +19,7 @@ import FeelingsPicker from '@components/posts/post-form/feelings-picker/Feelings
 import MediaPreview from '@components/posts/post-form/media-preview/MediaPreview';
 import ColorPicker from '@components/posts/post-form/color-picker/ColorPicker';
 import PostActions from '@components/posts/post-form/post-actions/PostActions';
+import { clearPost, updatePostItem } from '@redux/reducers/post/post.reducer';
 
 const PostForm = () => {
   const { profile } = useSelector((state) => state.user);
@@ -86,22 +87,106 @@ const PostForm = () => {
 
   // Update image state when props change
   useEffect(() => {
-    if (gifUrl) {
+    // This effect runs when the component mounts
+    // Immediately clear ALL post data from Redux
+    dispatch(clearPost());
+
+    // Forcefully override any GIF data that might still be in Redux
+    dispatch(
+      updatePostItem({
+        gifUrl: '',
+        image: '',
+        video: '',
+        imgId: '',
+        imgVersion: '',
+        videoId: '',
+        videoVersion: ''
+      })
+    );
+
+    // Add multiple timeouts to catch any async updates
+    const timeoutIds = [
+      setTimeout(() => {
+        dispatch(clearPost());
+        // Double-ensure GIF data is cleared
+        dispatch(
+          updatePostItem({
+            gifUrl: '',
+            image: '',
+            video: '',
+            imgId: '',
+            imgVersion: '',
+            videoId: '',
+            videoVersion: ''
+          })
+        );
+      }, 50),
+      setTimeout(() => {
+        dispatch(clearPost());
+        // Triple-ensure GIF data is cleared
+        dispatch(
+          updatePostItem({
+            gifUrl: '',
+            image: '',
+            video: '',
+            imgId: '',
+            imgVersion: '',
+            videoId: '',
+            videoVersion: ''
+          })
+        );
+      }, 300)
+    ];
+
+    // Clean up timeouts
+    return () => timeoutIds.forEach((id) => clearTimeout(id));
+  }, [dispatch]);
+
+  // Reset form and ensure it's completely clear when closing
+  useEffect(() => {
+    if (!isExpanded) {
+      // Clear data when form is collapsed
+      dispatch(clearPost());
+      // Forcefully clear any media data
+      dispatch(
+        updatePostItem({
+          gifUrl: '',
+          image: '',
+          video: '',
+          imgId: '',
+          imgVersion: '',
+          videoId: '',
+          videoVersion: ''
+        })
+      );
+
+      // Clear local state too
+      setPostImage('');
+      setIsGif(false);
+      setHasVideo(false);
+    }
+  }, [isExpanded, dispatch]);
+
+  // Also modify the useEffect that watches GIF URL changes to add more checks
+  useEffect(() => {
+    // Only update if this is an explicitly set GIF (not one from another post)
+    if (gifUrl && isExpanded) {
       setPostImage(gifUrl);
       setHasVideo(false);
       setIsGif(true);
       setSelectedColor('#ffffff'); // Reset color when GIF is added
       setPostData({ ...postData, bgColor: '#ffffff', gifUrl });
-    } else if (image) {
+    } else if (image && isExpanded) {
       setPostImage(image);
       setHasVideo(false);
       setIsGif(false);
-    } else if (video) {
+    } else if (video && isExpanded) {
       setHasVideo(true);
       setPostImage(video);
       setIsGif(false);
     }
-  }, [gifUrl, image, postData, video]);
+    // If not expanded, don't update from Redux
+  }, [gifUrl, image, postData, video, isExpanded]);
 
   // Update the useEffect - add privacy display logic
   useEffect(() => {
@@ -112,6 +197,32 @@ const PostForm = () => {
       }
     }
   }, [privacy]);
+
+  // Add a continuous protection against Redux state leakage
+  useEffect(() => {
+    // Run this protection frequently to catch any changes
+    const intervalId = setInterval(() => {
+      // If the form is not expanded, always keep media fields clear
+      if (!isExpanded) {
+        // Only dispatch if we're not already in the process of setting media
+        if (!postImage && !selectedPostImage && !selectedPostVideo && !isGif) {
+          dispatch(
+            updatePostItem({
+              gifUrl: '',
+              image: '',
+              video: '',
+              imgId: '',
+              imgVersion: '',
+              videoId: '',
+              videoVersion: ''
+            })
+          );
+        }
+      }
+    }, 500); // Check every 500ms
+
+    return () => clearInterval(intervalId);
+  }, [dispatch, isExpanded, postImage, selectedPostImage, selectedPostVideo, isGif]);
 
   // Handle expanding the form
   const handleFocus = () => {
@@ -139,15 +250,36 @@ const PostForm = () => {
     const file = event.target.files[0];
     if (!file) return;
 
+    // Clear Redux state before setting new image
+    dispatch(clearPost());
+    dispatch(
+      updatePostItem({
+        gifUrl: '',
+        image: '',
+        video: '',
+        imgId: '',
+        imgVersion: '',
+        videoId: '',
+        videoVersion: ''
+      })
+    );
+
     // Validate the file
     ImageUtils.checkFile(file, 'image');
 
     // Set the local state without clearing the text
     setSelectedPostImage(file);
+    setIsGif(false);
 
     // Reset background color to white when adding an image
     setSelectedColor('#ffffff');
-    setPostData({ ...postData, bgColor: '#ffffff' });
+    setPostData({
+      ...postData,
+      bgColor: '#ffffff',
+      gifUrl: '',
+      video: '',
+      image: ''
+    });
 
     // Read and preview the image
     const reader = new FileReader();
@@ -164,16 +296,37 @@ const PostForm = () => {
     const file = event.target.files[0];
     if (!file) return;
 
+    // Clear Redux state before setting new video
+    dispatch(clearPost());
+    dispatch(
+      updatePostItem({
+        gifUrl: '',
+        image: '',
+        video: '',
+        imgId: '',
+        imgVersion: '',
+        videoId: '',
+        videoVersion: ''
+      })
+    );
+
     // Validate the file
     ImageUtils.checkFile(file, 'video');
 
     // Set the local state without clearing the text
     setSelectedPostVideo(file);
     setHasVideo(true);
+    setIsGif(false);
 
     // Reset background color to white when adding a video
     setSelectedColor('#ffffff');
-    setPostData({ ...postData, bgColor: '#ffffff' });
+    setPostData({
+      ...postData,
+      bgColor: '#ffffff',
+      gifUrl: '',
+      image: '',
+      video: ''
+    });
 
     // Read and preview the video
     const reader = new FileReader();
@@ -243,14 +396,40 @@ const PostForm = () => {
 
   // Function to handle GIF selection
   const updateGif = (gifUrl) => {
+    // First clear any existing post data
+    dispatch(clearPost());
+
+    // Explicitly clear all media fields
+    dispatch(
+      updatePostItem({
+        gifUrl: '',
+        image: '',
+        video: '',
+        imgId: '',
+        imgVersion: '',
+        videoId: '',
+        videoVersion: ''
+      })
+    );
+
+    // Now set our local state with the new GIF
     setPostImage(gifUrl);
     setIsGif(true);
     setSelectedColor('#ffffff');
+
+    // Update postData with the new GIF URL
     setPostData({
       ...postData,
       gifUrl,
-      bgColor: '#ffffff'
+      bgColor: '#ffffff',
+      image: '',
+      video: '',
+      imgId: '',
+      imgVersion: '',
+      videoId: '',
+      videoVersion: ''
     });
+
     setIsGifPickerVisible(false);
   };
 
@@ -318,6 +497,43 @@ const PostForm = () => {
 
   // Reset form state
   const resetForm = () => {
+    // First forcefully clear ALL media data in Redux
+    dispatch(
+      updatePostItem({
+        gifUrl: '',
+        image: '',
+        video: '',
+        imgId: '',
+        imgVersion: '',
+        videoId: '',
+        videoVersion: ''
+      })
+    );
+
+    // Then clear the entire post state
+    dispatch(clearPost());
+
+    // Multiple timeouts to ensure any async updates are caught
+    setTimeout(() => {
+      dispatch(clearPost());
+      dispatch(
+        updatePostItem({
+          gifUrl: '',
+          image: '',
+          video: '',
+          imgId: '',
+          imgVersion: '',
+          videoId: '',
+          videoVersion: ''
+        })
+      );
+    }, 50);
+
+    setTimeout(() => {
+      dispatch(clearPost());
+    }, 150);
+
+    // Reset ALL local component state
     setPostText('');
     setSelectedColor('#ffffff');
     setPostImage('');
@@ -328,6 +544,7 @@ const PostForm = () => {
     setShowFeelingsPicker(false);
     setSelectedPostImage(null);
     setSelectedPostVideo(null);
+    setIsGif(false);
     setPostData({
       post: '',
       bgColor: '#ffffff',
@@ -339,6 +556,7 @@ const PostForm = () => {
       video: ''
     });
 
+    // Reset character counter
     if (counterRef.current) {
       counterRef.current.textContent = `${maxCharCount}/${maxCharCount}`;
     }

@@ -37,6 +37,7 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
   const commentsTimeoutRef = useRef(null);
   const dispatch = useDispatch();
   const [showReactionsMenu, setShowReactionsMenu] = useState(false);
+  const hideTimeoutRef = useRef(null);
 
   // Update local post state when initialPost changes
   useEffect(() => {
@@ -135,14 +136,22 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
    * @description Handle showing reactions menu
    */
   const handleShowReactionsMenu = () => {
+    // Clear any existing hide timer to prevent flickering
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
     setShowReactionsMenu(true);
   };
 
   /**
-   * @description Handle hiding reactions menu
+   * @description Handle hiding reactions menu with a delay
    */
   const handleHideReactionsMenu = () => {
-    setShowReactionsMenu(false);
+    // Add a delay before hiding the menu to give the user time to move to it
+    hideTimeoutRef.current = setTimeout(() => {
+      setShowReactionsMenu(false);
+    }, 300); // 300ms delay gives enough time to move to the popup
   };
 
   /**
@@ -437,14 +446,39 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
     );
   };
 
+  // Add handlers for the reactions menu itself
+  const handleReactionsMenuEnter = () => {
+    // Clear hide timeout when mouse enters the reactions menu
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
+  };
+
+  const handleReactionsMenuLeave = () => {
+    // Hide menu when mouse leaves the reactions menu
+    handleHideReactionsMenu();
+  };
+
+  // Cleanup the timeout when component unmounts
+  useEffect(() => {
+    return () => {
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <div className="reactions-display">
       <div className="reaction-comments-container">
         {/* Reactions summary - shows the count and icons */}
-        <div className="reactions-summary" onClick={openReactionsComponent}>
-          <div className="reactions-icons">{renderReactionIcons()}</div>
-          <span className="reactions-count">{sumAllReactions(reactions)}</span>
-        </div>
+        {reactions.length > 0 && (
+          <div className="reactions-summary" onClick={openReactionsComponent}>
+            <div className="reactions-icons">{renderReactionIcons()}</div>
+            <span className="reactions-count">{sumAllReactions(reactions)}</span>
+          </div>
+        )}
 
         {/* Facebook-style reaction buttons */}
         <div className="reaction-buttons-container">
@@ -458,7 +492,10 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
 
             {/* Reactions hover menu */}
             {showReactionsMenu && (
-              <div className="reactions-menu">
+              <div
+                className="reactions-menu"
+                onMouseEnter={handleReactionsMenuEnter}
+                onMouseLeave={handleReactionsMenuLeave}>
                 <Reactions handleClick={addReactionPost} showLabel={true} currentReaction={userSelectedReaction} />
               </div>
             )}

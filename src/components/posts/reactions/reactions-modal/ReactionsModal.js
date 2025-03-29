@@ -38,7 +38,7 @@ const ReactionsModal = () => {
   };
 
   /**
-   * @description Fetches post reactions
+   * @description Fetche s post reactions
    */
   const getPostReactions = useCallback(async () => {
     try {

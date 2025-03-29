@@ -3,6 +3,7 @@ import '@components/posts/comment-area/commentArea.scss';
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PostUtils } from '@services/utils/post.utils.service';
+import { CommentUtils } from '@services/utils/comment.utils.service';
 import useLocalStorage from '@hooks/useLocalStorage';
 import { clearPost, updatePostItem } from '@redux/reducers/post/post.reducer';
 import Icon from '@components/icons';
@@ -24,9 +25,8 @@ const CommentArea = ({ post }) => {
   const toggleCommentInput = () => {
     if (!selectedPostId) {
       setSelectedPostId(post?._id);
-      // Use the utility function to prepare the post without media
-      const postWithoutMedia = PostUtils.preparePostWithoutMedia(post);
-      dispatch(updatePostItem(postWithoutMedia));
+      // Use the utility method to safely handle post data in Redux
+      CommentUtils.handleCommentOperation(post, dispatch);
     } else {
       removeSelectedPostId();
     }
@@ -41,9 +41,8 @@ const CommentArea = ({ post }) => {
       dispatch(clearPost());
     } else {
       setSelectedPostId(post?._id);
-      // Use the utility function to prepare the post without media
-      const postWithoutMedia = PostUtils.preparePostWithoutMedia(post);
-      dispatch(updatePostItem(postWithoutMedia));
+      // Use the utility method to safely handle post data in Redux
+      CommentUtils.handleCommentOperation(post, dispatch);
     }
   };
 

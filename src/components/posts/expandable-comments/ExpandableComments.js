@@ -3,12 +3,13 @@ import '@components/posts/expandable-comments/ExpandableComments.scss';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { postService } from '@services/api/post/post.service';
-import { updatePostItem } from '@redux/reducers/post/post.reducer';
+import { updatePostItem, clearPost } from '@redux/reducers/post/post.reducer';
 import Avatar from '@components/avatar/Avatar';
 import { Utils } from '@services/utils/utils.service';
 import { timeAgo } from '@services/utils/timeago.utils.service';
 import { socketService } from '@services/sockets/socket.service';
 import { PostUtils } from '@services/utils/post.utils.service';
+import { CommentUtils } from '@services/utils/comment.utils.service';
 import Icon from '@components/icons';
 
 /**
@@ -34,21 +35,10 @@ const ExpandableComments = ({ post, isExpanded, onToggle }) => {
   const clearPostMedia = () => {
     // Instead of manually clearing fields, use the utility function
     if (post) {
-      const postWithoutMedia = PostUtils.preparePostWithoutMedia(post);
-      dispatch(updatePostItem(postWithoutMedia));
+      CommentUtils.handleCommentOperation(post, dispatch);
     } else {
-      // If no post is provided, just clear the media fields
-      dispatch(
-        updatePostItem({
-          gifUrl: '',
-          image: '',
-          video: '',
-          imgId: '',
-          imgVersion: '',
-          videoId: '',
-          videoVersion: ''
-        })
-      );
+      // If no post is provided, just clear everything
+      dispatch(clearPost());
     }
   };
 
@@ -100,6 +90,9 @@ const ExpandableComments = ({ post, isExpanded, onToggle }) => {
     event.preventDefault();
     if (!newComment.trim()) return;
 
+    // First clear any existing post data
+    dispatch(clearPost());
+
     setIsPostingComment(true);
     try {
       const response = await postService.addComment({
@@ -109,14 +102,14 @@ const ExpandableComments = ({ post, isExpanded, onToggle }) => {
         profilePicture: profile?.profilePicture || ''
       });
 
-      // Increment comment count in local state and Redux
+      // Create updated post with increased comment count
       const updatedPost = {
         ...post,
         commentsCount: (post.commentsCount || 0) + 1
       };
 
-      // Update Redux state to reflect new comment count
-      dispatch(updatePostItem(updatedPost));
+      // Use the utility method to safely handle post data in Redux
+      CommentUtils.handleCommentOperation(updatedPost, dispatch);
 
       // Emit Socket.IO event to notify other users about the new comment
       if (response && response.data) {
@@ -137,9 +130,6 @@ const ExpandableComments = ({ post, isExpanded, onToggle }) => {
           // Continue even if socket emit fails - the API call succeeded
         }
       }
-
-      // Clear only media data in Redux to prevent image/GIF being carried over
-      clearPostMedia();
 
       // Refresh comments after posting
       await getPostComments();
@@ -170,12 +160,14 @@ const ExpandableComments = ({ post, isExpanded, onToggle }) => {
    */
   useEffect(() => {
     if (isExpanded) {
-      // Clear only media data in Redux when opening comments to prevent image/GIF being carried over
-      clearPostMedia();
-      getPostComments();
+      // First directly clear the post state
+      dispatch(clearPost());
+
+      // Then use the utility method which will safely handle the state
+      CommentUtils.handleCommentOperation(post, dispatch, getPostComments);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isExpanded, getPostComments, dispatch]);
+  }, [isExpanded]);
 
   /**
    * @description Set up Socket.IO listeners for real-time comment updates
@@ -198,6 +190,17 @@ const ExpandableComments = ({ post, isExpanded, onToggle }) => {
       };
     }
   }, [isExpanded, post?._id, getPostComments]);
+
+  /**
+   * @description Clear post data when component is closed
+   */
+  useEffect(() => {
+    if (!isExpanded) {
+      // Clear post data when component is closed
+      dispatch(clearPost());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isExpanded]);
 
   return (
     <div className={`expandable-comments ${isExpanded ? 'expanded' : ''}`}>
