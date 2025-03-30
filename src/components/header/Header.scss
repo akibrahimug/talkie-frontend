@@ -1,4 +1,383 @@
-@import 'src/breakpoints.scss';
+@import '../../breakpoints.scss';
+
+header {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 60px;
+  background-color: var(--white-1);
+  box-shadow: 0 1px 3px var(--white-3);
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid var(--white-3);
+
+  .container {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+
+    .header-navigation {
+      display: flex;
+      align-items: center;
+      justify-self: flex-start;
+
+      .brand-logo {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        margin-right: 20px;
+
+        img {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          margin-top: 2px;
+        }
+
+        span {
+          font-size: 24px;
+          margin-left: 5px;
+          color: var(--primary-1);
+          font-weight: 700;
+
+          @media (max-width: 576px) {
+            display: none;
+          }
+        }
+      }
+
+      .header-nav-item {
+        margin-right: 5px;
+        display: flex;
+        align-items: center;
+
+        @media (max-width: 576px) {
+          display: none;
+        }
+
+        span {
+          font-weight: 600;
+          margin-left: 5px;
+          color: var(--gray-10);
+        }
+      }
+    }
+
+    .header-right-content {
+      display: flex;
+      align-items: center;
+      justify-self: flex-end;
+
+      .search-input-container {
+        position: relative;
+        margin-right: 15px;
+
+        @media (max-width: 768px) {
+          margin-right: 10px;
+          width: 150px;
+        }
+
+        @media (max-width: 576px) {
+          width: 120px;
+        }
+
+        input {
+          border-radius: 20px;
+          border: none;
+          background-color: var(--white-2);
+          padding: 8px 12px 8px 35px;
+          font-size: 14px;
+          color: var(--gray-10);
+          width: 200px;
+          transition: width 0.3s ease;
+
+          @media (max-width: 768px) {
+            width: 150px;
+            padding: 8px 12px 8px 30px;
+          }
+
+          @media (max-width: 576px) {
+            width: 120px;
+            padding: 8px 8px 8px 28px;
+            font-size: 13px;
+          }
+
+          &:focus {
+            outline: none;
+            background-color: var(--white-3);
+            width: 250px;
+
+            @media (max-width: 768px) {
+              width: 180px;
+            }
+
+            @media (max-width: 576px) {
+              width: 150px;
+            }
+          }
+        }
+
+        .search-icon {
+          position: absolute;
+          top: 50%;
+          left: 12px;
+          transform: translateY(-50%);
+          color: var(--gray-8);
+          font-size: 14px;
+
+          @media (max-width: 576px) {
+            left: 8px;
+            font-size: 13px;
+          }
+        }
+      }
+
+      ul {
+        display: flex;
+        margin: 0;
+        padding: 0;
+        align-items: center;
+
+        li {
+          display: flex;
+          align-items: center;
+          list-style-type: none;
+          margin: 0 8px;
+          cursor: pointer;
+          position: relative;
+
+          @media (max-width: 576px) {
+            margin: 0 6px;
+          }
+
+          &.active {
+            position: relative;
+
+            &:after {
+              content: '';
+              position: absolute;
+              bottom: -10px;
+              left: 50%;
+              transform: translateX(-50%);
+              width: 36px;
+              height: 3px;
+              background-color: var(--primary-1);
+              border-radius: 2px;
+
+              @media (max-width: 576px) {
+                display: none;
+              }
+            }
+          }
+
+          .icon-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--white-2);
+            transition: background-color 0.2s ease;
+
+            @media (max-width: 576px) {
+              width: 36px;
+              height: 36px;
+            }
+
+            &:hover {
+              background-color: var(--white-3);
+            }
+
+            i {
+              color: var(--black-1);
+              font-size: 18px;
+
+              @media (max-width: 576px) {
+                font-size: 16px;
+              }
+            }
+          }
+
+          .count {
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            background-color: var(--red-1);
+            color: var(--white-1);
+            font-size: 11px;
+            font-weight: 600;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            border: 2px solid var(--white-1);
+          }
+
+          .profile-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            transition: filter 0.2s ease;
+
+            @media (max-width: 576px) {
+              width: 36px;
+              height: 36px;
+            }
+
+            &:hover {
+              filter: brightness(0.9);
+            }
+          }
+
+          .profile-name {
+            margin-left: 8px;
+            font-weight: 600;
+            color: var(--black-1);
+            max-width: 100px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            @media (max-width: 768px) {
+              max-width: 80px;
+            }
+
+            @media (max-width: 576px) {
+              display: none;
+            }
+          }
+
+          .caret {
+            margin-left: 5px;
+            font-size: 14px;
+            color: var(--gray-8);
+
+            @media (max-width: 576px) {
+              margin-left: 3px;
+              font-size: 12px;
+            }
+          }
+        }
+      }
+
+      .notification-dropdown-ul {
+        position: relative;
+
+        .notification-dropdown {
+          position: absolute;
+          top: 50px;
+          right: 0;
+          z-index: 30;
+
+          @media (max-width: 768px) {
+            right: -40px;
+          }
+
+          @media (max-width: 576px) {
+            right: -50px;
+          }
+        }
+      }
+
+      .messages-dropdown-ul {
+        position: relative;
+
+        .messages-dropdown {
+          position: absolute;
+          top: 50px;
+          right: 0;
+          z-index: 30;
+
+          @media (max-width: 768px) {
+            right: -40px;
+          }
+
+          @media (max-width: 576px) {
+            right: -50px;
+          }
+        }
+      }
+
+      .settings-dropdown {
+        position: relative;
+
+        .profile-dropdown {
+          position: absolute;
+          top: 50px;
+          right: 0;
+          z-index: 30;
+
+          @media (max-width: 768px) {
+            right: -20px;
+          }
+
+          @media (max-width: 576px) {
+            right: -30px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.app-header-menu-item {
+  display: none;
+
+  @media (max-width: 576px) {
+    display: flex;
+    margin-right: 8px;
+  }
+}
+
+// User profile dropdown wrapper
+.profile-wrapper {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 20px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--white-2);
+  }
+}
+
+// Custom dropdown appearance for user settings
+.settings-dropdown .social-dropdown {
+  .profile-content {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--white-3);
+
+    .profile-info {
+      margin-left: 10px;
+
+      .name {
+        font-weight: 600;
+        font-size: 15px;
+        color: var(--black-1);
+      }
+
+      .email {
+        font-size: 13px;
+        color: var(--gray-8);
+        margin-top: 2px;
+      }
+    }
+  }
+}
+
 @mixin bar-styles {
   width: 25px;
   height: 3px;
@@ -12,17 +391,20 @@
   top: 0;
   background-color: var(--white-1);
   position: sticky;
-  z-index: 20;
+  z-index: 50;
   height: 60px;
-  box-shadow: 0 0 20px 0 rgb(44 101 144 / 10%);
-  padding: 0 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  border-bottom: 1px solid var(--white-3);
 
   .header-navbar {
     display: flex;
     justify-content: space-between;
     height: 60px;
     color: var(--gray-12);
-    padding: 0 15px;
+    padding: 0 16px;
+    max-width: 1920px;
+    margin: 0 auto;
 
     .header-image {
       display: flex;
@@ -40,13 +422,14 @@
 
       img {
         max-width: 100%;
-        height: 28px;
+        height: 40px;
       }
 
       .app-name {
         margin-left: 10px;
         font-size: 28px;
-        color: var(--gray-11);
+        font-weight: 700;
+        color: var(--primary-1);
         align-self: center;
 
         .environment {
@@ -87,59 +470,112 @@
       display: flex;
       align-items: center;
       padding: 0;
+      gap: 8px;
 
       .header-nav-item {
         list-style: none;
         cursor: pointer;
         display: flex;
+        position: relative;
 
         .header-list-icon {
-          width: 50px;
-          text-align: center;
+          width: 24px;
+          height: 24px;
+          color: var(--gray-10);
+          transition: color 0.2s ease;
+        }
+
+        &.active-item {
+          .header-list-name {
+            background-color: var(--white-3);
+
+            .header-list-icon {
+              color: var(--primary-1);
+            }
+          }
         }
 
         .header-list-name {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          position: relative;
+          transition: background-color 0.2s ease;
+
+          &:hover {
+            background-color: var(--white-3);
+          }
+
           .bg-danger-dots {
             background-color: var(--error);
-            right: 15px;
+            right: 0;
+            top: 0;
           }
 
           .bg-primary-dots {
             background-color: var(--primary-1);
-            right: 12px;
+            right: 0;
+            top: 0;
             animation: shadow-pulse 1s infinite;
           }
 
           .dots {
-            height: 7px;
-            width: 7px;
-            font-size: 0;
-            text-align: right;
+            height: 18px;
+            width: 18px;
+            font-size: 11px;
+            text-align: center;
+            line-height: 18px;
             padding: 0;
             position: absolute;
             top: -5px;
-            animation: shadow-pulse-dots 1s infinite;
+            right: -5px;
+            animation: none;
             border-radius: 50%;
+            color: var(--white-1);
+            font-weight: 700;
+            box-shadow: 0 0 0 2px var(--white-1);
           }
         }
 
         .profile-image {
-          margin-left: 10px;
+          margin-left: 0;
+          width: 40px;
+          height: 40px;
+          background: none;
+          border-radius: 50%;
+          overflow: hidden;
+          transition: filter 0.2s ease;
+
+          &:hover {
+            filter: brightness(0.95);
+          }
         }
 
         .profile-name {
-          color: var(--gray-11);
+          color: var(--black-1);
           font-size: 15px;
-          margin-left: 5px;
+          margin-left: 8px;
           text-transform: capitalize;
           align-items: center;
           display: flex;
           flex-direction: row;
-          font-weight: 700;
+          font-weight: 600;
+          max-width: 100px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+
+          @media (max-width: 576px) {
+            display: none;
+          }
 
           .caret {
             width: auto;
             margin-left: 3px;
+            color: var(--gray-10);
           }
         }
       }
@@ -180,24 +616,56 @@
   transition: 0.5s;
 }
 
+// Dropdown positioning
 ul .dropdown-ul {
   position: absolute;
 }
-.settings-dropdown {
-  right: -1vw;
-}
 
 .dropdown-ul {
+  position: absolute;
+  z-index: 100;
+
   .dropdown-li {
     list-style: none;
+    width: 100%;
   }
+}
 
-  &.notification-dropdown-ul {
-    left: -7vw;
+// Settings dropdown positioning
+.settings-dropdown {
+  position: absolute;
+  right: 0;
+  top: 55px;
+  z-index: 50;
 
-    @media (min-width: 1024px) {
-      left: -20vw;
-    }
+  @media (max-width: 576px) {
+    right: -20px;
+  }
+}
+
+// Notification dropdown positioning
+.notification-dropdown-ul {
+  position: absolute;
+  left: auto;
+  right: 0;
+  top: 55px;
+  z-index: 50;
+
+  @media (max-width: 576px) {
+    right: -30px;
+  }
+}
+
+// Media queries for dropdown widths
+@media (max-width: 768px) {
+  .header-navbar .header-image .app-name {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 576px) {
+  .header-navbar .header-image .app-name {
+    font-size: 20px;
   }
 }
 
@@ -240,7 +708,7 @@ ul .dropdown-ul {
     display: flex;
     position: absolute;
     right: 0;
-    margin-right: 10px;
+    margin-right: 0;
   }
 
   .header-nav-wrapper {
@@ -251,12 +719,6 @@ ul .dropdown-ul {
   .header-navbar .header-nav {
     margin: 0 30px;
     margin-top: 2px;
-    //   position: absolute;
-    //   top: 100%;
-    //   left: 0;
-    //   width: 90%;
-    //   background: var(--white-1);
-    //   box-shadow: 0 0 20px 0 rgb(44 101 144 / 10%);
     text-align: right;
   }
 
@@ -277,5 +739,115 @@ ul .dropdown-ul {
 
   .profile {
     display: none;
+  }
+}
+
+/* Add these styles at the end of the file to fix dropdown positioning issues */
+
+/* Fix positioning for dropdown-ul and settings-dropdown */
+.dropdown-ul.notification-dropdown-ul,
+.dropdown-ul.messages-dropdown-ul {
+  top: 46px;
+  right: -15px;
+  min-width: 450px;
+  z-index: 60;
+
+  @media (max-width: 768px) {
+    right: -80px;
+  }
+
+  @media (max-width: 576px) {
+    position: fixed;
+    right: 0;
+    left: 60px; /* Leave space for sidebar */
+    width: calc(100vw - 60px);
+    max-width: none;
+    top: 60px; /* Position right below header */
+    border-radius: 0;
+    height: calc(100vh - 60px); /* Make it take full height minus header */
+    overflow-y: auto;
+  }
+}
+
+.dropdown-ul.settings-dropdown {
+  top: 45px;
+  right: 40px;
+  z-index: 60;
+
+  @media (max-width: 576px) {
+    right: -20px;
+    width: 280px;
+  }
+}
+
+/* Make sure the social dropdown within each container has proper sizing */
+.notification-dropdown-ul .social-dropdown,
+.messages-dropdown-ul .social-dropdown {
+  width: 100%;
+  min-width: 320px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.15);
+
+  @media (max-width: 576px) {
+    width: 100% !important;
+    max-width: none;
+    border-radius: 0;
+    height: 100%;
+    box-shadow: none;
+
+    .social-card,
+    .social-card-body {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .social-card-body-info {
+      flex: 1;
+
+      &-container {
+        max-height: none !important;
+        height: calc(100vh - 120px); /* Full height minus header and dropdown header */
+      }
+    }
+  }
+}
+
+.settings-dropdown .social-dropdown {
+  width: 360px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.15);
+
+  @media (max-width: 576px) {
+    width: 290px;
+  }
+}
+
+/* Ensure dropdown contents have proper display */
+.messages-dropdown-ul .social-card-body-info-container,
+.notification-dropdown-ul .social-card-body-info-container {
+  max-height: 400px;
+  overflow-y: auto;
+
+  @media (max-width: 576px) {
+    max-height: 350px;
+  }
+}
+
+/* Add animation for dropdown appearance */
+.dropdown-ul {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

@@ -129,6 +129,21 @@
         z-index: 1000;
         pointer-events: auto;
         animation: slideUp 0.2s ease;
+
+        // Add a buffer zone to make it easier to reach the menu
+        padding-bottom: 15px; // Add padding below the menu
+        padding-top: 5px; // Add padding above the menu
+
+        // Create an invisible connection between button and menu
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 15px; // Invisible buffer area
+          background: transparent;
+        }
       }
 
       // Selected reaction colors with subtle glow effects

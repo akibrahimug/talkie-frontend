@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { postService } from '@services/api/post/post.service';
 import { reactionsMap } from '@services/utils/static.data';
-import { updatePostItem } from '@redux/reducers/post/post.reducer';
+import { updatePostItem, clearPost } from '@redux/reducers/post/post.reducer';
 import { toggleReactionsModal } from '@redux/reducers/modal/modal.reducer';
 import ExpandableComments from '@components/posts/expandable-comments/ExpandableComments';
 import Reactions from '@components/posts/reactions/reactions';
@@ -37,6 +37,7 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
   const commentsTimeoutRef = useRef(null);
   const dispatch = useDispatch();
   const [showReactionsMenu, setShowReactionsMenu] = useState(false);
+  const hideTimeoutRef = useRef(null);
 
   // Update local post state when initialPost changes
   useEffect(() => {
@@ -112,10 +113,38 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
    * @returns {void}
    */
   const openReactionsComponent = () => {
-    // Use the utility function to prepare the post without media
-    const postWithoutMedia = PostUtils.preparePostWithoutMedia(post);
-    dispatch(updatePostItem(postWithoutMedia));
-    dispatch(toggleReactionsModal(!reactionsModalIsOpen));
+    try {
+      // Make sure we have a valid post ID before opening the modal
+      if (!post?._id) {
+        console.error('Cannot open reactions modal: Post ID is missing');
+        Utils.dispatchNotification(dispatch, 'Unable to display reactions at this time', 'error');
+        return;
+      }
+
+      console.log('Opening reactions modal for post ID:', post._id);
+
+      // First clear any existing post data to avoid contamination
+      dispatch(clearPost());
+
+      // Create a minimal post object with only what's needed
+      const minimalPostData = {
+        _id: post._id,
+        reactions: post.reactions || {}
+      };
+
+      console.log('Setting post data for reactions modal:', minimalPostData);
+
+      // Update the post data in Redux
+      dispatch(updatePostItem(minimalPostData));
+
+      // Then toggle the modal with a small delay to ensure post data is set first
+      setTimeout(() => {
+        dispatch(toggleReactionsModal(true));
+      }, 50);
+    } catch (error) {
+      console.error('Error opening reactions modal:', error);
+      Utils.dispatchNotification(dispatch, 'Error displaying reactions', 'error');
+    }
   };
 
   /**
@@ -135,14 +164,22 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
    * @description Handle showing reactions menu
    */
   const handleShowReactionsMenu = () => {
+    // Clear any existing hide timer to prevent flickering
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
     setShowReactionsMenu(true);
   };
 
   /**
-   * @description Handle hiding reactions menu
+   * @description Handle hiding reactions menu with a delay
    */
   const handleHideReactionsMenu = () => {
-    setShowReactionsMenu(false);
+    // Add a delay before hiding the menu to give the user time to move to it
+    hideTimeoutRef.current = setTimeout(() => {
+      setShowReactionsMenu(false);
+    }, 300); // 300ms delay gives enough time to move to the popup
   };
 
   /**
@@ -437,14 +474,39 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
     );
   };
 
+  // Add handlers for the reactions menu itself
+  const handleReactionsMenuEnter = () => {
+    // Clear hide timeout when mouse enters the reactions menu
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
+  };
+
+  const handleReactionsMenuLeave = () => {
+    // Hide menu when mouse leaves the reactions menu
+    handleHideReactionsMenu();
+  };
+
+  // Cleanup the timeout when component unmounts
+  useEffect(() => {
+    return () => {
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <div className="reactions-display">
       <div className="reaction-comments-container">
         {/* Reactions summary - shows the count and icons */}
-        <div className="reactions-summary" onClick={openReactionsComponent}>
-          <div className="reactions-icons">{renderReactionIcons()}</div>
-          <span className="reactions-count">{sumAllReactions(reactions)}</span>
-        </div>
+        {reactions.length > 0 && (
+          <div className="reactions-summary" onClick={openReactionsComponent}>
+            <div className="reactions-icons">{renderReactionIcons()}</div>
+            <span className="reactions-count">{sumAllReactions(reactions)}</span>
+          </div>
+        )}
 
         {/* Facebook-style reaction buttons */}
         <div className="reaction-buttons-container">
@@ -458,7 +520,10 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
 
             {/* Reactions hover menu */}
             {showReactionsMenu && (
-              <div className="reactions-menu">
+              <div
+                className="reactions-menu"
+                onMouseEnter={handleReactionsMenuEnter}
+                onMouseLeave={handleReactionsMenuLeave}>
                 <Reactions handleClick={addReactionPost} showLabel={true} currentReaction={userSelectedReaction} />
               </div>
             )}

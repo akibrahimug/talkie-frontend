@@ -1,9 +1,12 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { FaRegPaperPlane, FaSpinner } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
 import Avatar from '@components/avatar/Avatar';
-import { useSelector } from 'react-redux';
 import { postService } from '@services/api/post/post.service';
+import { PostUtils } from '@services/utils/post.utils.service';
+import { CommentUtils } from '@services/utils/comment.utils.service';
+import { clearPost } from '@redux/reducers/post/post.reducer';
+import Icon from '@components/icons';
 import './CommentInputBox.scss';
 
 /**
@@ -13,6 +16,7 @@ import './CommentInputBox.scss';
  */
 const CommentInputBox = ({ post }) => {
   const { profile } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -23,6 +27,9 @@ const CommentInputBox = ({ post }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!comment.trim()) return;
+
+    // Clear post data before proceeding to prevent any existing media
+    dispatch(clearPost());
 
     setIsSubmitting(true);
     try {
@@ -35,6 +42,21 @@ const CommentInputBox = ({ post }) => {
 
       // Clear comment input after successful submission
       setComment('');
+
+      // Use the utility method to safely handle post data in Redux
+      // Create a new post object with updated comment count
+      const updatedPost = {
+        ...post,
+        commentsCount: (post.commentsCount || 0) + 1
+      };
+
+      // Let the utility handle clearing and updating Redux safely
+      CommentUtils.handleCommentOperation(updatedPost, dispatch);
+
+      // Add an extra clear after a delay to catch any race conditions
+      setTimeout(() => {
+        dispatch(clearPost());
+      }, 100);
 
       // You can add code here to refresh comments list if needed
     } catch (error) {
@@ -66,7 +88,11 @@ const CommentInputBox = ({ post }) => {
               disabled={isSubmitting}
             />
             <button type="submit" disabled={!comment.trim() || isSubmitting}>
-              {isSubmitting ? <FaSpinner className="spinner" /> : <FaRegPaperPlane />}
+              {isSubmitting ? (
+                <Icon name="SpinnerGap" className="spinner" weight="regular" />
+              ) : (
+                <Icon name="PaperPlane" className="comment-icon" weight="regular" />
+              )}
             </button>
           </div>
         </div>

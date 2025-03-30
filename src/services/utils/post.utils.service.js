@@ -270,6 +270,36 @@ export class PostUtils {
   }
 
   /**
+   * Safely handles comment operations ensuring media data is completely cleared from Redux
+   * @param {object} post - The post object
+   * @param {function} dispatch - The Redux dispatch function
+   * @param {function} callback - Optional callback after comment operation
+   */
+  static handleCommentOperation(post, dispatch, callback) {
+    // Step 1: Completely clear the post data
+    dispatch(clearPost());
+
+    // Step 2: Short timeout to ensure clearing has completed
+    setTimeout(() => {
+      // Step 3: Update only with essential data, no media
+      if (post) {
+        const minimalPostData = {
+          _id: post._id,
+          userId: post.userId,
+          commentsCount: post.commentsCount || 0
+        };
+
+        dispatch(updatePostItem(minimalPostData));
+      }
+
+      // Step 4: Execute callback if provided
+      if (callback && typeof callback === 'function') {
+        callback();
+      }
+    }, 10);
+  }
+
+  /**
    * Prepares a post object with media fields cleared to prevent them from appearing in the post form.
    * @param {object} post - The post object to prepare
    * @returns {object} - The post object with media fields cleared

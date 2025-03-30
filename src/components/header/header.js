@@ -114,16 +114,6 @@ const Header = () => {
         <HeaderSkeleton />
       ) : (
         <div className="header-nav-wrapper" data-testid="header-wrapper">
-          {isMessagesActive && (
-            <div ref={messagesRef}>
-              <MessageSidebar
-                profile={profile}
-                messageCount={0}
-                messageNotifications={[]}
-                openChatPage={openChatPage}
-              />
-            </div>
-          )}
           {notificationDialogContent?.senderName && (
             <NotificationPreview
               title="Your post"
@@ -167,6 +157,7 @@ const Header = () => {
               <li
                 data-testid="notification-list-item"
                 className="header-nav-item active-item"
+                title="Notifications"
                 onClick={() => {
                   setIsMessagesActive(false);
                   setIsNotificationsActive(true);
@@ -175,7 +166,7 @@ const Header = () => {
                 <span className="header-list-name">
                   <FAIcon icon="FaRegBell" className="header-list-icon" />
                   <span className="bg-danger-dots dots" data-testid="notification-dots">
-                    5
+                    {notificationCount > 0 ? (notificationCount > 99 ? '99+' : notificationCount) : '0'}
                   </span>
                 </span>
                 {isNotificationsActive && (
@@ -185,13 +176,9 @@ const Header = () => {
                         data={notifications}
                         notificationCount={notificationCount}
                         title="Notifications"
-                        height={300}
+                        height={400}
                         onMarkAsRead={onMarkAsRead}
                         onDeleteNotification={onDeleteNotification}
-                        style={{
-                          width: '600px',
-                          top: '25px'
-                        }}
                       />
                     </li>
                   </ul>
@@ -201,8 +188,9 @@ const Header = () => {
               <li
                 data-testid="message-list-item"
                 className="header-nav-item active-item"
+                title="Messages"
                 onClick={() => {
-                  setIsMessagesActive(true);
+                  setIsMessagesActive(!isMessagesActive);
                   setIsNotificationsActive(false);
                   setIsSettingsActive(false);
                 }}>
@@ -210,15 +198,28 @@ const Header = () => {
                   <FAIcon icon="FaRegEnvelope" className="header-list-icon" />
                   {notificationCount > 0 && (
                     <span className="bg-danger-dots dots" data-testid="messages-dots">
-                      {notificationCount}
+                      {notificationCount > 99 ? '99+' : notificationCount}
                     </span>
                   )}
                 </span>
+                {isMessagesActive && (
+                  <ul className="dropdown-ul messages-dropdown-ul" ref={messagesRef}>
+                    <li className="dropdown-li">
+                      <MessageSidebar
+                        profile={profile}
+                        messageCount={notificationCount}
+                        messageNotifications={[]}
+                        openChatPage={openChatPage}
+                      />
+                    </li>
+                  </ul>
+                )}
                 &nbsp;
               </li>
               <li
                 data-testid="settings-list-item"
                 className="header-nav-item"
+                title="Account"
                 onClick={() => {
                   setIsMessagesActive(false);
                   setIsNotificationsActive(false);
