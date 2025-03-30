@@ -19,7 +19,7 @@ const Dropdown = ({
   classNames
 }) => {
   return (
-    <div className={`social-dropdown ${classNames}`} style={style} data-testid="dropdown">
+    <div className={`social-dropdown ${classNames ? classNames : ''}`} style={style} data-testid="dropdown">
       <div className="social-card">
         <div className="social-card-body">
           <div className="social-bg-primary">
@@ -36,41 +36,47 @@ const Dropdown = ({
               data-testid="info-container"
               className="social-card-body-info-container"
               style={{ maxHeight: `${height}px` }}>
-              {data.map((item) => (
-                <div className="social-sub-card" key={Utils.generateString(10)}>
-                  <div className="content-avatar">
-                    {title === 'Notifications' ? (
-                      <Avatar
-                        name={item?.username}
-                        bgColor={item?.avatarColor}
-                        textColor="#ffffff"
-                        size={40}
-                        avatarSrc={item?.profilePicture}
-                      />
-                    ) : (
-                      <FaUserAlt className="userIcon" />
+              {data && data.length > 0 ? (
+                data.map((item) => (
+                  <div className="social-sub-card" key={Utils.generateString(10)}>
+                    <div className="content-avatar">
+                      {title === 'Notifications' ? (
+                        <Avatar
+                          name={item?.username}
+                          bgColor={item?.avatarColor}
+                          textColor="#ffffff"
+                          size={40}
+                          avatarSrc={item?.profilePicture}
+                        />
+                      ) : (
+                        <FaUserAlt className="userIcon" />
+                      )}
+                    </div>
+                    <div
+                      className="content-body"
+                      onClick={() => {
+                        if (title === 'Notifications') {
+                          onMarkAsRead(item);
+                        } else {
+                          onNavigate();
+                        }
+                      }}>
+                      <h6 className="title">{item?.topText}</h6>
+                      <p className="subtext">{item?.subText}</p>
+                    </div>
+                    {title === 'Notifications' && (
+                      <div className="content-icons">
+                        <FaTrashAlt className="trash" onClick={() => onDeleteNotification(item?._id)} />
+                        {item?.read ? <FaRegCircle className="circle" /> : <FaCircle className="circle" />}
+                      </div>
                     )}
                   </div>
-                  <div
-                    className="content-body"
-                    onClick={() => {
-                      if (title === 'Notifications') {
-                        onMarkAsRead(item);
-                      } else {
-                        onNavigate();
-                      }
-                    }}>
-                    <h6 className="title">{item?.topText}</h6>
-                    <p className="subtext">{item?.subText}</p>
-                  </div>
-                  {title === 'Notifications' && (
-                    <div className="content-icons">
-                      <FaTrashAlt className="trash" onClick={() => onDeleteNotification(item?._id)} />
-                      {item?.read ? <FaRegCircle className="circle" /> : <FaCircle className="circle" />}
-                    </div>
-                  )}
+                ))
+              ) : (
+                <div className="no-reactions-found">
+                  {title === 'Notifications' ? 'No notifications yet' : 'No items to display'}
                 </div>
-              ))}
+              )}
             </div>
 
             {title === 'Settings' && (
@@ -94,7 +100,8 @@ Dropdown.propTypes = {
   onMarkAsRead: PropTypes.func,
   onDeleteNotification: PropTypes.func,
   onLogout: PropTypes.func,
-  onNavigate: PropTypes.func
+  onNavigate: PropTypes.func,
+  classNames: PropTypes.oneOfType([PropTypes.string, PropTypes.array])
 };
 
 export default Dropdown;
