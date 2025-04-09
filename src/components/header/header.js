@@ -6,7 +6,7 @@ import '@components/header/Header.scss';
 import Avatar from '@components/avatar/Avatar';
 import { Utils } from '@services/utils/utils.service';
 import { ProfileUtils } from '@services/utils/profile-utils.service';
-import useDetectOutsidelick from '@hooks/useDetectOutsideClick';
+import useDetectOutsideClick from '@hooks/useDetectOutsideClick';
 import MessageSidebar from '@components/message-sidebar/MessageSidebar';
 import { useSelector } from 'react-redux';
 import Dropdown from '@components/dropdown/Dropdown';
@@ -28,9 +28,9 @@ const Header = () => {
   const messagesRef = useRef(null);
   const notificationsRef = useRef(null);
   const settingsRef = useRef(null);
-  const [isMessagesActive, setIsMessagesActive] = useDetectOutsidelick(messagesRef, false);
-  const [isNotificationsActive, setIsNotificationsActive] = useDetectOutsidelick(notificationsRef, false);
-  const [isSettingsActive, setIsSettingsActive] = useDetectOutsidelick(settingsRef, false);
+  const [isMessagesActive, setIsMessagesActive] = useDetectOutsideClick(messagesRef, false);
+  const [isNotificationsActive, setIsNotificationsActive] = useDetectOutsideClick(notificationsRef, false);
+  const [isSettingsActive, setIsSettingsActive] = useDetectOutsideClick(settingsRef, false);
   const [deleteStorageUsername] = useLocalStorage('username', 'delete');
   const [setLoggedIn] = useLocalStorage('keepLoggedIn', 'delete');
   const [deleteSessionPayload] = useSessionStorage('pageReload', 'delete');
@@ -45,6 +45,7 @@ const Header = () => {
     senderName: ''
   });
   const [storedUsername] = useLocalStorage('username', 'get');
+  const navigate = useNavigate();
 
   const backgroundColor = `${env === 'DEV' ? '#50b5ff' : env === 'STG' ? '#e9710f' : ''}`;
 
@@ -65,7 +66,24 @@ const Header = () => {
 
   const onMarkAsRead = async (notification) => {
     try {
-      await notificationsService.markNotificationAsRead(notification?._id);
+      await NotificationUtils.markMessageAsRead(notification?._id, notification, setNotificationDialogContent);
+
+      const updatedNotifications = notifications.map((item) => {
+        if (item._id === notification._id) {
+          return { ...item, read: true };
+        }
+        return item;
+      });
+
+      setNotifications(updatedNotifications);
+
+      if (!notification.read) {
+        setNotificationCount((prev) => Math.max(0, prev - 1));
+      }
+
+      setTimeout(() => {
+        setIsNotificationsActive(false);
+      }, 500);
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Error marking notification as read';
       Utils.dispatchNotification(dispatch, errorMessage, 'error');
@@ -75,6 +93,13 @@ const Header = () => {
   const onDeleteNotification = async (messageId) => {
     try {
       await notificationsService.deleteNotification(messageId);
+
+      const updatedNotifications = notifications.filter((item) => item._id !== messageId);
+      setNotifications(updatedNotifications);
+
+      const unreadCount = updatedNotifications.filter((item) => !item.read).length;
+      setNotificationCount(unreadCount);
+
       Utils.dispatchNotification(dispatch, 'Notification deleted successfully', 'success');
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Error deleting notification';
@@ -82,8 +107,13 @@ const Header = () => {
     }
   };
 
-  const navigate = useNavigate();
   const openChatPage = () => {};
+
+  const navigateToNotificationsPage = () => {
+    setIsNotificationsActive(false);
+    navigate('/app/social/notifications');
+  };
+
   const onLogout = async () => {
     try {
       setLoggedIn(false);
@@ -94,6 +124,12 @@ const Header = () => {
       Utils.dispatchNotification(dispatch, error.response?.data?.message || 'Error logging out', 'error');
     }
   };
+
+  // Handle refresh notifications event
+  const handleRefreshNotifications = async () => {
+    await getUserNotifications();
+  };
+
   useEffectOnce(() => {
     Utils.mapSettingsDropdownItems(setSettings);
     getUserNotifications();
@@ -106,6 +142,18 @@ const Header = () => {
 
   useEffect(() => {
     NotificationUtils.socketIONotification(profile, notifications, setNotifications, 'header', setNotificationCount);
+
+    // Setup socket event listeners for refresh notifications
+    if (socketService?.socket) {
+      socketService.socket.on('refresh notifications', handleRefreshNotifications);
+    }
+
+    // Cleanup function
+    return () => {
+      if (socketService?.socket) {
+        socketService.socket.off('refresh notifications');
+      }
+    };
   }, [profile, notifications]);
 
   return (
@@ -179,6 +227,7 @@ const Header = () => {
                         height={400}
                         onMarkAsRead={onMarkAsRead}
                         onDeleteNotification={onDeleteNotification}
+                        onNavigate={navigateToNotificationsPage}
                       />
                     </li>
                   </ul>

@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { updatePostItem } from '@redux/reducers/post/post.reducer';
 import '@components/select-dropdown/selectDropdown.scss';
 
-const SelectDropdown = ({ isActive, setSelectedItem, items = [], parentRef }) => {
+const SelectDropdown = ({ isActive, setSelectedItem, items = [], parentRef, updateRedux = false }) => {
   const dropdownRef = useRef(null);
   const menuRef = useRef(null);
   const dispatch = useDispatch();
@@ -13,7 +13,10 @@ const SelectDropdown = ({ isActive, setSelectedItem, items = [], parentRef }) =>
 
   const selectItem = (item) => {
     setSelectedItem(item);
-    dispatch(updatePostItem({ privacy: item.topText }));
+    // Only update Redux if updateRedux prop is true
+    if (updateRedux) {
+      dispatch(updatePostItem({ privacy: item.topText }));
+    }
   };
 
   // Calculate position based on parent element, once and keep it consistent
@@ -74,7 +77,8 @@ SelectDropdown.propTypes = {
   isActive: PropTypes.bool,
   setSelectedItem: PropTypes.func,
   items: PropTypes.array,
-  parentRef: PropTypes.object
+  parentRef: PropTypes.object,
+  updateRedux: PropTypes.bool
 };
 
 export default SelectDropdown;

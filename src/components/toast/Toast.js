@@ -38,7 +38,7 @@ const Toast = (props) => {
   }, [toastList, autoDelete, autoDeleteTime, list, deleteToast]);
 
   return (
-    <div className={`toast-notification-container ${position}`}>
+    <div data-testid="toast-notification-container" className={`toast-notification-container ${position}`}>
       {list.map((toast) => (
         <div
           data-testid="toast-notification"
@@ -48,10 +48,14 @@ const Toast = (props) => {
           <button className="cancel-button" onClick={() => deleteToast()}>
             X
           </button>
-          <div className={`toast-notification-image ${toast.description.length <= 73 ? 'toast-icon' : ''}`}>
+          <div
+            data-testid="toast-notification-image"
+            className={`toast-notification-image ${toast.description.length <= 73 ? 'toast-icon' : ''}`}>
             <img src={toast.icon} alt="" />
           </div>
-          <div className={`toast-notification-message ${toast.description.length <= 73 ? 'toast-message' : ''}`}>
+          <div
+            data-testid="toast-notification-message"
+            className={`toast-notification-message ${toast.description.length <= 73 ? 'toast-message' : ''}`}>
             {toast.description}
           </div>
         </div>

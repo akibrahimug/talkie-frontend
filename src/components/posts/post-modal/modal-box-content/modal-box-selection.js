@@ -4,9 +4,9 @@ import feeling from '@assets/images/feeling.png';
 import video from '@assets/images/video.png';
 import Input from '@components/input/Input';
 import useDetectOutsideClick from '@hooks/useDetectOutsideClick';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Feelings from '@components/feelings/feelings';
+import FeelingsPicker from '@components/posts/post-form/feelings-picker/FeelingsPicker';
 import { ImageUtils } from '@services/utils/image.utils.service';
 import PropTypes from 'prop-types';
 import { toggleGifModal } from '@redux/reducers/modal/modal.reducer';
@@ -18,6 +18,7 @@ const ModalBoxSelection = ({ setSelectedPostImage, setSelectedVideo }) => {
   const fileInputRef = useRef();
   const videoInputRef = useRef();
   const [toggleFeelings, setToggleFeelings] = useDetectOutsideClick(feelingsRef, feelingsIsOpen);
+  const [showFeelingsPicker, setShowFeelingsPicker] = useState(false);
   const dispatch = useDispatch();
 
   const fileInputClicked = () => {
@@ -36,13 +37,17 @@ const ModalBoxSelection = ({ setSelectedPostImage, setSelectedVideo }) => {
     ImageUtils.addFileToRedux(event, post, setSelectedVideo, dispatch, 'video');
   };
 
+  const selectFeeling = (feeling) => {
+    dispatch({ type: 'modal/addPostFeeling', payload: { feeling } });
+    setShowFeelingsPicker(false);
+    setToggleFeelings(false);
+  };
+
   return (
     <>
-      {toggleFeelings && (
-        <div ref={feelingsRef}>
-          <Feelings />
-        </div>
-      )}
+      <div ref={feelingsRef} className="feelings-picker-container">
+        <FeelingsPicker isVisible={toggleFeelings} onClose={() => setToggleFeelings(false)} onSelect={selectFeeling} />
+      </div>
       <div className="modal-box-selection" data-testid="modal-box-selection">
         <ul className="post-form-list" data-testid="list-item">
           <li className="post-form-list-item image-select" onClick={fileInputClicked}>

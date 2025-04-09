@@ -9,6 +9,7 @@ import useEffectOnce from '@hooks/useEffectOnce';
 import { NotificationUtils } from '@services/utils/notification.utils.service';
 import NotificationPreview from '@components/dialog/NotificationPreview';
 import { timeAgo } from '@services/utils/timeago.utils.service';
+import { socketService } from '@services/sockets/socket.service';
 
 const Notification = () => {
   const { profile } = useSelector((state) => state.user);
@@ -55,12 +56,29 @@ const Notification = () => {
     }
   };
 
+  // Handle refresh notifications event
+  const handleRefreshNotifications = async () => {
+    await getUserNotifications();
+  };
+
   useEffectOnce(() => {
     getUserNotifications();
   });
 
   useEffect(() => {
     NotificationUtils.socketIONotification(profile, notifications, setNotifications, 'notificationPage');
+
+    // Setup socket event listeners for refresh notifications
+    if (socketService?.socket) {
+      socketService.socket.on('refresh notifications', handleRefreshNotifications);
+    }
+
+    // Cleanup function
+    return () => {
+      if (socketService?.socket) {
+        socketService.socket.off('refresh notifications');
+      }
+    };
   }, [profile, notifications]);
 
   return (

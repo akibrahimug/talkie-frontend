@@ -38,7 +38,7 @@ const Dropdown = ({
               style={{ maxHeight: `${height}px` }}>
               {data && data.length > 0 ? (
                 data.map((item) => (
-                  <div className="social-sub-card" key={Utils.generateString(10)}>
+                  <div className={`social-sub-card ${!item.read ? 'unread' : ''}`} key={Utils.generateString(10)}>
                     <div className="content-avatar">
                       {title === 'Notifications' ? (
                         <Avatar
@@ -66,7 +66,13 @@ const Dropdown = ({
                     </div>
                     {title === 'Notifications' && (
                       <div className="content-icons">
-                        <FaTrashAlt className="trash" onClick={() => onDeleteNotification(item?._id)} />
+                        <FaTrashAlt
+                          className="trash"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDeleteNotification(item?._id);
+                          }}
+                        />
                         {item?.read ? <FaRegCircle className="circle" /> : <FaCircle className="circle" />}
                       </div>
                     )}
@@ -82,6 +88,12 @@ const Dropdown = ({
             {title === 'Settings' && (
               <div className="social-sub-button">
                 <Button label="Sign out" className="button signOut" handleClick={onLogout} />
+              </div>
+            )}
+
+            {title === 'Notifications' && data && data.length > 0 && (
+              <div className="social-sub-button">
+                <Button label="View All" className="button viewAll" handleClick={onNavigate} />
               </div>
             )}
           </div>

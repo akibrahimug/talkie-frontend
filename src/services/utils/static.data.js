@@ -1,7 +1,3 @@
-import blessed from '@assets/feelings/blessed.jpg';
-import excited from '@assets/feelings/excited.jpg';
-import happy from '@assets/feelings/happy.jpg';
-import loved from '@assets/feelings/loved.jpg';
 import Icon from '@components/icons';
 import React from 'react';
 
@@ -60,22 +56,22 @@ export const feelingsList = [
   {
     index: 0,
     name: 'happy',
-    image: happy
+    icon: <Icon name="Smiley" weight="fill" className="feeling-icon" />
   },
   {
     index: 1,
     name: 'excited',
-    image: excited
+    icon: <Icon name="Star" weight="fill" className="feeling-icon" />
   },
   {
     index: 2,
     name: 'blessed',
-    image: blessed
+    icon: <Icon name="HandsClapping" weight="fill" className="feeling-icon" />
   },
   {
     index: 3,
     name: 'loved',
-    image: loved
+    icon: <Icon name="Heart" weight="fill" className="feeling-icon" />
   }
 ];
 

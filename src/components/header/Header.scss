@@ -241,7 +241,7 @@ header {
           .profile-name {
             margin-left: 8px;
             font-weight: 600;
-            color: var(--black-1);
+            color: var(--black-3);
             max-width: 100px;
             white-space: nowrap;
             overflow: hidden;
@@ -505,10 +505,6 @@ header {
           position: relative;
           transition: background-color 0.2s ease;
 
-          &:hover {
-            background-color: var(--white-3);
-          }
-
           .bg-danger-dots {
             background-color: var(--error);
             right: 0;
@@ -555,7 +551,7 @@ header {
         }
 
         .profile-name {
-          color: var(--black-1);
+          color: var(--black-3);
           font-size: 15px;
           margin-left: 8px;
           text-transform: capitalize;

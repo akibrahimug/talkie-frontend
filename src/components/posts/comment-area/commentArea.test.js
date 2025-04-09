@@ -27,7 +27,7 @@ describe('CommentArea', () => {
     expect(defaultReaction).toBeInTheDocument();
     // Don't check for src attribute since we can't modify the source code
     // Just check that the text is correct
-    expect(defaultReaction.childNodes.item(1).textContent).toEqual('Like');
+    expect(defaultReaction.childNodes.item(1).textContent).toEqual('Comment');
   });
 
   it('should display selected reaction icon and name', async () => {

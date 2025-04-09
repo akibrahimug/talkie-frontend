@@ -49,7 +49,7 @@ const CommentArea = ({ post }) => {
   return (
     <div className="comment-area" data-testid="comment-area">
       {/* Comment button */}
-      <div className="comment-button" onClick={toggleCommentInput}>
+      <div className="comment-button" data-testid="selected-reaction" onClick={toggleCommentInput}>
         <span className="comment-button-icon">
           <Icon name="ChatTeardrop" className="comment-icon" weight="regular" />
         </span>

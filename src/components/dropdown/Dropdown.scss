@@ -86,9 +86,27 @@
             grid-template-rows: 1fr;
             width: 100%;
             cursor: pointer;
+            transition: all 0.2s ease;
 
             &:hover {
               background-color: var(--white-2);
+            }
+
+            // Style for unread notifications
+            &.unread {
+              background-color: rgba(var(--primary-rgb), 0.05);
+              border-left: 3px solid var(--primary-1);
+
+              .content-body {
+                h6.title {
+                  color: var(--primary-1);
+                  font-weight: 700;
+                }
+              }
+
+              &:hover {
+                background-color: rgba(var(--primary-rgb), 0.1);
+              }
             }
 
             .content-avatar {
@@ -145,6 +163,7 @@
               .trash {
                 font-size: 16px;
                 color: var(--gray-8);
+                transition: color 0.2s ease;
 
                 &:hover {
                   color: var(--red-1);
@@ -178,6 +197,21 @@
               background-color: var(--white-4);
             }
           }
+
+          .button.viewAll {
+            width: 100%;
+            background-color: var(--primary-1);
+            color: var(--white-1);
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 16px;
+            transition: background-color 0.2s ease;
+
+            &:hover {
+              background-color: var(--primary-2);
+            }
+          }
         }
       }
     }
@@ -204,4 +238,8 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+:root {
+  --primary-rgb: 0, 149, 246; /* Define RGB for primary color for rgba usage */
 }

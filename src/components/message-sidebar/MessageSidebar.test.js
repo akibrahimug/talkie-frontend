@@ -65,8 +65,8 @@ describe('MessageSidebar', () => {
       messageNotifications: [messageData, messageData],
       openChatPage
     };
-    const { baseElement } = render(<MessageSidebar {...props} />);
-    const messageCard = baseElement.querySelectorAll('.message-sub-card');
+    render(<MessageSidebar {...props} />);
+    const messageCard = screen.getAllByTestId('message-sub-card');
     userEvent.click(messageCard[0]);
     expect(openChatPage).toHaveBeenCalledTimes(1);
   });

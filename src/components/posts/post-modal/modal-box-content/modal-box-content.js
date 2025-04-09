@@ -46,9 +46,13 @@ const ModalBoxContent = () => {
           {profile?.username}
         </h5>
         {feeling?.name && (
-          <p className="inline-display" data-testid="box-feeling">
-            is feeling <img className="feeling-icon" src={`${feeling?.image}`} alt="" /> <span>{feeling?.name}</span>
-          </p>
+          <div className="inline-display" data-testid="box-feeling">
+            <span>is feeling</span>
+            <span className="feeling-icon">
+              {typeof feeling?.icon === 'object' ? feeling?.icon : <img src={feeling?.image || 'happy.jpg'} alt="" />}
+            </span>
+            <span className="feeling-name">{feeling?.name}</span>
+          </div>
         )}
         <div
           data-testid="box-text-display"
@@ -59,7 +63,13 @@ const ModalBoxContent = () => {
             {selectedItem.topText}
           </div>
           <div ref={privacyRef}>
-            <SelectDropdown isActive={tooglePrivacy} items={privacyList} setSelectedItem={setSelectedItem} />
+            <SelectDropdown
+              isActive={tooglePrivacy}
+              items={privacyList}
+              setSelectedItem={setSelectedItem}
+              parentRef={privacyRef}
+              updateRedux={true}
+            />
           </div>
         </div>
       </div>

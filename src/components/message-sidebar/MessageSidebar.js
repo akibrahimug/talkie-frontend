@@ -23,7 +23,8 @@ const MessageSidebar = ({ profile, messageCount, messageNotifications, openChatP
               {messageNotifications && messageNotifications.length > 0 ? (
                 messageNotifications.map((notification) => (
                   <div
-                    className="social-sub-card"
+                    className="social-sub-card message-sub-card"
+                    data-testid="message-sub-card"
                     key={Utils.generateString(10)}
                     onClick={() => openChatPage(notification)}>
                     <div className="content-avatar">
