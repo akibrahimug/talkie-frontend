@@ -6,7 +6,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { postService } from '@services/api/post/post.service';
 import { reactionsMap } from '@services/utils/static.data';
 import { updatePostItem, clearPost } from '@redux/reducers/post/post.reducer';
-import { toggleReactionsModal, toggleDeleteDialog, openModal } from '@redux/reducers/modal/modal.reducer';
+import { toggleReactionsModal } from '@redux/reducers/modal/modal.reducer';
 import ExpandableComments from '@components/posts/expandable-comments/ExpandableComments';
 import Reactions from '@components/posts/reactions/reactions';
 import { cloneDeep, filter } from 'lodash';
@@ -25,12 +25,12 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
   const { profile } = useSelector((state) => state.user);
   let { reactions: userReactions = [] } = useSelector((state) => state.userPostReactions || { reactions: [] });
   const [post, setPost] = useState(initialPost);
-  const [postReactions, setPostReactions] = useState([]);
+  // const [setPostReactions] = useState([]);
   const [reactions, setReactions] = useState([]);
   // const [postCommentNames] = useState([]);
-  const [isLoadingReactions, setIsLoadingReactions] = useState(false);
+  // const [isLoadingReactions, setIsLoadingReactions] = useState(false);
   // const [isLoadingComments] = useState(false);
-  const [hasLoadedReactions, setHasLoadedReactions] = useState(false);
+  // const [hasLoadedReactions, setHasLoadedReactions] = useState(false);
   const [commentsExpanded, setCommentsExpanded] = useState(false);
   const [userSelectedReaction, setUserSelectedReaction] = useState('');
   const reactionsTimeoutRef = useRef(null);
@@ -38,7 +38,7 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
   const dispatch = useDispatch();
   const [showReactionsMenu, setShowReactionsMenu] = useState(false);
   const hideTimeoutRef = useRef(null);
-  const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
+  const [setShowSettingsDropdown] = useState(false);
   const settingsDropdownRef = useRef(null);
 
   // Update local post state when initialPost changes
@@ -50,20 +50,20 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
    * @description Fetches the reactions for a post
    * @returns {void}
    */
-  const getPostReactions = useCallback(async () => {
-    if (hasLoadedReactions || isLoadingReactions) return;
+  // const getPostReactions = useCallback(async () => {
+  //   if (hasLoadedReactions || isLoadingReactions) return;
 
-    setIsLoadingReactions(true);
-    try {
-      const response = await postService.getPostReactions(post?._id);
-      setPostReactions(response.data.reactions);
-      setHasLoadedReactions(true);
-    } catch (error) {
-      console.log('Error fetching reactions:', error?.response?.data?.message || error.message);
-    } finally {
-      setIsLoadingReactions(false);
-    }
-  }, [post?._id, hasLoadedReactions, isLoadingReactions]);
+  //   setIsLoadingReactions(true);
+  //   try {
+  //     const response = await postService.getPostReactions(post?._id);
+  //     setPostReactions(response.data.reactions);
+  //     setHasLoadedReactions(true);
+  //   } catch (error) {
+  //     console.log('Error fetching reactions:', error?.response?.data?.message || error.message);
+  //   } finally {
+  //     setIsLoadingReactions(false);
+  //   }
+  // }, [post?._id, hasLoadedReactions, isLoadingReactions]);
 
   /**
    * @description Gets the user's reaction to this post
@@ -90,12 +90,12 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
    * @description Delayed fetch for reactions on hover
    * @returns {void}
    */
-  const handleReactionsHover = () => {
-    if (reactionsTimeoutRef.current) clearTimeout(reactionsTimeoutRef.current);
-    reactionsTimeoutRef.current = setTimeout(() => {
-      getPostReactions();
-    }, 300);
-  };
+  // const handleReactionsHover = () => {
+  //   if (reactionsTimeoutRef.current) clearTimeout(reactionsTimeoutRef.current);
+  //   reactionsTimeoutRef.current = setTimeout(() => {
+  //     getPostReactions();
+  //   }, 300);
+  // };
 
   /**
    * @description Sums all the reactions
@@ -158,6 +158,7 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
     setCommentsExpanded((prevState) => {
       // If we're opening comments (prevState is false)
       if (!prevState) {
+        // set the comments section to open on the first click
         try {
           // Prepare the post data
           const postWithoutMedia = PostUtils.preparePostWithoutMedia(post);
@@ -234,10 +235,6 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
       const hasExistingReaction = Object.keys(reactionResponse.data.reactions).length > 0;
       const previousReaction = hasExistingReaction ? reactionResponse.data.reactions.type : '';
       const isSameReaction = previousReaction === reaction;
-
-      console.log('Has existing reaction?', hasExistingReaction);
-      console.log('Previous reaction:', previousReaction);
-      console.log('Is same reaction?', isSameReaction);
 
       // Update UI immediately for better user experience
       if (!hasExistingReaction) {
@@ -520,68 +517,71 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
    * @description Opens the post edit modal
    * @returns {void}
    */
-  const openPostModal = () => {
-    try {
-      // Create a clean copy of the post data for editing
-      const postData = {
-        _id: post._id,
-        post: post.post,
-        bgColor: post.bgColor,
-        privacy: post.privacy,
-        feelings: post.feelings,
-        gifUrl: post.gifUrl,
-        image: post.imgId ? Utils.getImage(post.imgId, post.imgVersion) : '',
-        video: post.videoId ? Utils.getVideo(post.videoId, post.videoVersion) : '',
-        // Preserve user-related fields to ensure the avatar displays correctly
-        profilePicture: post.profilePicture,
-        avatarColor: post.avatarColor,
-        username: post.username
-      };
+  // const openPostModal = () => {
+  //   try {
+  //     // Create a clean copy of the post data for editing
+  //     const postData = {
+  //       _id: post._id,
+  //       post: post.post,
+  //       bgColor: post.bgColor,
+  //       privacy: post.privacy,
+  //       feelings: post.feelings,
+  //       gifUrl: post.gifUrl,
+  //       image: post.imgId ? Utils.getImage(post.imgId, post.imgVersion) : '',
+  //       video: post.videoId ? Utils.getVideo(post.videoId, post.videoVersion) : '',
+  //       // Preserve user-related fields to ensure the avatar displays correctly
+  //       profilePicture: post.profilePicture,
+  //       avatarColor: post.avatarColor,
+  //       username: post.username
+  //     };
 
-      // First update post data in Redux
-      dispatch(updatePostItem(postData));
+  //     // First update post data in Redux
+  //     dispatch(updatePostItem(postData));
 
-      // Then open the modal with edit type
-      setTimeout(() => {
-        dispatch(openModal({ type: 'edit' }));
-        setShowSettingsDropdown(false);
-      }, 100);
+  //     // Then open the modal with edit type
+  //     setTimeout(() => {
+  //       dispatch(openModal({ type: 'edit' }));
+  //       setShowSettingsDropdown(false);
+  //     }, 100);
 
-      console.log('Opening post modal for editing:', postData);
-    } catch (error) {
-      console.error('Error opening edit modal:', error);
-      Utils.dispatchNotification(dispatch, 'Failed to open edit modal. Please try again.', 'error');
-    }
-  };
+  //     console.log('Opening post modal for editing:', postData);
+  //   } catch (error) {
+  //     console.error('Error opening edit modal:', error);
+  //     Utils.dispatchNotification(dispatch, 'Failed to open edit modal. Please try again.', 'error');
+  //   }
+  // };
 
   /**
    * @description Opens the delete post confirmation dialog
    * @returns {void}
    */
-  const openDeleteDialog = () => {
-    dispatch(toggleDeleteDialog({ toggle: true }));
-    dispatch(updatePostItem(post));
-    setShowSettingsDropdown(false);
-  };
+  // const openDeleteDialog = () => {
+  //   dispatch(toggleDeleteDialog({ toggle: true }));
+  //   dispatch(updatePostItem(post));
+  //   setShowSettingsDropdown(false);
+  // };
 
   /**
    * @description Toggles the settings dropdown
    * @returns {void}
    */
-  const toggleSettingsDropdown = () => {
-    setShowSettingsDropdown(!showSettingsDropdown);
-  };
+  // const toggleSettingsDropdown = () => {
+  //   setShowSettingsDropdown(!showSettingsDropdown);
+  // };
 
   /**
    * @description Closes the settings dropdown when clicking outside
    * @param {Event} event - The click event
    * @returns {void}
    */
-  const handleClickOutside = useCallback((event) => {
-    if (settingsDropdownRef.current && !settingsDropdownRef.current.contains(event.target)) {
-      setShowSettingsDropdown(false);
-    }
-  }, []);
+  const handleClickOutside = useCallback(
+    (event) => {
+      if (settingsDropdownRef.current && !settingsDropdownRef.current.contains(event.target)) {
+        setShowSettingsDropdown(false);
+      }
+    },
+    [setShowSettingsDropdown]
+  );
 
   // Add event listener for clicking outside the dropdown
   useEffect(() => {
