@@ -67,6 +67,9 @@ export class NotificationUtils {
     });
   };
 
+  // Track notifications that have already been shown in a dialog
+  static displayedNotifications = new Set();
+
   /**
    * Map notification dropdown items.
    * @param {object} notificationData - The notification data
@@ -120,7 +123,12 @@ export class NotificationUtils {
    *
    */
   static async markMessageAsRead(messageId, notification, setNotificationDialogContent) {
-    if (notification.notificationType !== 'follows') {
+    // Don't show notification if:
+    // 1. It's a follow notification
+    // 2. It has already been displayed
+    if (notification.notificationType !== 'follows' && !this.displayedNotifications.has(messageId)) {
+      console.log('Displaying notification dialog for:', notification?.post);
+
       const notificationDialog = {
         createdAt: notification?.createdAt,
         post: notification?.post,
@@ -134,7 +142,26 @@ export class NotificationUtils {
         senderName: notification?.userFrom ? notification?.userFrom.username : notification?.username
       };
       setNotificationDialogContent(notificationDialog);
+
+      // Add this notification to the set of displayed notifications
+      this.displayedNotifications.add(messageId);
+    } else {
+      console.log('Skipping notification dialog display.');
     }
+
+    // Always mark the notification as read in the database
     await notificationsService.markNotificationAsRead(messageId);
+  }
+
+  /**
+   * Reset the displayed notification for a specific ID or clear all if no ID provided
+   * @param {string} messageId - Optional messageId to reset
+   */
+  static resetDisplayedNotification(messageId = null) {
+    if (messageId) {
+      this.displayedNotifications.delete(messageId);
+    } else {
+      this.displayedNotifications.clear();
+    }
   }
 }

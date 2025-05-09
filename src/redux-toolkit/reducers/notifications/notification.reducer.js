@@ -4,6 +4,7 @@ import errorIcon from '@assets/images/error.svg';
 import infoIcon from '@assets/images/info.svg';
 import warningIcon from '@assets/images/warning.svg';
 import { cloneDeep, uniqBy } from 'lodash';
+import { socketService } from '@services/sockets/socket.service';
 
 /**
  * Initial state for the notification slice.
@@ -44,6 +45,14 @@ const notificationSlice = createSlice({
       list.unshift(toastItem);
 
       list = [...uniqBy(list, 'description')];
+
+      // Emit socket refresh event for non-error/info notifications
+      if (socketService?.socket && type !== 'error' && type !== 'info') {
+        socketService.socket.emit('refresh notification', {
+          userTo: socketService.socket.id
+        });
+      }
+
       return list;
     },
     /**

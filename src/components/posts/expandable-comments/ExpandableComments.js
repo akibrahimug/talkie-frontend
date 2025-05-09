@@ -3,12 +3,12 @@ import '@components/posts/expandable-comments/ExpandableComments.scss';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { postService } from '@services/api/post/post.service';
-import { updatePostItem, clearPost } from '@redux/reducers/post/post.reducer';
+import { clearPost } from '@redux/reducers/post/post.reducer';
 import Avatar from '@components/avatar/Avatar';
 import { Utils } from '@services/utils/utils.service';
 import { timeAgo } from '@services/utils/timeago.utils.service';
 import { socketService } from '@services/sockets/socket.service';
-import { PostUtils } from '@services/utils/post.utils.service';
+// import { PostUtils } from '@services/utils/post.utils.service';
 import { CommentUtils } from '@services/utils/comment.utils.service';
 import Icon from '@components/icons';
 
@@ -32,15 +32,15 @@ const ExpandableComments = ({ post, isExpanded, onToggle }) => {
   /**
    * @description Clears image and GIF data from Redux store without removing other post data
    */
-  const clearPostMedia = () => {
-    // Instead of manually clearing fields, use the utility function
-    if (post) {
-      CommentUtils.handleCommentOperation(post, dispatch);
-    } else {
-      // If no post is provided, just clear everything
-      dispatch(clearPost());
-    }
-  };
+  // const clearPostMedia = () => {
+  //   // Instead of manually clearing fields, use the utility function
+  //   if (post) {
+  //     CommentUtils.handleCommentOperation(post, dispatch);
+  //   } else {
+  //     // If no post is provided, just clear everything
+  //     dispatch(clearPost());
+  //   }
+  // };
 
   /**
    * @description Fetches comments for the post

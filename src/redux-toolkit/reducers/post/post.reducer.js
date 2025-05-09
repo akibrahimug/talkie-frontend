@@ -16,6 +16,7 @@ const postSlice = createSlice({
         state[key] = value;
       }
     },
+
     /**
      * Clear post.
      * @param {object} state - The state

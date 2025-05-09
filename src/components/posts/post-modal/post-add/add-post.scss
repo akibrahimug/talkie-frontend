@@ -201,20 +201,31 @@ hr {
 
     .inline-display {
       margin-bottom: 0;
-      display: inline-block;
-      height: 18px;
-
-      .feeling-icon {
-        object-fit: cover;
-        width: 20px;
-        height: 20px;
-        vertical-align: bottom;
-      }
+      display: flex;
+      align-items: center;
+      height: auto;
+      font-size: 14px;
 
       span {
-        display: contents;
-        font-weight: bolder;
-        color: var(--gray-3);
+        white-space: nowrap;
+      }
+
+      .feeling-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 4px;
+
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
+
+      .feeling-name {
+        font-weight: 600;
+        color: var(--primary-1);
+        text-transform: capitalize;
       }
     }
 
@@ -338,6 +349,15 @@ hr {
 
 .modal-box-selection {
   padding: 10px 15px;
+  position: relative;
+
+  .feelings-picker-container {
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 100%;
+    z-index: 200;
+  }
 
   .post-form-list {
     padding: 0;

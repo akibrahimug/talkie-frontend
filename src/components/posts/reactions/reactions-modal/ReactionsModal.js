@@ -1,6 +1,6 @@
-import ReactionWrapper from '@components/posts/modal-wrappers/reaction-wrapper/reaction-wrapper';
+// import ReactionWrapper from '@components/posts/modal-wrappers/reaction-wrapper/reaction-wrapper';
 import ReactionList from '@components/posts/reactions/reactions-modal/reaction-list/ReactionList';
-import useEffectOnce from '@hooks/useEffectOnce';
+// import useEffectOnce from '@hooks/useEffectOnce';
 import { closeModal } from '@redux/reducers/modal/modal.reducer';
 import { clearPost } from '@redux/reducers/post/post.reducer';
 import { postService } from '@services/api/post/post.service';
@@ -40,6 +40,29 @@ const ReactionsModal = () => {
       const response = await postService.getPostReactions(_id);
       console.log('Reactions API response:', response.data);
 
+      // Additional debugging to see duplicate reactions
+      if (response.data?.reactions) {
+        const userCounts = {};
+        response.data.reactions.forEach((reaction) => {
+          if (!userCounts[reaction.userId]) {
+            userCounts[reaction.userId] = 0;
+          }
+          userCounts[reaction.userId]++;
+        });
+
+        // Log any users with multiple reactions
+        const duplicateUsers = Object.entries(userCounts)
+          .filter(([userId, count]) => count > 1)
+          .map(([userId, count]) => {
+            const userReactions = response.data.reactions.filter((r) => r.userId === userId);
+            return { userId, count, reactions: userReactions };
+          });
+
+        if (duplicateUsers.length > 0) {
+          console.warn('Found duplicate user reactions:', duplicateUsers);
+        }
+      }
+
       // Explicit check to ensure we only process responses for the current post ID
       if (response.data?.postId && response.data.postId !== _id) {
         console.error('Received reactions for wrong post ID', {
@@ -58,7 +81,28 @@ const ReactionsModal = () => {
         console.log('Filtered reactions to ensure only for this post:', filteredReactions.length);
       }
 
-      const orderedPosts = orderBy(filteredReactions, ['createdAt'], ['desc']);
+      // Deduplicate reactions by userId (keep only the most recent reaction from each user)
+      const uniqueReactions = filteredReactions.reduce((acc, reaction) => {
+        const existingIndex = acc.findIndex((r) => r.userId === reaction.userId);
+
+        if (existingIndex === -1) {
+          // If this is the first reaction from this user, add it
+          return [...acc, reaction];
+        }
+
+        // If we have a reaction from this user already, keep the most recent one
+        if (new Date(reaction.createdAt) > new Date(acc[existingIndex].createdAt)) {
+          const updated = [...acc];
+          updated[existingIndex] = reaction;
+          return updated;
+        }
+
+        return acc;
+      }, []);
+
+      console.log('Reactions after deduplication:', uniqueReactions.length);
+
+      const orderedPosts = orderBy(uniqueReactions, ['createdAt'], ['desc']);
       setPostReactions(orderedPosts);
       setReactionsOfPost(orderedPosts);
       setFormattedReactions(Utils.formattedReactions(reactions));

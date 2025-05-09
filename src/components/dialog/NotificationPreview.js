@@ -1,6 +1,8 @@
 import Button from '@components/button/Button';
 import { reactionsMap } from '@services/utils/static.data';
 import PropTypes from 'prop-types';
+import { useEffect } from 'react';
+import { NotificationUtils } from '@services/utils/notification.utils.service';
 
 import '@components/dialog/NotificationPreview.scss';
 
@@ -12,8 +14,38 @@ const NotificationPreview = ({
   reaction,
   senderName,
   secondButtonText,
-  secondBtnHandler
+  secondBtnHandler,
+  notificationId,
+  addToNotifications
 }) => {
+  // Create a wrapper for the secondBtnHandler to also reset the notification tracking
+  const handleClose = () => {
+    // Reset tracking for this specific notification if ID is provided
+    if (notificationId) {
+      NotificationUtils.resetDisplayedNotification(notificationId);
+    }
+
+    // Add to notifications section if callback is provided
+    if (addToNotifications) {
+      addToNotifications();
+    }
+
+    // Call the original handler
+    if (secondBtnHandler) {
+      secondBtnHandler();
+    }
+  };
+
+  // Auto-dismiss notification after 2 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleClose();
+    }, 2000); // 2 seconds
+
+    // Clean up timer when component unmounts
+    return () => clearTimeout(timer);
+  }, [notificationId, addToNotifications, secondBtnHandler]); // Add dependencies to prevent stale closures
+
   return (
     <>
       <div className="notification-preview-container" data-testid="notification-preview">
@@ -31,7 +63,7 @@ const NotificationPreview = ({
             )}
           </div>
           <div className="btn-container">
-            <Button className="button cancel-btn" label={secondButtonText} handleClick={secondBtnHandler} />
+            <Button className="button cancel-btn" label={secondButtonText} handleClick={handleClose} />
           </div>
         </div>
       </div>
@@ -47,7 +79,9 @@ NotificationPreview.propTypes = {
   reaction: PropTypes.string,
   senderName: PropTypes.string,
   secondButtonText: PropTypes.string,
-  secondBtnHandler: PropTypes.func
+  secondBtnHandler: PropTypes.func,
+  notificationId: PropTypes.string,
+  addToNotifications: PropTypes.func
 };
 
 export default NotificationPreview;

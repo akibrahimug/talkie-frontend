@@ -11,7 +11,7 @@ import { FaGlobe } from 'react-icons/fa';
 import Avatar from '@components/avatar/Avatar';
 import SelectDropdown from '@components/select-dropdown/selectDropdown';
 import useDetectOutsideClick from '@hooks/useDetectOutsideClick';
-import { privacyList } from '@services/utils/static.data';
+import { privacyList, feelingsList } from '@services/utils/static.data';
 import { find } from 'lodash';
 import PostHeader from '@components/posts/post-form/post-header/PostHeader';
 import TextInput from '@components/posts/post-form/text-input/TextInput';
@@ -570,6 +570,11 @@ const PostForm = () => {
     // This function is used by the PostUtils.sendPostWithFileRequest method
   };
 
+  const getFeelingIcon = (name) => {
+    const feeling = find(feelingsList, (data) => data.name === name);
+    return feeling?.icon;
+  };
+
   return (
     <div className="post-form-container" ref={containerRef} data-testid="post-form">
       <div className="post-form">
@@ -591,7 +596,9 @@ const PostForm = () => {
                 <div className="user-info-details">
                   {userFeeling && (
                     <div className="user-feeling-display">
-                      is feeling <span>{userFeeling}</span>
+                      <span>is feeling</span>
+                      <span className="feeling-icon">{getFeelingIcon(userFeeling)}</span>
+                      <span className="feeling-text">{userFeeling}</span>
                       <button className="remove-feeling" onClick={() => setUserFeeling(null)}>
                         ×
                       </button>
@@ -612,6 +619,7 @@ const PostForm = () => {
                     items={privacyList}
                     setSelectedItem={setSelectedPrivacy}
                     parentRef={privacyRef}
+                    updateRedux={true}
                   />
                 </div>
               </div>

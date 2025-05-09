@@ -9,11 +9,13 @@ import useEffectOnce from '@hooks/useEffectOnce';
 import { NotificationUtils } from '@services/utils/notification.utils.service';
 import NotificationPreview from '@components/dialog/NotificationPreview';
 import { timeAgo } from '@services/utils/timeago.utils.service';
+import { socketService } from '@services/sockets/socket.service';
 
 const Notification = () => {
   const { profile } = useSelector((state) => state.user);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentNotificationId, setCurrentNotificationId] = useState('');
   const [notificationDialogContent, setNotificationDialogContent] = useState({
     post: '',
     imgUrl: '',
@@ -37,6 +39,7 @@ const Notification = () => {
 
   const markAsRead = async (notification) => {
     try {
+      setCurrentNotificationId(notification?._id);
       NotificationUtils.markMessageAsRead(notification?._id, notification, setNotificationDialogContent);
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Error marking notification as read';
@@ -55,12 +58,29 @@ const Notification = () => {
     }
   };
 
+  // Handle refresh notifications event
+  const handleRefreshNotifications = async () => {
+    await getUserNotifications();
+  };
+
   useEffectOnce(() => {
     getUserNotifications();
   });
 
   useEffect(() => {
     NotificationUtils.socketIONotification(profile, notifications, setNotifications, 'notificationPage');
+
+    // Setup socket event listeners for refresh notifications
+    if (socketService?.socket) {
+      socketService.socket.on('refresh notifications', handleRefreshNotifications);
+    }
+
+    // Cleanup function
+    return () => {
+      if (socketService?.socket) {
+        socketService.socket.off('refresh notifications');
+      }
+    };
   }, [profile, notifications]);
 
   return (
@@ -73,7 +93,11 @@ const Notification = () => {
           comment={notificationDialogContent?.comment}
           reaction={notificationDialogContent?.reaction}
           senderName={notificationDialogContent?.senderName}
+          notificationId={currentNotificationId}
           secondButtonText="Close"
+          addToNotifications={() => {
+            console.log('Notification already in list, no need to add');
+          }}
           secondBtnHandler={() => {
             setNotificationDialogContent({
               post: '',
@@ -82,6 +106,7 @@ const Notification = () => {
               reaction: '',
               senderName: ''
             });
+            setCurrentNotificationId('');
           }}
         />
       )}

@@ -6,7 +6,7 @@ import '@components/header/Header.scss';
 import Avatar from '@components/avatar/Avatar';
 import { Utils } from '@services/utils/utils.service';
 import { ProfileUtils } from '@services/utils/profile-utils.service';
-import useDetectOutsidelick from '@hooks/useDetectOutsideClick';
+import useDetectOutsideClick from '@hooks/useDetectOutsideClick';
 import MessageSidebar from '@components/message-sidebar/MessageSidebar';
 import { useSelector } from 'react-redux';
 import Dropdown from '@components/dropdown/Dropdown';
@@ -20,6 +20,7 @@ import { notificationsService } from '@services/api/notications/notifications.se
 import { NotificationUtils } from '@services/utils/notification.utils.service';
 import NotificationPreview from '@components/dialog/NotificationPreview';
 import { socketService } from '@services/sockets/socket.service';
+import { chatService } from '@services/api/chat/chat.service';
 
 const Header = () => {
   const { profile } = useSelector((state) => state.user);
@@ -28,15 +29,17 @@ const Header = () => {
   const messagesRef = useRef(null);
   const notificationsRef = useRef(null);
   const settingsRef = useRef(null);
-  const [isMessagesActive, setIsMessagesActive] = useDetectOutsidelick(messagesRef, false);
-  const [isNotificationsActive, setIsNotificationsActive] = useDetectOutsidelick(notificationsRef, false);
-  const [isSettingsActive, setIsSettingsActive] = useDetectOutsidelick(settingsRef, false);
+  const [isMessagesActive, setIsMessagesActive] = useDetectOutsideClick(messagesRef, false);
+  const [isNotificationsActive, setIsNotificationsActive] = useDetectOutsideClick(notificationsRef, false);
+  const [isSettingsActive, setIsSettingsActive] = useDetectOutsideClick(settingsRef, false);
   const [deleteStorageUsername] = useLocalStorage('username', 'delete');
   const [setLoggedIn] = useLocalStorage('keepLoggedIn', 'delete');
   const [deleteSessionPayload] = useSessionStorage('pageReload', 'delete');
   const dispatch = useDispatch();
   const [notifications, setNotifications] = useState([]);
   const [notificationCount, setNotificationCount] = useState(0);
+  const [messageCount, setMessageCount] = useState(0);
+  const [currentNotificationId, setCurrentNotificationId] = useState('');
   const [notificationDialogContent, setNotificationDialogContent] = useState({
     post: '',
     imgUrl: '',
@@ -45,27 +48,75 @@ const Header = () => {
     senderName: ''
   });
   const [storedUsername] = useLocalStorage('username', 'get');
+  const navigate = useNavigate();
 
   const backgroundColor = `${env === 'DEV' ? '#50b5ff' : env === 'STG' ? '#e9710f' : ''}`;
 
   const getUserNotifications = async () => {
     try {
+      console.log('Fetching user notifications...');
       const response = await notificationsService.getUserNotifications();
+      console.log('Notifications response:', response.data.notifications);
+
+      // Map notification items to dropdown items with proper count calculation
       const mappedNotifications = NotificationUtils.mapNotificationDropdownItems(
         response.data.notifications,
         setNotificationCount
       );
+
+      console.log('Mapped notifications for dropdown:', mappedNotifications);
       setNotifications(mappedNotifications);
-      socketService?.socket.emit('setup', { userId: storedUsername });
+
+      // Setup socket connection
+      socketService?.socket?.emit('setup', { userId: storedUsername });
     } catch (error) {
+      console.error('Error fetching notifications:', error);
       const errorMessage = error.response?.data?.message || 'Error fetching notifications';
       Utils.dispatchNotification(dispatch, errorMessage, 'error');
     }
   };
 
+  // Get unread messages count from server
+  const getUnreadMessages = async () => {
+    try {
+      // Use our new chat service to get the actual unread count
+      const response = await chatService.getUnreadMessagesCount();
+      setMessageCount(response?.data?.unreadCount || 0);
+
+      console.log('Unread messages count set to:', response?.data?.unreadCount);
+
+      // Listen for new messages via socket - this is handled in the useEffect where we set up socket listeners
+      return () => {
+        // No cleanup needed here as it's handled in the useEffect
+      };
+    } catch (error) {
+      console.error('Error fetching unread messages count:', error);
+      setMessageCount(0);
+      return () => {}; // Return empty function for cleanup
+    }
+  };
+
   const onMarkAsRead = async (notification) => {
     try {
-      await notificationsService.markNotificationAsRead(notification?._id);
+      setCurrentNotificationId(notification?._id);
+      await NotificationUtils.markMessageAsRead(notification?._id, notification, setNotificationDialogContent);
+
+      const updatedNotifications = notifications.map((item) => {
+        if (item._id === notification._id) {
+          return { ...item, read: true };
+        }
+        return item;
+      });
+
+      setNotifications(updatedNotifications);
+
+      if (!notification.read) {
+        setNotificationCount((prev) => Math.max(0, prev - 1));
+      }
+
+      setTimeout(() => {
+        setIsNotificationsActive(false);
+      }, 500);
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Error marking notification as read';
       Utils.dispatchNotification(dispatch, errorMessage, 'error');
@@ -75,6 +126,13 @@ const Header = () => {
   const onDeleteNotification = async (messageId) => {
     try {
       await notificationsService.deleteNotification(messageId);
+
+      const updatedNotifications = notifications.filter((item) => item._id !== messageId);
+      setNotifications(updatedNotifications);
+
+      const unreadCount = updatedNotifications.filter((item) => !item.read).length;
+      setNotificationCount(unreadCount);
+
       Utils.dispatchNotification(dispatch, 'Notification deleted successfully', 'success');
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Error deleting notification';
@@ -82,8 +140,28 @@ const Header = () => {
     }
   };
 
-  const navigate = useNavigate();
-  const openChatPage = () => {};
+  const openChatPage = (messageId) => {
+    // In a real implementation, you would navigate to a chat page
+    // and send a request to mark the message as read
+    console.log('Opening chat for message ID:', messageId);
+
+    // Mark message as read in UI
+    setMessageCount((prevCount) => Math.max(0, prevCount - 1));
+
+    // Emit message read event to server
+    if (socketService?.socket?.connected && messageId) {
+      socketService.socket.emit('message read', { messageId });
+    }
+
+    // Navigate to chat page
+    navigate('/app/social/chat/messages');
+  };
+
+  const navigateToNotificationsPage = () => {
+    setIsNotificationsActive(false);
+    navigate('/app/social/notifications');
+  };
+
   const onLogout = async () => {
     try {
       setLoggedIn(false);
@@ -94,18 +172,62 @@ const Header = () => {
       Utils.dispatchNotification(dispatch, error.response?.data?.message || 'Error logging out', 'error');
     }
   };
+
+  // Handle refresh notifications event
+  const handleRefreshNotifications = async () => {
+    await getUserNotifications();
+  };
+
   useEffectOnce(() => {
     Utils.mapSettingsDropdownItems(setSettings);
     getUserNotifications();
-  }, []);
 
-  useEffect(() => {
-    const enviroment = Utils.appEnviroment();
-    setEnv(enviroment);
+    // Set environment
+    const environment = Utils.appEnviroment();
+    setEnv(environment);
+
+    // Get unread messages and store the cleanup function
+    const cleanupMessageTimer = getUnreadMessages();
+
+    // Return cleanup function
+    return () => {
+      // Clean up message timer when component unmounts
+      if (cleanupMessageTimer) {
+        cleanupMessageTimer();
+      }
+    };
   }, []);
 
   useEffect(() => {
     NotificationUtils.socketIONotification(profile, notifications, setNotifications, 'header', setNotificationCount);
+
+    // Setup socket event listeners for refresh notifications
+    if (socketService?.socket) {
+      socketService.socket.on('refresh notifications', handleRefreshNotifications);
+
+      // Listen for new messages
+      socketService.socket.on('new message', (data) => {
+        console.log('New message received:', data);
+        // Increment message count when new message is received
+        setMessageCount((prevCount) => prevCount + 1);
+      });
+
+      // Listen for message read events
+      socketService.socket.on('message read', (data) => {
+        console.log('Message read event:', data);
+        // Decrement message count when message is read
+        setMessageCount((prevCount) => Math.max(0, prevCount - 1));
+      });
+    }
+
+    // Cleanup function
+    return () => {
+      if (socketService?.socket) {
+        socketService.socket.off('refresh notifications');
+        socketService.socket.off('new message');
+        socketService.socket.off('message read');
+      }
+    };
   }, [profile, notifications]);
 
   return (
@@ -122,7 +244,38 @@ const Header = () => {
               comment={notificationDialogContent?.comment}
               reaction={notificationDialogContent?.reaction}
               senderName={notificationDialogContent?.senderName}
+              notificationId={currentNotificationId}
               secondButtonText="Close"
+              addToNotifications={() => {
+                if (currentNotificationId) {
+                  const exists = notifications.some((notification) => notification._id === currentNotificationId);
+                  if (!exists && Object.values(notificationDialogContent).some((value) => value)) {
+                    const newNotification = {
+                      _id: currentNotificationId,
+                      message: `${notificationDialogContent.senderName} ${
+                        notificationDialogContent.reaction
+                          ? `reacted with ${notificationDialogContent.reaction}`
+                          : notificationDialogContent.comment
+                          ? 'commented on your post'
+                          : 'interacted with your post'
+                      }`,
+                      read: true,
+                      createdAt: new Date().toISOString(),
+                      senderUsername: notificationDialogContent.senderName
+                    };
+
+                    // Update notifications array with new notification
+                    const updatedNotifications = [newNotification, ...notifications];
+                    setNotifications(updatedNotifications);
+
+                    // Recalculate notification count (though this is already read)
+                    const unreadCount = updatedNotifications.filter((item) => !item.read).length;
+                    setNotificationCount(unreadCount);
+
+                    console.log('Added notification to list:', newNotification);
+                  }
+                }
+              }}
               secondBtnHandler={() => {
                 setNotificationDialogContent({
                   post: '',
@@ -131,6 +284,7 @@ const Header = () => {
                   reaction: '',
                   senderName: ''
                 });
+                setCurrentNotificationId('');
               }}
             />
           )}
@@ -179,6 +333,7 @@ const Header = () => {
                         height={400}
                         onMarkAsRead={onMarkAsRead}
                         onDeleteNotification={onDeleteNotification}
+                        onNavigate={navigateToNotificationsPage}
                       />
                     </li>
                   </ul>
@@ -196,18 +351,16 @@ const Header = () => {
                 }}>
                 <span className="header-list-name">
                   <FAIcon icon="FaRegEnvelope" className="header-list-icon" />
-                  {notificationCount > 0 && (
-                    <span className="bg-danger-dots dots" data-testid="messages-dots">
-                      {notificationCount > 99 ? '99+' : notificationCount}
-                    </span>
-                  )}
+                  <span className="bg-danger-dots dots" data-testid="messages-dots">
+                    {messageCount > 0 ? (messageCount > 99 ? '99+' : messageCount) : '0'}
+                  </span>
                 </span>
                 {isMessagesActive && (
                   <ul className="dropdown-ul messages-dropdown-ul" ref={messagesRef}>
                     <li className="dropdown-li">
                       <MessageSidebar
                         profile={profile}
-                        messageCount={notificationCount}
+                        messageCount={messageCount}
                         messageNotifications={[]}
                         openChatPage={openChatPage}
                       />

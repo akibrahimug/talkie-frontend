@@ -9,7 +9,7 @@ import { updatePostItem, clearPost } from '@redux/reducers/post/post.reducer';
 import { toggleReactionsModal } from '@redux/reducers/modal/modal.reducer';
 import ExpandableComments from '@components/posts/expandable-comments/ExpandableComments';
 import Reactions from '@components/posts/reactions/reactions';
-import { cloneDeep, filter, find } from 'lodash';
+import { cloneDeep, filter } from 'lodash';
 import { addReactions } from '@redux/reducers/post/user-post-reaction.reducer';
 import { socketService } from '@services/sockets/socket.service';
 import Icon from '@components/icons';
@@ -21,16 +21,16 @@ import { PostUtils } from '@services/utils/post.utils.service';
  * @returns {JSX} The reactions and comments display component
  */
 const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
-  const { reactionsModalIsOpen } = useSelector((state) => state.modal);
+  // const { reactionsModalIsOpen } = useSelector((state) => state.modal);
   const { profile } = useSelector((state) => state.user);
   let { reactions: userReactions = [] } = useSelector((state) => state.userPostReactions || { reactions: [] });
   const [post, setPost] = useState(initialPost);
-  const [postReactions, setPostReactions] = useState([]);
+  // const [setPostReactions] = useState([]);
   const [reactions, setReactions] = useState([]);
-  const [postCommentNames] = useState([]);
-  const [isLoadingReactions, setIsLoadingReactions] = useState(false);
-  const [isLoadingComments] = useState(false);
-  const [hasLoadedReactions, setHasLoadedReactions] = useState(false);
+  // const [postCommentNames] = useState([]);
+  // const [isLoadingReactions, setIsLoadingReactions] = useState(false);
+  // const [isLoadingComments] = useState(false);
+  // const [hasLoadedReactions, setHasLoadedReactions] = useState(false);
   const [commentsExpanded, setCommentsExpanded] = useState(false);
   const [userSelectedReaction, setUserSelectedReaction] = useState('');
   const reactionsTimeoutRef = useRef(null);
@@ -38,6 +38,8 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
   const dispatch = useDispatch();
   const [showReactionsMenu, setShowReactionsMenu] = useState(false);
   const hideTimeoutRef = useRef(null);
+  const [setShowSettingsDropdown] = useState(false);
+  const settingsDropdownRef = useRef(null);
 
   // Update local post state when initialPost changes
   useEffect(() => {
@@ -48,20 +50,20 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
    * @description Fetches the reactions for a post
    * @returns {void}
    */
-  const getPostReactions = useCallback(async () => {
-    if (hasLoadedReactions || isLoadingReactions) return;
+  // const getPostReactions = useCallback(async () => {
+  //   if (hasLoadedReactions || isLoadingReactions) return;
 
-    setIsLoadingReactions(true);
-    try {
-      const response = await postService.getPostReactions(post?._id);
-      setPostReactions(response.data.reactions);
-      setHasLoadedReactions(true);
-    } catch (error) {
-      console.log('Error fetching reactions:', error?.response?.data?.message || error.message);
-    } finally {
-      setIsLoadingReactions(false);
-    }
-  }, [post?._id, hasLoadedReactions, isLoadingReactions]);
+  //   setIsLoadingReactions(true);
+  //   try {
+  //     const response = await postService.getPostReactions(post?._id);
+  //     setPostReactions(response.data.reactions);
+  //     setHasLoadedReactions(true);
+  //   } catch (error) {
+  //     console.log('Error fetching reactions:', error?.response?.data?.message || error.message);
+  //   } finally {
+  //     setIsLoadingReactions(false);
+  //   }
+  // }, [post?._id, hasLoadedReactions, isLoadingReactions]);
 
   /**
    * @description Gets the user's reaction to this post
@@ -88,12 +90,12 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
    * @description Delayed fetch for reactions on hover
    * @returns {void}
    */
-  const handleReactionsHover = () => {
-    if (reactionsTimeoutRef.current) clearTimeout(reactionsTimeoutRef.current);
-    reactionsTimeoutRef.current = setTimeout(() => {
-      getPostReactions();
-    }, 300);
-  };
+  // const handleReactionsHover = () => {
+  //   if (reactionsTimeoutRef.current) clearTimeout(reactionsTimeoutRef.current);
+  //   reactionsTimeoutRef.current = setTimeout(() => {
+  //     getPostReactions();
+  //   }, 300);
+  // };
 
   /**
    * @description Sums all the reactions
@@ -152,12 +154,30 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
    * @returns {void}
    */
   const toggleCommentsSection = () => {
-    setCommentsExpanded(!commentsExpanded);
-    if (!commentsExpanded) {
-      // Use the utility function to prepare the post without media
-      const postWithoutMedia = PostUtils.preparePostWithoutMedia(post);
-      dispatch(updatePostItem(postWithoutMedia));
-    }
+    // Update the state and use the previous state value to determine if we're opening or closing
+    setCommentsExpanded((prevState) => {
+      // If we're opening comments (prevState is false)
+      if (!prevState) {
+        // set the comments section to open on the first click
+        try {
+          // Prepare the post data
+          const postWithoutMedia = PostUtils.preparePostWithoutMedia(post);
+
+          // Update Redux with the silent action
+          dispatch(
+            updatePostItem({
+              _id: postWithoutMedia._id,
+              post: postWithoutMedia.post,
+              commentsCount: postWithoutMedia.commentsCount
+            })
+          );
+        } catch (error) {
+          console.error('Error preparing post for comments section:', error);
+        }
+      }
+      // Return the toggled state
+      return !prevState;
+    });
   };
 
   /**
@@ -215,10 +235,6 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
       const hasExistingReaction = Object.keys(reactionResponse.data.reactions).length > 0;
       const previousReaction = hasExistingReaction ? reactionResponse.data.reactions.type : '';
       const isSameReaction = previousReaction === reaction;
-
-      console.log('Has existing reaction?', hasExistingReaction);
-      console.log('Previous reaction:', previousReaction);
-      console.log('Is same reaction?', isSameReaction);
 
       // Update UI immediately for better user experience
       if (!hasExistingReaction) {
@@ -497,21 +513,112 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
     };
   }, []);
 
+  /**
+   * @description Opens the post edit modal
+   * @returns {void}
+   */
+  // const openPostModal = () => {
+  //   try {
+  //     // Create a clean copy of the post data for editing
+  //     const postData = {
+  //       _id: post._id,
+  //       post: post.post,
+  //       bgColor: post.bgColor,
+  //       privacy: post.privacy,
+  //       feelings: post.feelings,
+  //       gifUrl: post.gifUrl,
+  //       image: post.imgId ? Utils.getImage(post.imgId, post.imgVersion) : '',
+  //       video: post.videoId ? Utils.getVideo(post.videoId, post.videoVersion) : '',
+  //       // Preserve user-related fields to ensure the avatar displays correctly
+  //       profilePicture: post.profilePicture,
+  //       avatarColor: post.avatarColor,
+  //       username: post.username
+  //     };
+
+  //     // First update post data in Redux
+  //     dispatch(updatePostItem(postData));
+
+  //     // Then open the modal with edit type
+  //     setTimeout(() => {
+  //       dispatch(openModal({ type: 'edit' }));
+  //       setShowSettingsDropdown(false);
+  //     }, 100);
+
+  //     console.log('Opening post modal for editing:', postData);
+  //   } catch (error) {
+  //     console.error('Error opening edit modal:', error);
+  //     Utils.dispatchNotification(dispatch, 'Failed to open edit modal. Please try again.', 'error');
+  //   }
+  // };
+
+  /**
+   * @description Opens the delete post confirmation dialog
+   * @returns {void}
+   */
+  // const openDeleteDialog = () => {
+  //   dispatch(toggleDeleteDialog({ toggle: true }));
+  //   dispatch(updatePostItem(post));
+  //   setShowSettingsDropdown(false);
+  // };
+
+  /**
+   * @description Toggles the settings dropdown
+   * @returns {void}
+   */
+  // const toggleSettingsDropdown = () => {
+  //   setShowSettingsDropdown(!showSettingsDropdown);
+  // };
+
+  /**
+   * @description Closes the settings dropdown when clicking outside
+   * @param {Event} event - The click event
+   * @returns {void}
+   */
+  const handleClickOutside = useCallback(
+    (event) => {
+      if (settingsDropdownRef.current && !settingsDropdownRef.current.contains(event.target)) {
+        setShowSettingsDropdown(false);
+      }
+    },
+    [setShowSettingsDropdown]
+  );
+
+  // Add event listener for clicking outside the dropdown
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [handleClickOutside]);
+
   return (
     <div className="reactions-display">
       <div className="reaction-comments-container">
-        {/* Reactions summary - shows the count and icons */}
-        {reactions.length > 0 && (
-          <div className="reactions-summary" onClick={openReactionsComponent}>
-            <div className="reactions-icons">{renderReactionIcons()}</div>
-            <span className="reactions-count">{sumAllReactions(reactions)}</span>
-          </div>
-        )}
+        {/* Display area for both reactions and comments counts */}
+        <div className="counts-summary-container">
+          {/* Reactions summary - shows the count and icons */}
+          {reactions && reactions.length > 0 && (
+            <div className="reactions-summary" onClick={openReactionsComponent}>
+              <div className="reactions-icons">{renderReactionIcons()}</div>
+              <span className="reactions-count">{sumAllReactions(reactions)}</span>
+            </div>
+          )}
+
+          {/* Comments count summary - with text description instead of icon */}
+          {post?.commentsCount > 0 && (
+            <div className="comments-summary" onClick={toggleCommentsSection}>
+              <span className="comments-count-text">
+                {post.commentsCount} {post.commentsCount === 1 ? 'comment' : 'comments'}
+              </span>
+            </div>
+          )}
+        </div>
 
         {/* Facebook-style reaction buttons */}
         <div className="reaction-buttons-container">
           {/* Like/React button */}
           <div
+            data-testid="selected-reaction"
             className={`reaction-button ${userSelectedReaction ? `selected-${userSelectedReaction}` : ''}`}
             onMouseEnter={handleShowReactionsMenu}
             onMouseLeave={handleHideReactionsMenu}
@@ -521,16 +628,22 @@ const ReactionsAndCommentsDisplay = ({ post: initialPost }) => {
             {/* Reactions hover menu */}
             {showReactionsMenu && (
               <div
+                data-testid="reactions"
                 className="reactions-menu"
                 onMouseEnter={handleReactionsMenuEnter}
                 onMouseLeave={handleReactionsMenuLeave}>
-                <Reactions handleClick={addReactionPost} showLabel={true} currentReaction={userSelectedReaction} />
+                <Reactions
+                  data-testid="reaction"
+                  handleClick={addReactionPost}
+                  showLabel={true}
+                  currentReaction={userSelectedReaction}
+                />
               </div>
             )}
           </div>
 
           {/* Comment button */}
-          <div className="reaction-button" onClick={toggleCommentsSection}>
+          <div data-testid="comment-container" className="reaction-button" onClick={toggleCommentsSection}>
             <span className="reaction-button-icon">
               <Icon name="ChatTeardrop" className="comment-icon" weight="regular" />
             </span>

@@ -1,4 +1,4 @@
-// hook to enfore dropdown close if there is an outside click
+// hook to enforce dropdown close if there is an outside click
 import { useEffect, useState } from 'react';
 
 /**
@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
  * @param {boolean} initialState - The initial state of the dropdown.
  * @returns {[boolean, (value: boolean) => void]} - The state and setter for the dropdown.
  */
-const useDetectOutsidelick = (ref, initialState) => {
+const useDetectOutsideClick = (ref, initialState) => {
   const [isActive, setIsActive] = useState(initialState);
 
   /**
@@ -15,8 +15,9 @@ const useDetectOutsidelick = (ref, initialState) => {
    */
   useEffect(() => {
     const onClick = (event) => {
-      if (ref.current !== null && !ref.current.contains(event.target)) {
-        setIsActive(!isActive);
+      // Only close the dropdown if it's open and clicked outside - never toggle it
+      if (isActive && ref.current !== null && !ref.current.contains(event.target)) {
+        setIsActive(false); // Only set to false, don't toggle
       }
     };
 
@@ -29,4 +30,4 @@ const useDetectOutsidelick = (ref, initialState) => {
   }, [isActive, ref]);
   return [isActive, setIsActive];
 };
-export default useDetectOutsidelick;
+export default useDetectOutsideClick;

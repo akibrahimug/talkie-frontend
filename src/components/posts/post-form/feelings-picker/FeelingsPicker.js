@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { FaTimes } from 'react-icons/fa';
 import './FeelingsPicker.scss';
+import { feelingsList } from '@services/utils/static.data';
 
 /**
  * @description Component for picking a feeling for a post
@@ -12,21 +13,6 @@ import './FeelingsPicker.scss';
 const FeelingsPicker = ({ isVisible, onClose, onSelect }) => {
   if (!isVisible) return null;
 
-  // Available feelings
-  const feelings = [
-    'Happy',
-    'Sad',
-    'Excited',
-    'Angry',
-    'Loved',
-    'Blessed',
-    'Thankful',
-    'Grateful',
-    'Relaxed',
-    'Worried',
-    'Tired'
-  ];
-
   return (
     <div className="feelings-picker">
       <div className="feelings-header">
@@ -36,9 +22,10 @@ const FeelingsPicker = ({ isVisible, onClose, onSelect }) => {
         </button>
       </div>
       <div className="feelings-list">
-        {feelings.map((feeling) => (
-          <button key={feeling} className="feeling-option" onClick={() => onSelect(feeling)}>
-            {feeling}
+        {feelingsList.map((feeling) => (
+          <button key={feeling.name} className="feeling-option" onClick={() => onSelect(feeling.name)}>
+            <span className="feeling-icon">{feeling.icon}</span>
+            <span className="feeling-name">{feeling.name}</span>
           </button>
         ))}
       </div>

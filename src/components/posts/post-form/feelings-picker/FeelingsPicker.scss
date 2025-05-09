@@ -5,6 +5,20 @@
   margin-bottom: 16px;
   overflow: hidden;
   animation: slideDown 0.3s ease;
+  width: 100%;
+  max-width: 600px;
+  position: relative;
+  z-index: 50;
+
+  // When used in a modal context, ensure proper positioning
+  .modal-box-content & {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    margin-top: 45px;
+    z-index: 100;
+  }
 
   .feelings-header {
     display: flex;
@@ -51,6 +65,25 @@
       color: var(--gray-11);
       cursor: pointer;
       transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+
+      .feeling-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
+
+      .feeling-name {
+        text-transform: capitalize;
+      }
 
       &:hover {
         background-color: var(--primary-1);
@@ -58,6 +91,15 @@
       }
     }
   }
+}
+
+// Style for FeelingsPicker when used in modal context
+[ref='feelingsRef'] .feelings-picker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
 }
 
 @keyframes slideDown {

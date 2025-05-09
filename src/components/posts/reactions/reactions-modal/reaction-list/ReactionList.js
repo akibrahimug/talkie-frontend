@@ -10,23 +10,42 @@ import '@components/posts/reactions/reactions-modal/reaction-list/ReactionList.s
 const ReactionList = ({ postReactions }) => {
   const { _id: currentPostId } = useSelector((state) => state.post);
 
-  // Filter reactions one more time to ensure they belong to the current post
-  const validReactions = postReactions.filter((reaction) => {
-    // If reaction has a postId field, validate it matches the current post
+  // Filter reactions to ensure they belong to the current post and deduplicate by userId
+  const validReactions = postReactions.reduce((uniqueReactions, reaction) => {
+    // Skip if reaction doesn't match current post ID
     if (reaction.postId && currentPostId && reaction.postId !== currentPostId) {
       console.warn(`Filtered out reaction that doesn't match current post ID`, {
         reactionPostId: reaction.postId,
         currentPostId
       });
-      return false;
+      return uniqueReactions;
     }
-    return true;
-  });
+
+    // Check if we already have a reaction from this user
+    const existingIndex = uniqueReactions.findIndex((item) => item.userId === reaction.userId);
+
+    if (existingIndex === -1) {
+      // If this user's reaction isn't in our list yet, add it
+      return [...uniqueReactions, reaction];
+    }
+
+    // If we already have a reaction from this user but the new one is more recent, replace it
+    if (new Date(reaction.createdAt) > new Date(uniqueReactions[existingIndex].createdAt)) {
+      const updated = [...uniqueReactions];
+      updated[existingIndex] = reaction;
+      return updated;
+    }
+
+    return uniqueReactions;
+  }, []);
 
   return (
     <div className="modal-reactions-container" data-testid="modal-reactions-container">
       {validReactions.map((reaction) => (
-        <div className="modal-reactions-container-list" key={Utils.generateString(10)} data-testid="reaction-list">
+        <div
+          className="modal-reactions-container-list"
+          key={reaction.userId || reaction._id || Utils.generateString(10)}
+          data-testid="reaction-list">
           <div className="img">
             <Avatar
               name={reaction?.username}
